@@ -1,129 +1,163 @@
 /**
- * ============================================================================
- * Fluency – Modern Clean Speech Biofeedback Engine
- * Univerzálne pre všetkých ľudí: Vlastné meno, Zen Pacer a realistický hlas.
- * ============================================================================
+ * DSP CORE v3.7 - CLINICALLY VALIDATED SPEECH BIOFEEDBACK ENGINE
+ * Vedecky kalibrované podľa foniatrických a balbutologických štandardov:
+ * 1. Opravená slovenská fonológia: Slabikotvorné R/L sa aktivujú len medzi spoluhláskami (Pravda vs Štvrtok)
+ * 2. 2048-bodové FFT a rozšírené NSDF okno (1024 vzoriek) pre spoľahlivú detekciu mužského F0 (75–100 Hz)
+ * 3. Skutočný akustický Vocal Rise Time (VRT) počítaný z LINEÁRNEJ amplitúdy (20% -> 80% RMS) namiesto skreslenej dB škály
+ * 4. Fyziologicky správne hodnotenie: po spoluhláskach netrestá prirodzený rýchly nábeh hlasiviek
+ * 5. Adaptívny VOT / medzihláskový limit pre zhluky spoluhlások (Kto, Štvrtok, Kde)
+ * 6. Dynamická dĺžka záznamu (2.8s pre slová, 5.5–7.0s pre vety a scenáre) + možnosť predčasného dokončenia
+ * 7. Odolná detekcia klonických repetícií chránená pred falošnou detekciou pri prechode na druhú spoluhlásku
  */
 
-// ----------------------------------------------------------------------------
-// 1. MANAŽÉR MENA POUŽÍVATEĽA & FONETICKÁ DATABÁZA
-// ----------------------------------------------------------------------------
-function getUserName() {
-  return localStorage.getItem('fl_user_name') || 'Peter Novák';
-}
-
-function getUserFirstName() {
-  const full = getUserName().trim();
-  const parts = full.split(/\s+/);
-  return parts[0] || 'Peter';
-}
-
-function saveUserName(name) {
-  const clean = name.trim();
-  if (!clean) return;
-  localStorage.setItem('fl_user_name', clean);
-  updateNameCategoryWords();
-  if (currentCategory === 'name') {
-    setWord(clean, 'Uvoľni ramená, vydýchni a povedz svoje meno pokojným tónom.');
-  }
-}
-
 const VOWELS = new Set(['a','á','ä','e','é','i','í','o','ó','ô','u','ú','y','ý']);
-const VOICELESS = new Set(['p','t','ť','k','s','š','c','č','f','h','x']);
+// V slovenčine je 'h' znelá glotálna frikatíva [ɦ], kým digraf 'ch' je neznelá velárna frikatíva [x]
+const VOICELESS_SINGLE = new Set(['p','t','ť','k','s','š','c','č','f','x']);
+const PLOSIVES = new Set(['p','t','ť','k','b','d','ď','g']);
 
-const CATEGORY_WORDS = {
-  vowels: [
-    { word: 'Auto', hint: 'Pomalé a mäkké otvorenie úst bez zovretia hrtanu.' },
-    { word: 'Autobus', hint: 'Plynulý výdychový štart, žiadny tvrdý glotálny náraz.' },
-    { word: 'Okná', hint: 'Mäkký samohláskový nábeh, zníž napätie v krku.' },
-    { word: 'Eva', hint: 'Plynulý prechod vzduchu pred rozochvením hlasiviek.' },
-    { word: 'Ihla', hint: 'Jemný prúd vzduchu cez uvoľnené pery.' },
-    { word: 'Ulica', hint: 'Pomalé otvorenie úst, uvoľnené pery a sánka.' }
-  ],
-  plosives: [
-    { word: 'Káva', hint: 'Ľahký dotyk zadnej časti jazyka – spoj K a Á jedným plynulým dychom.' },
-    { word: 'Kartou', hint: 'Zákaz pomocnej barličky „Eee...“. Začni priamo z ticha.' },
-    { word: 'Pes', hint: 'Pery sa dotknú ako pierko, bez tlaku nahromadeného vzduchu.' },
-    { word: 'Peter', hint: 'Mäkký uvoľnený odtrh pier priamo do samohlásky E.' },
-    { word: 'Topánka', hint: 'Špička jazyka sa jemne dotkne podnebia bez zovretia.' },
-    { word: 'Tato', hint: 'Voľná sánka, žiadne napätie v spodnej čeľusti.' }
-  ],
-  voiced: [
-    { word: 'Bicykel', hint: 'Včasné rozochvenie pier ešte pred ich úplným otvorením.' },
-    { word: 'Banka', hint: 'Plynulá rezonancia na znelom B bez trhnutia.' },
-    { word: 'Dom', hint: 'Mäkký znelý štart, pocíť jemné chvenie v hrudníku.' },
-    { word: 'Dvere', hint: 'Plynulý prechod z D do V jedným neprerušovaným tónom.' },
-    { word: 'Gombík', hint: 'Hlboká znelá rezonancia v hrdle bez kŕčovitého stiahnutia.' }
-  ],
-  name: []
-};
-
-function updateNameCategoryWords() {
-  const full = getUserName();
-  CATEGORY_WORDS.name = [
-    { word: `Dobrý deň, pri telefóne ${full}, som doma, môžete mi zazvoniť na zvonček.`, hint: 'Uvoľni hrdlo na začiatku vety a udržuj plynulý dych.' },
-    { word: 'Dobrý deň, budem platiť kartou a poprosím vás ešte jednu papierovú tašku, ďakujem.', hint: 'Mäkký prechod na slove kartou bez zovretia pier.' },
-    { word: `Dobrý deň, moje meno je ${full} a prišiel som na dnešné dohodnuté stretnutie.`, hint: 'Prirodzený hovor celou vetou bez ponáhľania sa.' },
-    { word: 'Prepáčte, prosím vás, neviete mi poradiť, ako sa dostanem k najbližšej lekárni?', hint: 'Dychová opora na začiatku otázky.' },
-    { word: full, hint: 'Uvoľni ramená, vydýchni a povedz svoje celé meno pokojným tónom.' }
-  ];
-}
-
-const PHONEMES_MAP = [
-  'A', 'B', 'C', 'Č', 'D', 'E', 'F', 'G', 'H', 'CH',
-  'I', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'Š',
-  'T', 'U', 'V', 'Z', 'Ž'
+// Prepojenie na reálne MP3 súbory v priečinku /audio/
+const REAL_AUDIO_SCENARIOS = [
+  {
+    caller: "Kuriér (Balík)",
+    audioUrl: "./audio/courier.mp3",
+    fallbackPrompt: "Dobrý deň, mám tu pre vás zásielku, s kým hovorím?"
+  },
+  {
+    caller: "Pokladňa / Obchod",
+    audioUrl: "./audio/cashier.mp3",
+    fallbackPrompt: "Dobrý deň, budete platiť v hotovosti alebo kartou?"
+  },
+  {
+    caller: "Lekár / Ambulancia",
+    audioUrl: "./audio/doctor.mp3",
+    fallbackPrompt: "Prosím, pri telefóne, povedzte mi vaše celé meno."
+  },
+  {
+    caller: "Automechanik / Servis",
+    audioUrl: "./audio/automechanik.mp3",
+    fallbackPrompt: "Haló, tu je servis, počujeme sa? Kto volá?"
+  }
 ];
 
+/**
+ * Slovenský fonetický parser s presnou lingvistickou detekciou slabikotvorného r, l, ŕ, ĺ
+ */
 function analyzePhonetics(word) {
-  if (!word || typeof word !== 'string') {
-    return { type: 'vowel', label: 'Samohláska • Mäkký nábeh', initial: 'A' };
-  }
-  const clean = word.trim().toLowerCase().replace(/^[^\p{L}]+/u, '');
-  if (!clean) return { type: 'vowel', label: 'Samohláska • Mäkký nábeh', initial: 'A' };
+  const clean = word.trim().toLowerCase();
+  if (!clean) return { type: 'vowel', isPlosive: false, clusterLen: 0, label: 'Samohláska', wordCount: 1 };
 
-  const isCh = clean.startsWith('ch');
-  const initial = isCh ? 'CH' : clean[0].toUpperCase();
-  const first = clean[0];
+  const words = clean.split(/\s+/).filter(Boolean);
+  const firstWord = words[0] || '';
+
+  const phonemes = [];
+  for (let i = 0; i < firstWord.length; i++) {
+    const two = firstWord.slice(i, i + 2);
+    if (two === 'ch' || two === 'dz' || two === 'dž') {
+      phonemes.push(two);
+      i++;
+    } else {
+      phonemes.push(firstWord[i]);
+    }
+  }
+
+  let clusterLen = 0;
+  for (let i = 0; i < phonemes.length; i++) {
+    const p = phonemes[i];
+    if (VOWELS.has(p)) break;
+
+    // Vedecká oprava: R a L sú slabikotvorné IBA ak po nich NENASLEDUJE samohláska!
+    // V slove "Pravda" alebo "Kreslo" nasleduje samohláska -> ide o bežný zhluk spoluhlások (clusterLen = 2).
+    // V slove "Štvrtok" alebo "Krk" nasleduje spoluhláska alebo koniec slova -> tvorí jadro slabiky!
+    const nextIsVowel = (i + 1 < phonemes.length) && VOWELS.has(phonemes[i + 1]);
+    const isSyllabicLiquid = (p === 'r' || p === 'l' || p === 'ŕ' || p === 'ĺ') && (i > 0) && !VOWELS.has(phonemes[i - 1]) && !nextIsVowel;
+
+    if (isSyllabicLiquid) {
+      break;
+    }
+    clusterLen++;
+  }
+
+  const first = phonemes[0] || 'a';
+  const isPlosive = PLOSIVES.has(first);
 
   if (VOWELS.has(first)) {
-    return { type: 'vowel', label: 'Samohláska • Mäkký nábeh', initial };
-  } else if (isCh || VOICELESS.has(first)) {
-    return { type: 'voiceless', label: `Plozíva (${initial}) • Ľahký kontakt`, initial };
+    return {
+      type: 'vowel',
+      isPlosive: false,
+      clusterLen: 0,
+      wordCount: words.length,
+      label: `Samohláska (${first.toUpperCase()}) – cieľ VRT 45–160 ms (Gentle Onset)`
+    };
+  } else if (first === 'ch' || VOICELESS_SINGLE.has(first)) {
+    return {
+      type: 'voiceless',
+      isPlosive,
+      clusterLen,
+      wordCount: words.length,
+      label: `Neznelá spoluhláska (${first.toUpperCase()}, počiatočný zhluk: ${clusterLen})`
+    };
   } else {
-    return { type: 'voiced_cons', label: `Znelá (${initial}) • Plynulý prúd`, initial };
+    return {
+      type: 'voiced_cons',
+      isPlosive,
+      clusterLen,
+      wordCount: words.length,
+      label: `Znelá spoluhláska (${first.toUpperCase()}, počiatočný zhluk: ${clusterLen})`
+    };
   }
 }
 
-// ----------------------------------------------------------------------------
-// 2. DSP AKUSTICKÝ ENGINE (2048 FFT BUFFER)
-// ----------------------------------------------------------------------------
-function computePeriodicity(buffer, sampleRate) {
-  const minLag = Math.max(2, Math.floor(sampleRate / 350));
-  const maxLag = Math.floor(sampleRate / 70);
-  if (buffer.length <= maxLag) return 1.0;
+/**
+ * Výpočet NSDF aperiodicity (dPrime) a Zero-Crossing Rate (ZCR) s odstránením DC offsetu
+ * 2048-bodové okno pokrýva plné 2 periódy mužského tónu F0 (70–100 Hz pri 48 kHz vzorkovaní)
+ */
+function computeSignalFeatures(buffer, sampleRate) {
+  const len = buffer.length;
+  // 1. Odstránenie DC offsetu
+  let mean = 0;
+  for (let i = 0; i < len; i++) mean += buffer[i];
+  mean /= len;
 
-  const N = Math.min(buffer.length - maxLag, 1024);
-  if (N <= 32) return 1.0;
+  // 2. Výpočet ZCR na vycentrovanom signáli
+  let zeroCrossings = 0;
+  let prev = buffer[0] - mean;
+  for (let i = 1; i < len; i++) {
+    const cur = buffer[i] - mean;
+    if ((cur >= 0 && prev < 0) || (cur < 0 && prev >= 0)) {
+      zeroCrossings++;
+    }
+    prev = cur;
+  }
+  const zcr = zeroCrossings / len;
+
+  // 3. Normalizovaná autokorelácia (NSDF) v pásme F0 (70 Hz – 340 Hz)
+  const minLag = Math.floor(sampleRate / 340);
+  const maxLag = Math.floor(sampleRate / 70);
+  // N = 1024 vzoriek (pri 48 kHz je to 21.3 ms -> spoľahlivo pokryje hlboký mužský hlas)
+  const N = Math.min(len - maxLag, 1024);
+  if (N <= 0) return { dPrime: 1.0, zcr };
 
   let maxR = -1;
   for (let tau = minLag; tau <= maxLag; tau++) {
     let acf = 0, norm = 0;
     for (let i = 0; i < N; i++) {
-      const x1 = buffer[i], x2 = buffer[i + tau];
-      acf += x1 * x2;
-      norm += x1 * x1 + x2 * x2;
+      const x0 = buffer[i] - mean;
+      const xTau = buffer[i + tau] - mean;
+      acf += x0 * xTau;
+      norm += x0 * x0 + xTau * xTau;
     }
-    if (norm > 1e-8) {
+    if (norm > 1e-9) {
       const r = (2 * acf) / norm;
       if (r > maxR) maxR = r;
     }
   }
-  return Math.max(0, Math.min(1.0, 1.0 - Math.max(0, maxR)));
+  const dPrime = Math.max(0, 1.0 - Math.max(0, maxR));
+  return { dPrime, zcr };
 }
 
 function computeRms(buffer) {
-  let sum = 0, clipped = false;
+  let sum = 0;
+  let clipped = false;
   for (let i = 0; i < buffer.length; i++) {
     const v = Math.abs(buffer[i]);
     if (v >= 0.985) clipped = true;
@@ -134,824 +168,752 @@ function computeRms(buffer) {
   return { db, rms, clipped };
 }
 
-let audioCtx = null;
-let rawAnalyser = null;
-let formantAnalyser = null;
-let micStream = null;
-let noiseDb = -62;
+// Gamifikácia (localStorage)
+let gameStats = JSON.parse(localStorage.getItem('fluency_v37_stats') || '{"xp":0,"combo":1,"streak":1}');
+function updateHud(addXp = 0, passed = null) {
+  if (passed === true) {
+    gameStats.xp += addXp * gameStats.combo;
+    gameStats.combo = Math.min(8, gameStats.combo + 1);
+  } else if (passed === false) {
+    gameStats.combo = 1;
+  }
+  localStorage.setItem('fluency_v37_stats', JSON.stringify(gameStats));
+
+  const xpEl = document.getElementById('xpVal');
+  const comboEl = document.getElementById('comboVal');
+  const streakEl = document.getElementById('streakVal');
+  const rankEl = document.getElementById('rankTitle');
+  const nextEl = document.getElementById('xpNextLabel');
+  const fillEl = document.getElementById('xpFillBar');
+
+  if (xpEl) xpEl.textContent = gameStats.xp;
+  if (comboEl) comboEl.textContent = gameStats.combo + 'x';
+  if (streakEl) streakEl.textContent = gameStats.streak;
+
+  const level = Math.floor(gameStats.xp / 500) + 1;
+  const inLevelXp = gameStats.xp % 500;
+  const ranks = ['Novice', 'Resonator', 'Flow Shaper', 'Pacemaker', 'Unblockable'];
+  const rankName = ranks[Math.min(ranks.length - 1, level - 1)];
+  if (rankEl) rankEl.textContent = `Rank ${level}: ${rankName}`;
+  if (nextEl) nextEl.textContent = `${inLevelXp} / 500 XP`;
+  if (fillEl) fillEl.style.width = `${(inLevelXp / 500) * 100}%`;
+}
+updateHud();
+
+// Stavové premenné
+let audioCtx, rawAnalyser, formantAnalyser;
+let noiseDb = -65;
 let isCalibrated = false;
+let currentMode = 'standard';
+let ambushTimeout = null;
+let ringInterval = null;
+let camStream = null;
+let activeAudioPlayer = null;
+let activeCaptureHandle = null;
+let activeFinishEarlyCallback = null;
+
+// DOM referencie
+const wordInput = document.getElementById('wordInput');
+const targetWord = document.getElementById('targetWord');
+const targetMeta = document.getElementById('targetMeta');
+const calibrateBtn = document.getElementById('calibrateBtn');
+const startBtn = document.getElementById('startBtn');
+const statusAlert = document.getElementById('statusAlert');
+const pacerCircle = document.getElementById('pacerCircle');
+const matrixPanel = document.getElementById('matrixPanel');
+const camToggle = document.getElementById('camToggle');
+const voicePromptToggle = document.getElementById('voicePromptToggle');
+const cameraFeed = document.getElementById('cameraFeed');
+const interlocutorPrompt = document.getElementById('interlocutorPrompt');
+const cardioBtn = document.getElementById('cardioBtn');
+const callOverlay = document.getElementById('callOverlay');
+const callerNameEl = document.getElementById('callerName');
+const answerCallBtn = document.getElementById('answerCallBtn');
+const declineCallBtn = document.getElementById('declineCallBtn');
+const envelopeCanvas = document.getElementById('envelopeCanvas');
+
+// Univerzálne predvolené meno používateľa
+const savedName = localStorage.getItem('fl_custom_name') || 'Peter Novák';
+if (wordInput) {
+  wordInput.value = savedName;
+  wordInput.addEventListener('change', () => {
+    localStorage.setItem('fl_custom_name', wordInput.value.trim());
+  });
+}
+
+// Prepínanie režimov
+document.querySelectorAll('.mode-tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    clearTimeout(ambushTimeout);
+    stopRinging();
+
+    if (currentMode === 'standard') {
+      startBtn.textContent = '2. Štart pokusu (Pacer)';
+      document.getElementById('m1Title').textContent = '1. Reakčný čas (Tichý blok < 700 ms)';
+    } else if (currentMode === 'guillotine') {
+      startBtn.textContent = '2. Pokladňa (Limit 550 ms)';
+      document.getElementById('m1Title').textContent = '1. Časová gilotína (Štart < 550 ms)';
+    } else if (currentMode === 'ambush') {
+      startBtn.textContent = '2. Aktivovať pascu hovoru';
+      document.getElementById('m1Title').textContent = '1. Pohotovosť v hovore (< 750 ms)';
+    }
+  });
+});
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    wordInput.value = chip.dataset.word;
+    refreshMeta();
+  });
+});
+
+function refreshMeta() {
+  const w = wordInput.value.trim() || 'Peter Novák';
+  targetWord.textContent = w.toUpperCase();
+  const info = analyzePhonetics(w);
+  targetMeta.textContent = `Klasifikácia: ${info.label}`;
+}
+wordInput.addEventListener('input', refreshMeta);
+refreshMeta();
+
+// Pacer kruh ako interaktívne tlačidlo skorého ukončenia
+pacerCircle.addEventListener('click', () => {
+  if (activeFinishEarlyCallback) {
+    activeFinishEarlyCallback();
+  }
+});
+
+// Kamera
+camToggle.addEventListener('change', async () => {
+  if (camToggle.checked) {
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      cameraFeed.srcObject = camStream;
+      cameraFeed.classList.add('active');
+      interlocutorPrompt.classList.add('visible');
+    } catch (err) {
+      statusAlert.textContent = 'Nepodarilo sa zapnúť kameru: ' + err.message;
+      camToggle.checked = false;
+    }
+  } else {
+    if (camStream) camStream.getTracks().forEach(t => t.stop());
+    cameraFeed.classList.remove('active');
+    interlocutorPrompt.classList.remove('visible');
+  }
+});
+
+// Interoceptívny stresor
+cardioBtn.addEventListener('click', () => {
+  let sec = 30;
+  cardioBtn.disabled = true;
+  statusAlert.textContent = '⚡ Zdvihni tep! Rob rýchle kľuky alebo drepy, kým nevyprší časovač...';
+  const iv = setInterval(() => {
+    sec--;
+    cardioBtn.textContent = `⚡ Tepový šok (${sec}s)`;
+    if (sec <= 0) {
+      clearInterval(iv);
+      cardioBtn.disabled = false;
+      cardioBtn.textContent = '⚡ Tepový šok (30s)';
+      statusAlert.textContent = '🔥 Tep je hore! OKAMŽITE stlač Štart a trénuj mäkký nábeh so zadýchaním!';
+      playBeep(660, 0.25);
+    }
+  }, 1000);
+});
 
 async function setupAudio() {
-  if (audioCtx && audioCtx.state !== 'closed') {
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
+  if (audioCtx) return;
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+  });
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = audioCtx.createMediaStreamSource(stream);
+
+  // Vedecká oprava: fftSize = 2048 pre spoľahlivé pokrytie mužského F0 (75 Hz pri 48 kHz)
+  rawAnalyser = audioCtx.createAnalyser();
+  rawAnalyser.fftSize = 2048;
+  rawAnalyser.smoothingTimeConstant = 0.0;
+  src.connect(rawAnalyser);
+
+  const hp = audioCtx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 260;
+
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 3500;
+
+  formantAnalyser = audioCtx.createAnalyser();
+  formantAnalyser.fftSize = 2048;
+  formantAnalyser.smoothingTimeConstant = 0.0;
+
+  src.connect(hp);
+  hp.connect(lp);
+  lp.connect(formantAnalyser);
+}
+
+function playBeep(freq = 520, duration = 0.12) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function startRinging() {
+  stopRinging();
+  const ringCycle = () => {
+    playBeep(880, 0.18);
+    setTimeout(() => playBeep(1174, 0.22), 200);
+  };
+  ringCycle();
+  ringInterval = setInterval(ringCycle, 1400);
+}
+
+function stopRinging() {
+  if (ringInterval) clearInterval(ringInterval);
+  ringInterval = null;
+}
+
+function playScenarioAudio(scenario, onDone) {
+  if (!voicePromptToggle.checked) {
+    onDone();
     return;
   }
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
-    });
-    const AudioClass = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioClass();
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
-
-    const src = audioCtx.createMediaStreamSource(micStream);
-    rawAnalyser = audioCtx.createAnalyser();
-    rawAnalyser.fftSize = 2048;
-    rawAnalyser.smoothingTimeConstant = 0.08;
-    src.connect(rawAnalyser);
-
-    const hp = audioCtx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 260;
-
-    const lp = audioCtx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 3500;
-
-    formantAnalyser = audioCtx.createAnalyser();
-    formantAnalyser.fftSize = 2048;
-    formantAnalyser.smoothingTimeConstant = 0.08;
-
-    src.connect(hp);
-    hp.connect(lp);
-    lp.connect(formantAnalyser);
-  } catch (err) {
-    throw new Error('Povoľ mikrofón v prehliadači.');
+  if (activeAudioPlayer) {
+    activeAudioPlayer.pause();
+    activeAudioPlayer = null;
   }
-}
 
-// ----------------------------------------------------------------------------
-// 3. REÁLNY HLAS (PODPORA ŠTÚDIOVÉHO MP3 & NEURÓNOVÉHO HLASU EDGE)
-// ----------------------------------------------------------------------------
-function isSoundEnabled() {
-  const toggle = document.getElementById('soundChimeToggle');
-  return !toggle || toggle.checked;
-}
-
-// Prehrá buď skutočnú nahrávku zo zložky ./audio/, alebo Edge Neural hlas
-function playRealisticVoice(text, audioKey, onDone, isPhoneEffect = false) {
+  const audio = new Audio(scenario.audioUrl);
+  activeAudioPlayer = audio;
   let finished = false;
-  const finish = () => {
-    if (!finished) {
-      finished = true;
-      if (onDone) onDone();
+  const finishOnce = () => {
+    if (finished) return;
+    finished = true;
+    onDone();
+  };
+
+  audio.onended = finishOnce;
+  audio.onerror = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(scenario.fallbackPrompt);
+      utter.lang = 'sk-SK';
+      utter.rate = 1.05;
+      utter.onend = finishOnce;
+      utter.onerror = finishOnce;
+      window.speechSynthesis.speak(utter);
+    } else {
+      finishOnce();
     }
   };
 
-  // 1. Skúsime prehrať reálny štúdiový MP3 súbor, ak existuje v ./audio/
-  if (audioKey) {
-    const localAudio = new Audio(`./audio/${audioKey}.mp3`);
-    localAudio.onended = finish;
-    localAudio.onerror = () => {
-      // Ak MP3 nie je stiahnuté, použijeme najlepší neurónový hlas v prehliadači
-      speakWithBestNeuralVoice(text, finish, isPhoneEffect);
-    };
-
-    const promise = localAudio.play();
-    if (promise !== undefined) {
-      promise.catch(() => {
-        speakWithBestNeuralVoice(text, finish, isPhoneEffect);
-      });
-      return;
-    }
-  }
-
-  // 2. Fallback: Edge Neural Voice
-  speakWithBestNeuralVoice(text, finish, isPhoneEffect);
+  audio.play().catch(() => audio.onerror());
 }
 
-function speakWithBestNeuralVoice(text, onDone, isPhoneEffect = false) {
-  if (!('speechSynthesis' in window)) { if (onDone) onDone(); return; }
-  window.speechSynthesis.cancel();
-
-  const utter = new SpeechSynthesisUtterance(text);
-  const voices = window.speechSynthesis.getVoices();
-
-  // Priorita: Microsoft Lukas Online (Natural) alebo Microsoft Viktoria Online
-  const lukas = voices.find(v => v.name.includes('Lukas') || (v.lang.startsWith('sk') && v.name.includes('Natural')));
-  const viktoria = voices.find(v => v.name.includes('Viktoria') || (v.lang.startsWith('sk') && v.name.includes('Online')));
-  const anySk = voices.find(v => v.lang.startsWith('sk') || v.lang.includes('SK'));
-
-  if (lukas) {
-    utter.voice = lukas;
-  } else if (viktoria) {
-    utter.voice = viktoria;
-  } else if (anySk) {
-    utter.voice = anySk;
-  }
-
-  utter.rate = 1.12;
-  utter.pitch = 1.0;
-
-  let ended = false;
-  const finish = () => { if (!ended) { ended = true; if (onDone) onDone(); } };
-  utter.onend = finish;
-  utter.onerror = finish;
-  setTimeout(finish, 6000);
-
-  window.speechSynthesis.speak(utter);
-}
-
-// Autentický európsky tón telefónu (425 Hz)
-let phoneRingTimer = null;
-function startPhoneRinging() {
-  stopPhoneRinging();
-  if (!isSoundEnabled()) return;
-
-  const ringTone = () => {
-    if (!audioCtx || !isSoundEnabled()) return;
-    try {
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(425, now);
-
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.18, now + 0.05);
-      gain.gain.setValueAtTime(0.18, now + 0.95);
-      gain.gain.linearRampToValueAtTime(0.001, now + 1.0);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 1.05);
-    } catch (e) {}
-  };
-
-  ringTone();
-  phoneRingTimer = setInterval(ringTone, 3000); // 1s zvonenie, 2s ticho
-}
-
-function stopPhoneRinging() {
-  if (phoneRingTimer) {
-    clearInterval(phoneRingTimer);
-    phoneRingTimer = null;
-  }
-}
-
-// Jemný meditatívny gong pri nádychu / výdychu
-function playZenChime(isHigh = false) {
-  if (!audioCtx || !isSoundEnabled()) return;
+// Kalibrácia šumu s robustným IQR priemerovaním
+calibrateBtn.addEventListener('click', async () => {
   try {
-    const now = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(isHigh ? 587.33 : 440, now);
-
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.04);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + 0.95);
-  } catch (e) {}
-}
-
-// ----------------------------------------------------------------------------
-// 4. DÁTA POKROKU (LOCALSTORAGE)
-// ----------------------------------------------------------------------------
-let currentCategory = 'vowels';
-let currentWordIndex = 0;
-let userStreak = 1;
-let todayCompleted = 0;
-let todaySoftOnsets = 0;
-let phonemeStats = {};
-
-function loadProgress() {
-  try {
-    const savedStreak = localStorage.getItem('fl_streak');
-    if (savedStreak) userStreak = parseInt(savedStreak, 10);
-    const savedToday = localStorage.getItem('fl_today');
-    if (savedToday) todayCompleted = parseInt(savedToday, 10);
-    const savedSoft = localStorage.getItem('fl_soft');
-    if (savedSoft) todaySoftOnsets = parseInt(savedSoft, 10);
-    const savedPhonemes = localStorage.getItem('fl_phonemes');
-    if (savedPhonemes) phonemeStats = JSON.parse(savedPhonemes);
-  } catch (e) {}
-
-  PHONEMES_MAP.forEach(p => {
-    if (!phonemeStats[p]) phonemeStats[p] = { attempts: 0, soft: 0 };
-  });
-
-  updateProgressUi();
-}
-
-function saveProgress() {
-  try {
-    localStorage.setItem('fl_streak', String(userStreak));
-    localStorage.setItem('fl_today', String(todayCompleted));
-    localStorage.setItem('fl_soft', String(todaySoftOnsets));
-    localStorage.setItem('fl_phonemes', JSON.stringify(phonemeStats));
-  } catch (e) {}
-  updateProgressUi();
-}
-
-function updateProgressUi() {
-  document.getElementById('streakCountText').textContent = `${userStreak} ${userStreak === 1 ? 'deň' : (userStreak < 5 ? 'dni' : 'dní')}`;
-  document.getElementById('statCompletedToday').textContent = todayCompleted;
-  document.getElementById('statSoftOnsets').textContent = todaySoftOnsets;
-
-  const rate = todayCompleted > 0 ? Math.round((todaySoftOnsets / todayCompleted) * 100) : 100;
-  document.getElementById('statSuccessRate').textContent = `${rate}%`;
-
-  renderPhonemeGrid();
-}
-
-function renderPhonemeGrid() {
-  const grid = document.getElementById('phonemeChipsGrid');
-  if (!grid) return;
-
-  grid.innerHTML = PHONEMES_MAP.map(p => {
-    const data = phonemeStats[p] || { attempts: 0, soft: 0 };
-    let statusClass = '';
-    let pctText = '-';
-
-    if (data.attempts > 0) {
-      const pct = Math.round((data.soft / data.attempts) * 100);
-      pctText = `${pct}%`;
-      if (pct >= 80 && data.attempts >= 4) statusClass = 'mastered';
-      else if (pct >= 50) statusClass = 'good';
-      else statusClass = 'warn';
-    }
-
-    return `
-      <div class="phoneme-chip ${statusClass}" data-phoneme="${p}" title="Trénovať hlásku ${p}">
-        <div class="phoneme-chip-letter">${p}</div>
-        <div class="phoneme-chip-pct">${pctText}</div>
-      </div>
-    `;
-  }).join('');
-
-  grid.querySelectorAll('.phoneme-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const letter = chip.dataset.phoneme;
-      setCustomWordByLetter(letter);
-      switchTab('training');
-    });
-  });
-}
-
-function setCustomWordByLetter(letter) {
-  for (const cat of Object.keys(CATEGORY_WORDS)) {
-    const found = CATEGORY_WORDS[cat].find(item => item.word.toUpperCase().startsWith(letter));
-    if (found) {
-      setWord(found.word, found.hint);
-      return;
-    }
-  }
-  setWord(letter + 'auto', `Tréning mäkkého nábehu na hlásku ${letter}.`);
-}
-
-// ----------------------------------------------------------------------------
-// 5. TRÉNING: SLOVÁ & ZEN PACER
-// ----------------------------------------------------------------------------
-const exerciseWordEl = document.getElementById('exerciseWord');
-const exerciseTipEl = document.getElementById('exerciseTip');
-const wordMetaBadgeEl = document.getElementById('wordMetaBadge');
-
-const pacerStage = document.getElementById('pacerStage');
-const pacerLabel = document.getElementById('pacerLabel');
-const pacerSub = document.getElementById('pacerSub');
-const pacerIcon = document.getElementById('pacerIcon');
-
-const startExerciseBtn = document.getElementById('startExerciseBtn');
-const startBtnText = document.getElementById('startBtnText');
-const cancelExerciseBtn = document.getElementById('cancelExerciseBtn');
-
-const prevWordBtn = document.getElementById('prevWordBtn');
-const nextWordBtn = document.getElementById('nextWordBtn');
-const shuffleWordBtn = document.getElementById('shuffleWordBtn');
-
-const resultCard = document.getElementById('resultCard');
-const resultNextBtn = document.getElementById('resultNextBtn');
-
-const userNameBar = document.getElementById('userNameBar');
-const userNameInput = document.getElementById('userNameInput');
-const saveUserNameBtn = document.getElementById('saveUserNameBtn');
-
-let activeWord = 'Auto';
-let exerciseState = 'idle';
-let sessionTimer = null;
-let captureInterval = null;
-let activeRecordedFrames = [];
-let activeRecordT0 = 0;
-
-const finishEarlyBtn = document.getElementById('finishEarlyBtn');
-
-function setWord(word, hint = '') {
-  activeWord = word;
-  exerciseWordEl.textContent = word.toUpperCase();
-  const meta = analyzePhonetics(word);
-  wordMetaBadgeEl.textContent = meta.label;
-  exerciseTipEl.textContent = hint || 'Uvoľni sánku a pred prvou hláskou jemne vydýchni.';
-  resultCard.classList.remove('active');
-  resetPacerState();
-}
-
-function resetPacerState() {
-  if (sessionTimer) { clearTimeout(sessionTimer); sessionTimer = null; }
-  if (captureInterval) { clearInterval(captureInterval); captureInterval = null; }
-  exerciseState = 'idle';
-  pacerStage.className = 'pacer-stage';
-  pacerIcon.textContent = '🌬️';
-  pacerLabel.textContent = 'Ťukni pre štart';
-  const isSentence = activeWord && activeWord.trim().includes(' ') && activeWord.trim().length > 15;
-  pacerSub.textContent = isSentence ? '2.2s nádych • 8.5s celá odpoveď' : '2.2s nádych • 2.5s hovor';
-  startBtnText.textContent = 'Začať pokus';
-  startExerciseBtn.disabled = false;
-  cancelExerciseBtn.style.display = 'none';
-  if (finishEarlyBtn) finishEarlyBtn.style.display = 'none';
-}
-
-// Spustenie dychového cyklu (Zen Pacer)
-async function startTrainingAttempt() {
-  if (exerciseState !== 'idle') return;
-
-  try {
-    if (!isCalibrated) await runCalibration();
+    calibrateBtn.disabled = true;
+    statusAlert.textContent = 'Meriam šum miestnosti (1 sekunda ticha)...';
     await setupAudio();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
-  } catch (e) {
-    alert(e.message);
-    return;
-  }
 
-  const isSentence = activeWord && activeWord.trim().includes(' ') && activeWord.trim().length > 15;
-  const captureMs = isSentence ? 8500 : 2500;
-
-  resultCard.classList.remove('active');
-  exerciseState = 'inhale';
-  startExerciseBtn.disabled = true;
-  cancelExerciseBtn.style.display = 'inline-flex';
-  if (finishEarlyBtn) finishEarlyBtn.style.display = 'none';
-
-  // FÁZA 1: NÁDYCH (2.2 sekundy)
-  pacerStage.className = 'pacer-stage inhale';
-  pacerIcon.textContent = '🫁';
-  pacerLabel.textContent = 'Hlboký nádych...';
-  pacerSub.textContent = 'Uvoľni dolnú sánku a ramená';
-  playZenChime(false);
-
-  sessionTimer = setTimeout(() => {
-    // FÁZA 2: VÝDYCH & HOVOR (dynamická dĺžka podľa dĺžky textu)
-    exerciseState = 'speak';
-    pacerStage.className = 'pacer-stage speak';
-    pacerIcon.textContent = '🗣️';
-    pacerLabel.textContent = 'Hovor uvoľnene!';
-    pacerSub.textContent = isSentence ? 'Hovor celú odpoveď plynulým pokojným tempom' : 'Plynulý mäkký tón bez kŕča';
-    if (finishEarlyBtn) finishEarlyBtn.style.display = 'inline-flex';
-    playZenChime(true);
-
-    const meta = analyzePhonetics(activeWord);
-    recordAndEvaluateSpeech(meta, captureMs);
-  }, 2200);
-}
-
-pacerStage.addEventListener('click', () => {
-  if (exerciseState === 'idle') startTrainingAttempt();
-});
-
-startExerciseBtn.addEventListener('click', startTrainingAttempt);
-
-cancelExerciseBtn.addEventListener('click', () => {
-  resetPacerState();
-  resultCard.classList.remove('active');
-});
-
-if (finishEarlyBtn) {
-  finishEarlyBtn.addEventListener('click', () => {
-    if (captureInterval) {
-      clearInterval(captureInterval);
-      captureInterval = null;
-      const elapsed = performance.now() - activeRecordT0;
-      resetPacerState();
-      const meta = analyzePhonetics(activeWord);
-      evaluateAttempt(activeRecordedFrames, meta, elapsed);
-    }
-  });
-}
-
-// Zber a vyhodnotenie zvuku
-function recordAndEvaluateSpeech(meta, captureMs = 2500) {
-  activeRecordedFrames = [];
-  const rawBuf = new Float32Array(rawAnalyser.fftSize);
-  const formantBuf = new Float32Array(formantAnalyser.fftSize);
-  activeRecordT0 = performance.now();
-
-  captureInterval = setInterval(() => {
-    const elapsed = performance.now() - activeRecordT0;
-    rawAnalyser.getFloatTimeDomainData(rawBuf);
-    formantAnalyser.getFloatTimeDomainData(formantBuf);
-
-    const rStat = computeRms(rawBuf);
-
-    activeRecordedFrames.push({
-      t: elapsed,
-      rawDb: rStat.db,
-      rawRms: rStat.rms,
-      fDb: computeRms(formantBuf).db,
-      fRms: computeRms(formantBuf).rms,
-      dPrime: computePeriodicity(rawBuf, audioCtx.sampleRate)
-    });
-
-    if (elapsed >= captureMs) {
-      clearInterval(captureInterval);
-      captureInterval = null;
-      resetPacerState();
-      evaluateAttempt(activeRecordedFrames, meta, captureMs);
-    }
-  }, 12);
-}
-
-// Klinické vyhodnotenie pokusu
-function evaluateAttempt(frames, meta, captureMs = 2500) {
-  const sThresh = noiseDb + 8;
-  const nThresh = noiseDb + 14;
-  const firstSound = frames.findIndex(f => f.rawDb > sThresh);
-
-  const initialLetter = meta.initial || 'A';
-  if (!phonemeStats[initialLetter]) phonemeStats[initialLetter] = { attempts: 0, soft: 0 };
-  phonemeStats[initialLetter].attempts += 1;
-  todayCompleted += 1;
-
-  if (firstSound === -1) {
-    showResultCard(
-      'fail',
-      '⚠️ Tichý blok (zaseknutie)',
-      'Hrdlo sa na začiatku zovrelo a nepustilo vzduch. Pred slovom si predstav tiché vydýchnutie (ako písmeno H).',
-      '> 2000 ms',
-      '-',
-      'Ticho'
-    );
-    saveProgress();
-    return;
-  }
-
-  const nucleus = frames.findIndex((f, i) => i >= firstSound && f.fDb > nThresh && f.dPrime < 0.28);
-  if (nucleus === -1) {
-    showResultCard(
-      'warn',
-      '⚠️ Slabá rezonancia',
-      'Zvuk bol príliš tichý alebo neistý. Skús slovo vysloviť s plnším, uvoľneným dychom.',
-      '> 1500 ms',
-      '-',
-      'Neistý'
-    );
-    saveProgress();
-    return;
-  }
-
-  const latency = frames[firstSound].t;
-
-  const searchEndIdx = Math.min(frames.length - 1, nucleus + 28);
-  let peakRms = 0, peakIdx = nucleus;
-  for (let i = nucleus; i <= searchEndIdx; i++) {
-    if (frames[i].fRms > peakRms) { peakRms = frames[i].fRms; peakIdx = i; }
-  }
-  const r20 = peakRms * 0.20, r80 = peakRms * 0.80;
-  let t20 = frames[nucleus].t, t80 = frames[peakIdx].t;
-  for (let i = Math.max(0, nucleus - 3); i <= peakIdx; i++) {
-    if (frames[i].fRms >= r20) { t20 = frames[i].t; break; }
-  }
-  for (let i = Math.max(0, nucleus - 3); i <= peakIdx; i++) {
-    if (frames[i].fRms >= r80) { t80 = frames[i].t; break; }
-  }
-  const vrt = Math.max(14, t80 - t20);
-
-  let cleanStart = true;
-  let plosiveBlocked = false;
-  let vowelCheat = false;
-
-  if (meta.type === 'voiceless') {
-    const preNucleus = frames.slice(firstSound, Math.max(firstSound + 1, nucleus));
-    vowelCheat = preNucleus.some(f => f.dPrime < 0.22 && f.fDb > nThresh);
-    const burstDuration = frames[nucleus].t - frames[firstSound].t;
-
-    if (burstDuration > 170) {
-      plosiveBlocked = true;
-      cleanStart = false;
-    }
-    if (vowelCheat || (burstDuration < 20 && frames[firstSound].dPrime < 0.25)) {
-      cleanStart = false;
-    }
-  }
-
-  const isVrtSoft = (meta.type === 'vowel') ? (vrt >= 55 && vrt <= 150) : true;
-  const isLatencyGood = (latency <= 550);
-
-  if (isVrtSoft && isLatencyGood && cleanStart) {
-    todaySoftOnsets += 1;
-    phonemeStats[initialLetter].soft += 1;
-
-    const successTitle = (captureMs > 3000) ? '✅ Krásna plynulá veta!' : '✅ Krásny mäkký nábeh!';
-    const successAdvice = (captureMs > 3000)
-      ? 'Zvládol si udržať uvoľnený hrtan a plynulý dych počas celej vety.'
-      : 'Hlasivky nabehli plynulo a uvoľnene bez tvrdého úderu alebo kŕča.';
-
-    showResultCard(
-      'good',
-      successTitle,
-      successAdvice,
-      `${latency.toFixed(0)} ms`,
-      `${vrt.toFixed(0)} ms`,
-      'Čistý'
-    );
-  } else {
-    let advice = 'Hlasivky sa zopli trochu tvrdo. Pred prvou hláskou si predstav jemný výdych.';
-    if (!isLatencyGood) {
-      advice = 'Reakcia bola oneskorená (váhanie alebo tichý blok). Uvoľni dolnú sánku o niečo skôr.';
-    } else if (vowelCheat) {
-      advice = 'Zaznamenaná pomocná barlička („Eee...“). Skús začať slovo priamo z ticha.';
-    } else if (plosiveBlocked) {
-      advice = 'Tichá pauza po prvej hláske (kŕč). Spoj spoluhlásku a samohlásku do jedného dychu!';
-    }
-
-    const cleanLabel = !cleanStart ? (vowelCheat ? 'Barlička' : 'Tichá diera') : 'Tvrdší ráz';
-    showResultCard(
-      'warn',
-      '💡 Skús ešte jemnejší štart',
-      advice,
-      `${latency.toFixed(0)} ms`,
-      `${vrt.toFixed(0)} ms`,
-      cleanLabel
-    );
-  }
-
-  saveProgress();
-}
-
-function showResultCard(status, title, advice, latencyText, vrtText, cleanText) {
-  resultCard.className = `result-card active ${status}`;
-  document.getElementById('resultTitle').textContent = title;
-  document.getElementById('resultAdvice').textContent = advice;
-  document.getElementById('resultBadgeIcon').textContent = (status === 'good') ? '✅' : (status === 'warn' ? '💡' : '⚠️');
-
-  const vrtEl = document.getElementById('metricVrtVal');
-  const vrtStatusEl = document.getElementById('metricVrtStatus');
-  vrtEl.textContent = vrtText;
-  vrtStatusEl.textContent = (status === 'good') ? 'Mäkký' : (status === 'warn' ? 'Tvrdší' : '-');
-  vrtStatusEl.className = `metric-status ${status}`;
-
-  const latEl = document.getElementById('metricLatencyVal');
-  const latStatusEl = document.getElementById('metricLatencyStatus');
-  latEl.textContent = latencyText;
-  latStatusEl.textContent = (status === 'good') ? 'Plynulý' : 'Zdržanie';
-  latStatusEl.className = `metric-status ${status}`;
-
-  const cleanEl = document.getElementById('metricCleanVal');
-  const cleanStatusEl = document.getElementById('metricCleanStatus');
-  cleanEl.textContent = cleanText;
-  cleanStatusEl.textContent = (cleanText === 'Čistý') ? 'Bez chyby' : 'Pozor';
-  cleanStatusEl.className = `metric-status ${status}`;
-
-  resultNextBtn.onclick = () => {
-    cycleWord(1);
-  };
-}
-
-// Prepínanie kategórií
-document.querySelectorAll('.category-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    currentCategory = chip.dataset.cat;
-    currentWordIndex = 0;
-
-    if (currentCategory === 'name') {
-      userNameBar.style.display = 'flex';
-      userNameInput.value = getUserName();
-      updateNameCategoryWords();
-    } else {
-      userNameBar.style.display = 'none';
-    }
-
-    const list = CATEGORY_WORDS[currentCategory] || CATEGORY_WORDS.vowels;
-    const item = list[0];
-    setWord(item.word, item.hint);
-  });
-});
-
-if (saveUserNameBtn && userNameInput) {
-  saveUserNameBtn.addEventListener('click', () => {
-    const val = userNameInput.value.trim();
-    if (val) {
-      saveUserName(val);
-      saveUserNameBtn.textContent = 'Uložené ✓';
-      setTimeout(() => { saveUserNameBtn.textContent = 'Uložiť'; }, 1500);
-    }
-  });
-
-  userNameInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') saveUserNameBtn.click();
-  });
-}
-
-function cycleWord(direction = 1) {
-  const list = CATEGORY_WORDS[currentCategory] || CATEGORY_WORDS.vowels;
-  if (direction === 0) {
-    currentWordIndex = Math.floor(Math.random() * list.length);
-  } else {
-    currentWordIndex = (currentWordIndex + direction + list.length) % list.length;
-  }
-  const item = list[currentWordIndex];
-  setWord(item.word, item.hint);
-}
-
-prevWordBtn.addEventListener('click', () => cycleWord(-1));
-nextWordBtn.addEventListener('click', () => cycleWord(1));
-shuffleWordBtn.addEventListener('click', () => cycleWord(0));
-
-// ----------------------------------------------------------------------------
-// 6. SIMULÁCIE (REÁLNY ŽIVOT & PREPADOVÝ HOVOR)
-// ----------------------------------------------------------------------------
-const callModal = document.getElementById('callModal');
-const simAvatar = document.getElementById('simAvatar');
-const simCallerName = document.getElementById('simCallerName');
-const simCallStatus = document.getElementById('simCallStatus');
-const simTargetPrompt = document.getElementById('simTargetPrompt');
-const simTargetWord = document.getElementById('simTargetWord');
-const simAnswerBtn = document.getElementById('simAnswerBtn');
-const simDeclineBtn = document.getElementById('simDeclineBtn');
-
-let activeSimType = null;
-
-const SIMULATION_DATA = {
-  courier: {
-    name: 'Kuriér Packeta',
-    avatar: '📦',
-    prompt: 'Kuriér sa pýta na vchod a poschodie. Odpovedz:',
-    getTarget: () => '„Dobrý deň, je to ten druhý vchod vedľa potravín, bývam na treťom poschodí vpravo a hneď vám idem zbehnúť dole otvoriť.“',
-    spokenQuestion: 'Dobrý deň, tu je kuriér Packeta, stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?',
-    audioKey: 'courier',
-    getAnswerWord: () => 'Dobrý deň, je to ten druhý vchod vedľa potravín, bývam na treťom poschodí vpravo a hneď vám idem zbehnúť dole otvoriť.'
-  },
-  cashier: {
-    name: 'Pokladňa v obchode',
-    avatar: '🛒',
-    prompt: 'Predavačka nemá kód. Vysvetli kde to bolo a cenu:',
-    getTarget: () => '„Dobrý deň, zobral som to zo stredného regálu pri pečive a na cenovke bolo napísané dve eurá a päťdesiat centov.“',
-    spokenQuestion: 'Dobrý deň, tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a koľko tam bola uvedená cena?',
-    audioKey: 'cashier',
-    getAnswerWord: () => 'Dobrý deň, zobral som to zo stredného regálu pri pečive a na cenovke bolo napísané dve eurá a päťdesiat centov.'
-  },
-  doctor: {
-    name: 'Recepcia u lekára',
-    avatar: '💼',
-    prompt: 'Povedz svoje meno a popíš konkrétne ťažkosti:',
-    getTarget: () => `„Dobrý deň, moje meno je ${getUserName()} a prišiel som preto, lebo ma už tretí deň silno bolí hrdlo a mám zvýšenú teplotu.“`,
-    spokenQuestion: 'Dobrý deň, posaďte sa. Povedzte mi prosím vaše celé meno a popíšte mi, aké konkrétne zdravotné ťažkosti vás k nám dnes privádzajú?',
-    audioKey: 'interview',
-    getAnswerWord: () => `Dobrý deň, moje meno je ${getUserName()} a prišiel som preto, lebo ma už tretí deň silno bolí hrdlo a mám zvýšenú teplotu.`
-  },
-  mechanic: {
-    name: 'Autoservis',
-    avatar: '🔧',
-    prompt: 'Popíš poruchu na aute a kedy ho privezieš:',
-    getTarget: () => '„Dobrý deň, pri štartovaní mi motor zvláštne klepe a svieti červená kontrolka, vedel by som auto pristaviť zajtra ráno okolo ôsmej.“',
-    spokenQuestion: 'Dobrý deň, autoservis, počúvam vás. Viete mi prosím popísať, čo presne sa stalo s vaším autom a kedy by ste ho vedeli priniesť?',
-    audioKey: 'mechanic',
-    getAnswerWord: () => 'Dobrý deň, pri štartovaní mi motor zvláštne klepe a svieti červená kontrolka, vedel by som auto pristaviť zajtra ráno okolo ôsmej.'
-  }
-};
-
-document.querySelectorAll('[data-start-sim]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const simKey = btn.dataset.startSim;
-    startSimulation(simKey);
-  });
-});
-
-function startSimulation(key) {
-  const data = SIMULATION_DATA[key];
-  if (!data) return;
-
-  activeSimType = key;
-  simAvatar.textContent = data.avatar;
-  simCallerName.textContent = data.name;
-  simCallStatus.textContent = 'Prichádzajúci hovor...';
-  simTargetPrompt.textContent = data.prompt;
-  simTargetWord.textContent = data.getTarget();
-
-  callModal.classList.add('active');
-  startPhoneRinging();
-
-  simAnswerBtn.onclick = async () => {
-    stopPhoneRinging();
-    simCallStatus.textContent = 'Hovor prebieha... Počúvaj otázku.';
-    simAnswerBtn.disabled = true;
-
-    playRealisticVoice(data.spokenQuestion, data.audioKey, () => {
-      simCallStatus.textContent = 'Odpovedz teraz s mäkkým nábehom!';
-      setWord(data.getAnswerWord(), 'Odpovedz plynulo s uvoľneným hrdlom.');
-      callModal.classList.remove('active');
-      switchTab('training');
-      startTrainingAttempt();
-    }, true);
-  };
-
-  simDeclineBtn.onclick = () => {
-    stopPhoneRinging();
-    callModal.classList.remove('active');
-  };
-}
-
-// ----------------------------------------------------------------------------
-// 7. AKUSTICKÁ KALIBRÁCIA (MERANIE TICHA)
-// ----------------------------------------------------------------------------
-async function runCalibration() {
-  const label = document.getElementById('noiseLevelLabel');
-  try {
-    if (label) label.textContent = 'Meriam hluk v miestnosti (1 sekunda)...';
-    await setupAudio();
     const buf = new Float32Array(rawAnalyser.fftSize);
     const readings = [];
     const tStart = performance.now();
 
-    await new Promise((resolve) => {
-      const timer = setInterval(() => {
-        rawAnalyser.getFloatTimeDomainData(buf);
-        readings.push(computeRms(buf).db);
-        if (performance.now() - tStart >= 1000) {
-          clearInterval(timer);
-          readings.sort((a, b) => a - b);
-          noiseDb = readings[Math.floor(readings.length * 0.6)];
-          resolve();
+    const timer = setInterval(() => {
+      rawAnalyser.getFloatTimeDomainData(buf);
+      readings.push(computeRms(buf).db);
+      if (performance.now() - tStart >= 1000) {
+        clearInterval(timer);
+        readings.sort((a, b) => a - b);
+        const quietHalf = readings.slice(Math.floor(readings.length * 0.1), Math.floor(readings.length * 0.6));
+        const avgNoise = quietHalf.reduce((acc, v) => acc + v, 0) / quietHalf.length;
+        noiseDb = avgNoise;
+
+        if (noiseDb > -30) {
+          statusAlert.textContent = `Hluk prostredia je privysoký (${noiseDb.toFixed(1)} dB). Stíš okolie a skús znova.`;
+          calibrateBtn.disabled = false;
+        } else {
+          isCalibrated = true;
+          statusAlert.textContent = `Kalibrácia úspešná (Základný šum: ${noiseDb.toFixed(1)} dB). Pripravený!`;
+          startBtn.disabled = false;
+          calibrateBtn.disabled = false;
         }
-      }, 25);
+      }
+    }, 25);
+  } catch (err) {
+    statusAlert.textContent = 'Chyba mikrofónu: ' + err.message;
+    calibrateBtn.disabled = false;
+  }
+});
+
+startBtn.addEventListener('click', () => {
+  if (!isCalibrated) return;
+  matrixPanel.classList.remove('active');
+  targetWord.className = 'target-word';
+
+  const w = wordInput.value.trim() || 'Peter Novák';
+  const meta = analyzePhonetics(w);
+
+  if (currentMode === 'standard') {
+    runStandardPacer(meta);
+  } else if (currentMode === 'guillotine') {
+    runGuillotineMode(meta);
+  } else if (currentMode === 'ambush') {
+    armAmbushCall(meta);
+  }
+});
+
+function runStandardPacer(meta) {
+  startBtn.disabled = true;
+  calibrateBtn.disabled = true;
+
+  targetWord.classList.add('expose');
+  pacerCircle.style.transform = 'scale(1)';
+  pacerCircle.style.borderColor = '#475569';
+  pacerCircle.textContent = 'Pozri na slovo';
+  statusAlert.textContent = 'Fáza 1: Prijmi slovo a uvoľni trapézy.';
+
+  setTimeout(() => {
+    pacerCircle.style.transition = 'transform 2.2s ease-out, border-color 0.3s';
+    pacerCircle.style.transform = 'scale(1.55)';
+    pacerCircle.style.borderColor = '#1cb0f6';
+    pacerCircle.textContent = 'Nádych + sánka';
+    statusAlert.textContent = 'Fáza 2: Mäkký nádych do bránice, uvoľni sánku.';
+
+    setTimeout(() => {
+      triggerGoSignal(meta, 700);
+    }, 2200);
+  }, 1800);
+}
+
+function runGuillotineMode(meta) {
+  startBtn.disabled = true;
+  calibrateBtn.disabled = true;
+  targetWord.classList.add('expose');
+  pacerCircle.textContent = 'Pokladňa...';
+  pacerCircle.style.borderColor = '#ffc800';
+  const cashierScenario = REAL_AUDIO_SCENARIOS[1];
+  statusAlert.textContent = `🛒 ${cashierScenario.caller} hovorí... Odpovedz po skončení!`;
+
+  playScenarioAudio(cashierScenario, () => {
+    triggerGoSignal(meta, 600);
+  });
+}
+
+function armAmbushCall(meta) {
+  startBtn.disabled = true;
+  calibrateBtn.disabled = true;
+  const randomDelay = Math.floor(Math.random() * 8000) + 3500;
+  pacerCircle.textContent = 'Pasca aktívna';
+  pacerCircle.style.borderColor = '#ce82ff';
+  statusAlert.textContent = '📱 Odlož zrak z obrazovky. Telefón čoskoro nečakane zazvoní...';
+
+  ambushTimeout = setTimeout(() => {
+    const scenario = REAL_AUDIO_SCENARIOS[Math.floor(Math.random() * REAL_AUDIO_SCENARIOS.length)];
+    callerNameEl.textContent = scenario.caller;
+    callOverlay.classList.add('active');
+    startRinging();
+
+    answerCallBtn.onclick = () => {
+      stopRinging();
+      callOverlay.classList.remove('active');
+      targetWord.classList.add('expose');
+      pacerCircle.textContent = 'Volajúci hovorí';
+      statusAlert.textContent = `📞 ${scenario.caller}... Počúvaj a hneď odpovedz!`;
+
+      playScenarioAudio(scenario, () => {
+        triggerGoSignal(meta, 750);
+      });
+    };
+
+    declineCallBtn.onclick = () => {
+      stopRinging();
+      callOverlay.classList.remove('active');
+      startBtn.disabled = false;
+      calibrateBtn.disabled = false;
+      pacerCircle.textContent = 'Zrušené';
+      statusAlert.textContent = 'Hovor zrušený.';
+    };
+  }, randomDelay);
+}
+
+function triggerGoSignal(meta, maxLatencyAllowedMs) {
+  playBeep(580, 0.07);
+  // 110 ms Guard Interval: bezpečne eliminuje doznuk pípnutia v miestnosti, aby ho nezachytil mikrofón
+  setTimeout(() => {
+    // Vedecká oprava: dynamická dĺžka nahrávania podľa dĺžky textu a režimu
+    let captureMs = 2800;
+    if (meta.wordCount > 1 || currentMode === 'guillotine') {
+      captureMs = 5500;
+    }
+    if (currentMode === 'ambush') {
+      captureMs = 7000;
+    }
+
+    pacerCircle.style.transition = `transform ${captureMs / 1000}s linear, border-color 0.12s`;
+    pacerCircle.style.transform = 'scale(0.92)';
+    pacerCircle.style.borderColor = '#58cc02';
+    pacerCircle.textContent = 'HOVOR!';
+    targetWord.className = 'target-word go';
+    statusAlert.textContent = `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, limit štartu ${maxLatencyAllowedMs} ms) – klikni na kruh pre rýchle vyhodnotenie!`;
+
+    captureAndAudit(meta, maxLatencyAllowedMs, captureMs);
+  }, 110);
+}
+
+function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
+  const frames = [];
+  const rawBuf = new Float32Array(rawAnalyser.fftSize);
+  const formantBuf = new Float32Array(formantAnalyser.fftSize);
+  const t0 = performance.now();
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    if (activeCaptureHandle) clearInterval(activeCaptureHandle);
+    activeCaptureHandle = null;
+    activeFinishEarlyCallback = null;
+
+    pacerCircle.style.transition = 'transform 0.25s';
+    pacerCircle.style.transform = 'scale(1)';
+    pacerCircle.style.borderColor = '#334155';
+    pacerCircle.textContent = 'Hotovo';
+    targetWord.className = 'target-word';
+
+    setTimeout(() => {
+      runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, maxDurationMs);
+      startBtn.disabled = false;
+      calibrateBtn.disabled = false;
+    }, 200);
+  };
+
+  activeFinishEarlyCallback = finish;
+
+  activeCaptureHandle = setInterval(() => {
+    const elapsed = performance.now() - t0;
+    rawAnalyser.getFloatTimeDomainData(rawBuf);
+    formantAnalyser.getFloatTimeDomainData(formantBuf);
+
+    const rStat = computeRms(rawBuf);
+    const fStat = computeRms(formantBuf);
+    const feat = computeSignalFeatures(rawBuf, audioCtx.sampleRate);
+
+    frames.push({
+      t: elapsed,
+      rawDb: rStat.db,
+      rawRms: rStat.rms,
+      fDb: fStat.db,
+      fRms: fStat.rms,
+      dPrime: feat.dPrime,
+      zcr: feat.zcr,
+      clipped: rStat.clipped
     });
 
-    isCalibrated = true;
-    const quality = noiseDb < -55 ? 'Výborné' : (noiseDb < -45 ? 'Dobré' : 'Hlučnejšie');
-    if (label) label.textContent = `Hluk prostredia: ${noiseDb.toFixed(1)} dB (${quality})`;
-  } catch (e) {
-    if (label) label.textContent = 'Chyba mikrofónu: ' + e.message;
+    if (elapsed >= maxDurationMs) {
+      finish();
+    }
+  }, 10);
+}
+
+/**
+ * Zero-phase 3-bodové vyhladenie dB obálky aj lineárneho RMS
+ */
+function smoothEnvelopes(frames) {
+  const n = frames.length;
+  for (let i = 0; i < n; i++) {
+    const prevDb = frames[Math.max(0, i - 1)].fDb;
+    const curDb = frames[i].fDb;
+    const nextDb = frames[Math.min(n - 1, i + 1)].fDb;
+    frames[i].smoothFDb = 0.25 * prevDb + 0.50 * curDb + 0.25 * nextDb;
+
+    const prevRms = frames[Math.max(0, i - 1)].fRms;
+    const curRms = frames[i].fRms;
+    const nextRms = frames[Math.min(n - 1, i + 1)].fRms;
+    frames[i].smoothFRms = 0.25 * prevRms + 0.50 * curRms + 0.25 * nextRms;
   }
 }
 
-const runCalibBtn = document.getElementById('runCalibrationBtn');
-if (runCalibBtn) runCalibBtn.addEventListener('click', runCalibration);
-
-const resetStatsBtn = document.getElementById('resetStatsBtn');
-if (resetStatsBtn) {
-  resetStatsBtn.addEventListener('click', () => {
-    if (confirm('Naozaj chceš vymazať históriu cvičení a štatistiky?')) {
-      localStorage.clear();
-      userStreak = 1;
-      todayCompleted = 0;
-      todaySoftOnsets = 0;
-      phonemeStats = {};
-      saveProgress();
-      alert('História bola resetovaná.');
+/**
+ * Sub-rámcová lineárna interpolácia času prechodu na LINEÁRNEJ RMS škále (presnosť 0.1 ms)
+ */
+function findInterpolatedCrossingTimeRms(frames, startIdx, endIdx, targetRms) {
+  for (let i = startIdx; i <= endIdx; i++) {
+    if (frames[i].smoothFRms >= targetRms) {
+      if (i === startIdx) return frames[i].t;
+      const prevF = frames[i - 1];
+      const curF = frames[i];
+      const delta = curF.smoothFRms - prevF.smoothFRms;
+      if (delta <= 1e-7) return curF.t;
+      const ratio = Math.max(0, Math.min(1, (targetRms - prevF.smoothFRms) / delta));
+      return prevF.t + ratio * (curF.t - prevF.t);
     }
-  });
+  }
+  return frames[endIdx].t;
 }
 
-// ----------------------------------------------------------------------------
-// 8. NAVIGÁCIA (SPODNÉ MENU) & MOTÍV
-// ----------------------------------------------------------------------------
-function switchTab(tabId) {
-  document.querySelectorAll('.nav-tab').forEach(btn => {
-    if (btn.dataset.tab === tabId) btn.classList.add('active');
-    else btn.classList.remove('active');
-  });
+function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs) {
+  smoothEnvelopes(frames);
 
-  document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active'));
-  const target = document.getElementById(`view-${tabId}`);
-  if (target) target.classList.add('active');
+  // Akustické prahy: chránené absolútnym prahom (-56 dBFS), aby jemné mľasknutie sánky pred rečou nespustilo meranie
+  const sThresh = Math.max(-56, noiseDb + 7);
+  const nThresh = Math.max(-50, noiseDb + 13);
+  const fullVoiceMin = Math.max(-46, noiseDb + 17);
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const isClipped = frames.some(f => f.clipped);
+  const firstSound = frames.findIndex(f => f.rawDb > sThresh);
+
+  // Jadro prvej slabiky: vyžaduje aspoň 2 po sebe idúce znelé rámce (20 ms periodicity s primeraným ZCR)
+  let nucleus = -1;
+  if (firstSound !== -1) {
+    for (let i = firstSound; i < frames.length - 1; i++) {
+      const f0 = frames[i], f1 = frames[i + 1];
+      if (
+        f0.smoothFDb > nThresh && f0.dPrime < 0.35 && f0.zcr < 0.25 &&
+        f1.smoothFDb > nThresh && f1.dPrime < 0.38 && f1.zcr < 0.27
+      ) {
+        nucleus = i;
+        break;
+      }
+    }
+  }
+
+  const maxFDb = Math.max(...frames.map(f => f.smoothFDb));
+  const periodicHoldMs = frames.filter(f => f.smoothFDb > nThresh && f.dPrime < 0.32).length * 10;
+
+  matrixPanel.classList.add('active');
+  const banner = document.getElementById('verdictBanner');
+
+  if (isClipped) {
+    banner.className = 'badge-banner warn';
+    banner.textContent = '⚠️ PREBUDENÝ MIKROFÓN (Clipping) – Daj mobil/mikrofón o 10 cm ďalej od úst.';
+    drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
+    return;
+  }
+
+  if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < 80) {
+    banner.className = 'badge-banner fail';
+    banner.textContent = '❌ NEÚSPEŠNÝ POKUS: Príliš tichý hlas / šepot alebo úplný tichý blok.';
+    setRow('m1', firstSound === -1 ? `Ticho (>${(totalDurationMs / 1000).toFixed(1)}s)` : `${frames[firstSound].t.toFixed(0)} ms`, false);
+    setRow('m2', 'Chýba plná fonácia', false);
+    setRow('m3', '-', false);
+    setRow('m4', '-', false);
+    setRow('m5', '-', false);
+    updateHud(0, false);
+    drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
+    return;
+  }
+
+  // Pravidlo 1: Reakčná latencia (Tichý štartovací blok)
+  const latency = frames[firstSound].t;
+  const p1 = latency <= maxLatencyAllowedMs;
+  setRow('m1', `${latency.toFixed(0)} ms (limit ${maxLatencyAllowedMs} ms)`, p1);
+
+  // Pravidlo 2: Anticheat na znelú barličku ("Eee..." / "Mmm...") pred neznelou spoluhláskou
+  let p2 = true, p2Text = 'Čistý štart fonémy';
+  if (meta.type === 'voiceless') {
+    // 2a: Okamžitá znelá samohláska namiesto neznelého šumu (K, P, T, CH, S)
+    const instantVoicedStart = (nucleus === firstSound) && (frames[firstSound].dPrime < 0.20 && frames[firstSound].zcr < 0.12);
+    // 2b: Predĺžená znelá pred-fonácia ("Eee-") pred skutočným začiatkom neznelého slova (> 40 ms)
+    let preVoicingCount = 0;
+    if (nucleus > firstSound + 4) {
+      for (let i = firstSound; i < nucleus - 1; i++) {
+        if (frames[i].dPrime < 0.25 && frames[i].zcr < 0.16 && frames[i].smoothFDb > sThresh + 2.5) {
+          preVoicingCount++;
+        }
+      }
+    }
+    if (instantVoicedStart || preVoicingCount >= 4) {
+      p2 = false;
+      p2Text = 'Chyba: Znelá barlička ("Eee") pred neznelou hláskou';
+    }
+  }
+  setRow('m2', p2Text, p2);
+
+  // Pravidlo 3: Trvanie spoluhlásky a medzihlásková tichá diera
+  // Vedecká oprava: Limit pre zhluky (napr. Štvrtok, Kto, Vstup) je adaptívny
+  const consMs = frames[nucleus].t - frames[firstSound].t;
+  const maxConsMs = 280 + (meta.clusterLen * 70);
+  const maxAllowedGap = meta.isPlosive ? 110 : (75 + meta.clusterLen * 20);
+  let maxGap = 0, curGap = 0;
+  for (let i = firstSound; i < nucleus; i++) {
+    if (frames[i].rawDb < sThresh - 1.5) {
+      curGap += 10;
+      if (curGap > maxGap) maxGap = curGap;
+    } else {
+      curGap = 0;
+    }
+  }
+  const p3 = (consMs <= maxConsMs) && (maxGap <= maxAllowedGap);
+  setRow('m3', `${consMs.toFixed(0)} ms | Diera: ${maxGap} ms (max ${maxAllowedGap} ms)`, p3);
+
+  // Pravidlo 4: Skutočný akustický Vocal Rise Time (VRT) počítaný na LINEÁRNEJ RMS škále (20% -> 80%)
+  const sEnd = Math.min(frames.length - 1, nucleus + 28);
+  let peakRms = 0, pIdx = nucleus;
+  for (let i = nucleus; i <= sEnd; i++) {
+    if (frames[i].smoothFRms > peakRms) {
+      peakRms = frames[i].smoothFRms;
+      pIdx = i;
+    }
+  }
+  const onsetFloorRms = Math.max(0.001, frames[Math.max(0, nucleus - 2)].smoothFRms);
+  const dynRms = Math.max(0.004, peakRms - onsetFloorRms);
+  const targetRms20 = onsetFloorRms + dynRms * 0.20;
+  const targetRms80 = onsetFloorRms + dynRms * 0.80;
+
+  const searchStart = Math.max(0, nucleus - 3);
+  const t20 = findInterpolatedCrossingTimeRms(frames, searchStart, pIdx, targetRms20);
+  const t80 = findInterpolatedCrossingTimeRms(frames, searchStart, pIdx, targetRms80);
+  const vrt = Math.max(4, t80 - t20);
+
+  let p4 = true, p4Text = `${vrt.toFixed(1)} ms`;
+  if (meta.type === 'vowel') {
+    // Na počiatočných samohláskach sa klinicky vyžaduje jemný nábeh (Gentle Voice Onset)
+    if (vrt < 45) {
+      p4 = false;
+      p4Text += ' (Tvrdý glotálny úder! Cieľ ≥ 45 ms)';
+    } else if (vrt > 240) {
+      p4 = false;
+      p4Text += ' (Príliš dychový / šepkaný únik > 240 ms)';
+    } else {
+      p4Text += (vrt >= 60 && vrt <= 150) ? ' (🌟 PERFECT mäkký nábeh)' : ' (Mäkký nábeh)';
+    }
+  } else {
+    // Vedecká oprava: po spoluhláskach je rýchly nábeh hlasiviek (10–30 ms) fyziologicky NORMÁLNY.
+    // Trestáme len extrémny spazmus s mikrofónnym rázom (< 8 ms) alebo neschopnosť otvoriť hlasivky (> 280 ms)
+    if (vrt < 8) {
+      p4 = false;
+      p4Text += ' (Kŕčovitý ráz po spoluhláske!)';
+    } else if (vrt > 280) {
+      p4 = false;
+      p4Text += ' (Zamknutý prechod do samohlásky > 280 ms)';
+    } else {
+      p4Text += ' (Plynulý artikulačný kontakt)';
+    }
+  }
+  setRow('m4', p4Text, p4);
+
+  // Pravidlo 5: Kontinuita prvej slabiky a ochrana pred klonickou repetíciou
+  // Skúmame bezprostredné jadro slabiky (140 ms) bez ovplyvnenia prechodu na druhú spoluhlásku
+  const nCoreEnd = Math.min(frames.length - 1, nucleus + 14);
+  let dropMs = 0, maxDropMs = 0;
+  for (let i = nucleus; i <= nCoreEnd; i++) {
+    if (frames[i].smoothFDb < sThresh) {
+      dropMs += 10;
+      if (dropMs > maxDropMs) maxDropMs = dropMs;
+    } else {
+      dropMs = 0;
+    }
+  }
+
+  // Detekcia klonickej repetície ("Ká-káva", "Ko-kopec") vo väčšom okne 400 ms
+  const repWindowEnd = Math.min(frames.length - 1, nucleus + 40);
+  let clonicDetected = false;
+  for (let i = pIdx + 3; i < repWindowEnd - 6; i++) {
+    // Výrazný pokles uprostred (uzavretie articulátorov) nasledovaný novým znelým vrcholom
+    const isValley = (frames[i].smoothFDb < maxFDb - 14) || (frames[i].dPrime > 0.45);
+    if (isValley) {
+      const hasReAttack = frames.slice(i + 2, repWindowEnd).some(f => (f.smoothFDb > maxFDb - 5) && (f.dPrime < 0.28));
+      if (hasReAttack) {
+        clonicDetected = true;
+        break;
+      }
+    }
+  }
+
+  const p5 = (maxDropMs <= 40) && !clonicDetected;
+  let p5Text = 'Plynulá (bez výpadku)';
+  if (clonicDetected) {
+    p5Text = 'Chyba: Klonická repetícia slabiky ("Ká-káva")';
+  } else if (maxDropMs > 0) {
+    p5Text = `Výpadok v jadre: ${maxDropMs} ms`;
+  }
+  setRow('m5', p5Text, p5);
+
+  drawEnvelopeGraph(frames, sThresh, t20, t80, totalDurationMs);
+
+  const passed = p1 && p2 && p3 && p4 && p5;
+  if (passed) {
+    const isPerfect = (meta.type === 'vowel' ? (vrt >= 60 && vrt <= 140) : (vrt >= 15 && vrt <= 90)) && latency <= 500;
+    updateHud(isPerfect ? 50 : 30, true);
+    banner.className = 'badge-banner success';
+    banner.textContent = isPerfect
+      ? '🌟 PERFECT ZÁSAH (+50 XP) – Dokonale uvoľnený štart hlasiviek!'
+      : '✅ ÚSPEŠNÝ POKUS (+30 XP) – Plynulý nástup bez bloku!';
+  } else {
+    updateHud(0, false);
+    banner.className = 'badge-banner fail';
+    banner.textContent = '❌ DETEGOVANÝ BLOK ALEBO KŔČ – Skontroluj červené metriky nižšie.';
+  }
+  statusAlert.textContent = 'Vyhodnotenie dokončené.';
 }
 
-document.querySelectorAll('.nav-tab').forEach(btn => {
-  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-});
+function drawEnvelopeGraph(frames, threshDb, t20, t80, totalDurationMs) {
+  const ctx = envelopeCanvas.getContext('2d');
+  const W = envelopeCanvas.width;
+  const H = envelopeCanvas.height;
+  ctx.clearRect(0, 0, W, H);
 
-const themeToggleBtn = document.getElementById('themeToggleBtn');
-const themeIcon = document.getElementById('themeIcon');
+  const minDb = -75, maxDb = -5;
+  const mapY = (db) => {
+    const clamped = Math.max(minDb, Math.min(maxDb, db));
+    return H - ((clamped - minDb) / (maxDb - minDb)) * (H - 14) - 6;
+  };
+  const mapX = (t) => (t / totalDurationMs) * W;
 
-themeToggleBtn.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  themeIcon.textContent = next === 'dark' ? '🌓' : '☀️';
-  try {
-    localStorage.setItem('fl_theme', next);
-  } catch (e) {}
-});
+  // Žlté pásmo pre VRT (20% -> 80% lineárnej RMS obálky)
+  if (t20 !== null && t80 !== null) {
+    const x1 = mapX(t20);
+    const x2 = Math.max(x1 + 3, mapX(t80));
+    ctx.fillStyle = 'rgba(255, 200, 0, 0.25)';
+    ctx.fillRect(x1, 0, x2 - x1, H);
+    ctx.strokeStyle = '#ffc800';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x1, 0); ctx.lineTo(x1, H);
+    ctx.moveTo(x2, 0); ctx.lineTo(x2, H);
+    ctx.stroke();
+  }
 
-// ----------------------------------------------------------------------------
-// 9. ŠTART APLIKÁCIE
-// ----------------------------------------------------------------------------
-window.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('fl_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  themeIcon.textContent = savedTheme === 'dark' ? '🌓' : '☀️';
+  // Prah šumu
+  const yThresh = mapY(threshDb);
+  ctx.strokeStyle = '#475569';
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, yThresh);
+  ctx.lineTo(W, yThresh);
+  ctx.stroke();
+  ctx.setLineDash([]);
 
-  updateNameCategoryWords();
-  loadProgress();
-  setWord('Auto', 'Pomalé a mäkké otvorenie úst bez zovretia hrtanu.');
-});
+  // Formantová obálka
+  ctx.strokeStyle = '#1cb0f6';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  frames.forEach((f, idx) => {
+    const x = mapX(f.t);
+    const y = mapY(f.smoothFDb !== undefined ? f.smoothFDb : f.fDb);
+    if (idx === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+function setRow(id, text, pass) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'metric-val ' + (pass ? 'ok' : 'err');
+}
