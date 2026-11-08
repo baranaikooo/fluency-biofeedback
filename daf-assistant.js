@@ -141,7 +141,7 @@
       this.isActive = false;
       this.delayMs = 70;
       this.volumePercent = 85;
-      this.fafSemitones = 0;
+      this.fafSemitones = 2; // Automatické jemné zvýšenie tónu (+2 st) pre zborový efekt
 
       this.audioCtx = null;
       this.mediaStreamSource = null;
@@ -264,36 +264,6 @@
             });
           });
         }
-      }
-
-      // 5. FAF Frekvenčný posun čipy (-2 st, 0 st, +2 st, +4 st)
-      const fafChips = document.querySelectorAll('.faf-chip');
-      if (fafChips && fafChips.forEach) {
-        fafChips.forEach(chip => {
-          chip.addEventListener('click', () => {
-            const rawVal = chip.dataset ? chip.dataset.semitones : (chip.getAttribute ? chip.getAttribute('data-semitones') : '0');
-            const semitones = parseInt(rawVal, 10) || 0;
-            this.setFaf(semitones);
-
-            fafChips.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-
-            const fafValEl = document.getElementById('assistantFafVal');
-            if (fafValEl) {
-              const labelMap = {
-                '-2': '-2 st (Hlbší barytón)',
-                '0': '0 st (Prirodzený)',
-                '2': '+2 st (Vyšší tón)',
-                '4': '+4 st (Výrazný posun)'
-              };
-              fafValEl.textContent = labelMap[String(semitones)] || `${semitones} st`;
-            }
-
-            if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-              duoSfx.playTone(semitones < 0 ? 360 : (semitones > 0 ? 680 : 520), 'sine', 0.04, 0.08);
-            }
-          });
-        });
       }
     }
 

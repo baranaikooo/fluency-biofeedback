@@ -2817,89 +2817,36 @@ canvas#envelopeCanvas {
 }
 
 /* ==========================================================================
-   15. FREKVENČNÁ MODULÁCIA (FAF - FREQUENCY ALTERED FEEDBACK)
+   15. INTEGROVANÁ AUTOMATICKÁ MODULÁCIA TÓNU (CHORAL SPEECH EFFECT)
    ========================================================================== */
-.faf-group {
-  margin-top: 22px;
-  padding-top: 18px;
-  border-top: 1px solid var(--surface-border);
-}
-
-.control-val-badge.purple {
-  color: #ce82ff;
-  border-color: rgba(206, 130, 255, 0.4);
-}
-
-.faf-chips-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.faf-chip {
-  background: #0b132b;
-  border: 1.5px solid var(--surface-border);
-  border-radius: 14px;
-  padding: 10px 6px;
+.assistant-feature-badge {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  outline: none;
-  border-bottom: 3px solid rgba(0, 0, 0, 0.4);
-  transition: all 0.15s ease;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(206, 130, 255, 0.1) 0%, rgba(28, 42, 79, 0.5) 100%);
+  border: 1.5px solid rgba(206, 130, 255, 0.35);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-top: 20px;
+  box-shadow: 0 4px 16px rgba(206, 130, 255, 0.08);
 }
 
-.faf-chip:hover {
-  border-color: rgba(206, 130, 255, 0.6);
-  transform: translateY(-1px);
-}
-
-.faf-chip:active {
-  transform: translateY(2px);
-  border-bottom-width: 1.5px;
-}
-
-.faf-chip.active {
-  background: rgba(206, 130, 255, 0.14);
-  border-color: #ce82ff;
-  border-bottom-color: #a559d9;
-  box-shadow: 0 0 14px rgba(206, 130, 255, 0.25);
-}
-
-.faf-chip-icon {
-  font-size: 1.15rem;
+.afb-icon {
+  font-size: 1.3rem;
   line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.faf-chip-name {
-  font-size: 0.88rem;
-  font-weight: 900;
-  color: #ffffff;
+.afb-text {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.48;
 }
 
-.faf-chip.active .faf-chip-name {
+.afb-text strong {
   color: #ce82ff;
-}
-
-.faf-chip-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--text-dim);
-  text-align: center;
-  line-height: 1.2;
-}
-
-.faf-chip.active .faf-chip-tag {
-  color: #e2e8f0;
-}
-
-@media (max-width: 480px) {
-  .faf-chips-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  font-weight: 800;
 }
 
 /* ==========================================================================
