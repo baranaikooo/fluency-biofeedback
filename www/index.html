@@ -16,6 +16,48 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
   <link rel="stylesheet" href="./style.css">
+
+  <!-- OAuth Deep Link Relay: Keď používateľ dokončí Google prihlásenie v prehliadači, okamžite ho prepne späť do natívnej APK aplikácie -->
+  <script>
+    (function () {
+      try {
+        var hash = window.location.hash || '';
+        var search = window.location.search || '';
+        var isAuthReturn = (hash && (hash.indexOf('access_token=') !== -1 || hash.indexOf('error=') !== -1)) ||
+                           (search && (search.indexOf('code=') !== -1 || search.indexOf('error=') !== -1));
+
+        if (isAuthReturn) {
+          var isCapacitor = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+          // Ak sme v externom prehliadači (Chrome na mobile), vrátime sa do natívnej aplikácie
+          if (!isCapacitor) {
+            console.log('[Auth Relay] OAuth token nájdený v externom prehliadači. Prepínam do natívnej aplikácie...');
+            var targetScheme = 'com.fluency.biofeedback://auth-callback' + (hash || search);
+            
+            // Okamžité vyvolanie natívneho Deep Linku
+            window.location.href = targetScheme;
+
+            // Zobrazenie tlačidla pre manuálny návrat, ak systém vyžaduje klik
+            window.addEventListener('DOMContentLoaded', function () {
+              var relayDiv = document.createElement('div');
+              relayDiv.id = 'nativeAuthRelayOverlay';
+              relayDiv.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#091224;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:#fff;font-family:system-ui,-apple-system,sans-serif;';
+              relayDiv.innerHTML = 
+                '<div style="font-size:3.5rem;margin-bottom:12px;">🦉</div>' +
+                '<h2 style="font-size:1.35rem;font-weight:900;color:#f1f5f9;margin:0 0 8px 0;">Google Účet Overený!</h2>' +
+                '<p style="font-size:0.85rem;color:#94a3b8;max-width:320px;line-height:1.45;margin:0 0 24px 0;">Prepínam ťa späť do natívnej aplikácie Fluency...</p>' +
+                '<a href="' + targetScheme + '" style="background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff;text-decoration:none;font-weight:800;font-size:1rem;padding:14px 28px;border-radius:16px;box-shadow:0 8px 24px rgba(16,185,129,0.4);display:inline-flex;align-items:center;gap:8px;">' +
+                  '<span>🚀 Otvoriť v Aplikácii</span>' +
+                '</a>' +
+                '<p style="font-size:0.75rem;color:#64748b;margin-top:20px;">Ak sa aplikácia neprepla automaticky, ťukni na zelené tlačidlo vyššie.</p>';
+              document.body.appendChild(relayDiv);
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('[Auth Relay] Chyba:', e);
+      }
+    })();
+  </script>
 </head>
 <body>
 

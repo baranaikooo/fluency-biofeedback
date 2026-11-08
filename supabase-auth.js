@@ -102,9 +102,16 @@
   // 1. Prihlásenie cez Google OAuth
   async function signInWithGoogle() {
     if (!initSupabase()) return;
-    setFeedback('Presmerovávam na overenie cez Google...', true);
+    setFeedback('Pripravujem overenie cez Google...', true);
     try {
-      const redirectUrl = window.location.origin + window.location.pathname;
+      const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+      // V natívnej aplikácii posielame na Vercel relay, ktorý nás cez Deep Link okamžite prepne späť do APK
+      const redirectUrl = isNative
+        ? 'https://stutterbiofeedbackantigravity.vercel.app/'
+        : (window.location.origin + window.location.pathname);
+
+      console.log('[Supabase Auth] signInWithGoogle redirectUrl:', redirectUrl, 'isNative:', isNative);
+
       const { data, error } = await client.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -118,6 +125,58 @@
       setFeedback('Chyba Google prihlásenia: ' + (err.message || err));
     }
   }
+
+  // Spracovanie natívneho Deep Linku (návrat z Google OAuth z externého prehliadača do natívnej APK)
+  window.handleNativeDeepLink = async function (urlStr) {
+    console.log('[Supabase Auth] Prijatý natívny Deep Link:', urlStr);
+    if (!initSupabase()) return;
+    if (!urlStr) return;
+
+    try {
+      setFeedback('Spracovávam overený Google účet...', true);
+      
+      var hash = '';
+      if (urlStr.indexOf('#') !== -1) {
+        hash = urlStr.substring(urlStr.indexOf('#') + 1);
+      } else if (urlStr.indexOf('?') !== -1) {
+        hash = urlStr.substring(urlStr.indexOf('?') + 1);
+      }
+
+      if (!hash) {
+        console.warn('[Supabase Auth] Deep Link neobsahuje parametre tokenu.');
+        return;
+      }
+
+      var params = new URLSearchParams(hash);
+      var accessToken = params.get('access_token');
+      var refreshToken = params.get('refresh_token');
+
+      if (accessToken && refreshToken) {
+        console.log('[Supabase Auth] Ukladám session z Deep Linku do natívneho úložiska...');
+        var res = await client.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
+
+        if (res.error) throw res.error;
+
+        if (res.data && res.data.user) {
+          currentUser = res.data.user;
+          sessionStorage.removeItem('fl_guest_mode');
+          setFeedback('Úspešne prihlásený!', true);
+          await onAuthSuccess(currentUser);
+        }
+      } else {
+        var errDesc = params.get('error_description') || params.get('error');
+        if (errDesc) {
+          setFeedback('Google overenie: ' + decodeURIComponent(errDesc));
+        }
+      }
+    } catch (err) {
+      console.error('[Supabase Auth] Chyba pri spracovaní Deep Linku:', err);
+      setFeedback('Chyba Google prihlásenia: ' + (err.message || err));
+    }
+  };
 
   // 2. Inteligentné prihlásenie / registrácia cez email
   async function handleEmailAuth(email, password, name) {
@@ -708,6 +767,21 @@
     }
 
     setupAuthEvents();
+
+    // Kontrola prijatého natívneho Deep Linku pri štarte
+    if (window.__pendingDeepLink) {
+      const pending = window.__pendingDeepLink;
+      window.__pendingDeepLink = null;
+      console.log('[Supabase Auth] Spracúvam čakajúci Deep Link:', pending);
+      window.handleNativeDeepLink(pending);
+      return;
+    }
+
+    if (window.location.hash && window.location.hash.indexOf('access_token=') !== -1) {
+      console.log('[Supabase Auth] Nájdený access_token v URL hash:', window.location.hash);
+      window.handleNativeDeepLink(window.location.href);
+      return;
+    }
 
     const isGuest = sessionStorage.getItem('fl_guest_mode') === '1';
 
