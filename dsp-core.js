@@ -202,8 +202,8 @@ updateHud();
 
 // Stavové premenné
 let audioCtx, rawAnalyser, formantAnalyser;
-let noiseDb = -65;
-let isCalibrated = false;
+let noiseDb = -58;
+let isCalibrated = true; // Predvolene nakalibrované pre okamžitý štart lekcií
 let currentMode = 'standard';
 let ambushTimeout = null;
 let ringInterval = null;
@@ -323,9 +323,113 @@ cardioBtn.addEventListener('click', () => {
   }, 1000);
 });
 
+let dafFafPipeline = null;
+
+/**
+ * ŽIVÝ DAF & FAF ODOPOSLUCH DO SLÚCHADIEL (LIVE AUDITORY FEEDBACK PIPELINE)
+ * Paralelné vetvy:
+ *   1. DAF vetva: Oneskorenie 65 ms pre spomalenie tempa a uvoľnenie artikulácie
+ *   2. FAF vetva: Frekvenčný posun F0 (Doppler LFO sweep) + formantový peaking zdvih pre zborový efekt (Choral Effect)
+ * Signál smeruje priamo do audioCtx.destination so zabudovaným bezpečnostným dynamickým limiterom.
+ */
+function setupDafFafHeadphoneOutput(src, ctx) {
+  if (dafFafPipeline) return dafFafPipeline;
+
+  try {
+    const now = ctx.currentTime;
+
+    // Master Gain pre slúchadlá (85% hlasitosť)
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0.85, now);
+
+    // Bezpečnostný dynamický limiter na ochranu sluchu a zamedzenie spätnej väzby
+    const limiter = ctx.createDynamicsCompressor();
+    limiter.threshold.setValueAtTime(-14, now);
+    limiter.knee.setValueAtTime(8, now);
+    limiter.ratio.setValueAtTime(10, now);
+    limiter.attack.setValueAtTime(0.003, now);
+    limiter.release.setValueAtTime(0.06, now);
+
+    // 1. PRIMÁRNA DAF VETVA (Delayed Auditory Feedback ~65 ms)
+    const delayA = ctx.createDelay(1.0);
+    delayA.delayTime.setValueAtTime(0.065, now);
+    const gainA = ctx.createGain();
+    gainA.gain.setValueAtTime(0.75, now);
+
+    src.connect(delayA);
+    delayA.connect(gainA);
+    gainA.connect(limiter);
+
+    // 2. FAF VETVA (Frequency-Altered Feedback & Zborový detune)
+    const delayB = ctx.createDelay(1.0);
+    delayB.delayTime.setValueAtTime(0.078, now); // 78 ms offset
+
+    // LFO Doppler Pitch Modulator (kontinuálny frekvenčný posun FAF)
+    const fafLfo = ctx.createOscillator();
+    fafLfo.type = 'sine';
+    fafLfo.frequency.setValueAtTime(0.55, now); // 0.55 Hz plynulá zmena
+    const fafLfoGain = ctx.createGain();
+    fafLfoGain.gain.setValueAtTime(0.0035, now); // 3.5 ms sweep = frekvenčná zmena +/- 45 Hz
+
+    fafLfo.connect(fafLfoGain);
+    fafLfoGain.connect(delayB.delayTime);
+    fafLfo.start();
+
+    // Formantový rezonátor (peaking filter pre zreteľný druhý rečový hlas)
+    const formantFilter = ctx.createBiquadFilter();
+    formantFilter.type = 'peaking';
+    formantFilter.frequency.setValueAtTime(2400, now);
+    formantFilter.Q.setValueAtTime(1.4, now);
+    formantFilter.gain.setValueAtTime(6.0, now); // +6 dB rezonancia
+
+    const gainB = ctx.createGain();
+    gainB.gain.setValueAtTime(0.65, now);
+
+    src.connect(delayB);
+    delayB.connect(formantFilter);
+    formantFilter.connect(gainB);
+    gainB.connect(limiter);
+
+    // Výstup limitera priamo do slúchadiel
+    limiter.connect(masterGain);
+    masterGain.connect(ctx.destination);
+
+    dafFafPipeline = {
+      masterGain,
+      limiter,
+      delayA,
+      delayB,
+      setDelay: (ms) => {
+        const sec = Math.max(0.04, Math.min(0.16, ms / 1000));
+        const t = ctx.currentTime;
+        delayA.delayTime.cancelScheduledValues(t);
+        delayA.delayTime.setValueAtTime(sec, t);
+        delayB.delayTime.cancelScheduledValues(t);
+        delayB.delayTime.setValueAtTime(sec + 0.013, t);
+      },
+      setVolume: (pct) => {
+        const v = Math.max(0, Math.min(1.0, pct / 100));
+        masterGain.gain.setValueAtTime(v, ctx.currentTime);
+      },
+      setEnabled: (enabled) => {
+        masterGain.gain.setValueAtTime(enabled ? 0.85 : 0.0, ctx.currentTime);
+      }
+    };
+
+    window.dafFafPipeline = dafFafPipeline;
+    console.log('[Audio] DAF + FAF slúchadlový okruh zapojený a aktívny!');
+    return dafFafPipeline;
+  } catch (e) {
+    console.error('[Audio] Chyba pri zapájaní DAF/FAF odposluchu:', e);
+  }
+}
+
 async function setupAudio() {
   if (audioCtx) {
     window.audioCtx = audioCtx;
+    if (audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
     return;
   }
   const stream = await navigator.mediaDevices.getUserMedia({
@@ -359,6 +463,9 @@ async function setupAudio() {
   src.connect(hp);
   hp.connect(lp);
   lp.connect(formantAnalyser);
+
+  // ZAPOJENIE ŽIVÉHO DAF + FAF ODPOSLUCHU DO SLÚCHADIEL
+  setupDafFafHeadphoneOutput(src, audioCtx);
 }
 window.setupAudio = setupAudio;
 
@@ -474,8 +581,18 @@ calibrateBtn.addEventListener('click', async () => {
   }
 });
 
-startBtn.addEventListener('click', () => {
-  if (!isCalibrated) return;
+startBtn.addEventListener('click', async () => {
+  try {
+    if (typeof setupAudio === 'function') {
+      await setupAudio();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
+  } catch (e) {
+    console.warn('Audio resume error:', e);
+  }
+
   matrixPanel.classList.remove('active');
   targetWord.className = 'target-word';
 
@@ -509,7 +626,7 @@ function runStandardPacer(meta) {
     statusAlert.textContent = 'Fáza 2: Mäkký nádych do bránice, uvoľni sánku.';
 
     setTimeout(() => {
-      triggerGoSignal(meta, 700);
+      triggerGoSignal(meta, 1200);
     }, 2200);
   }, 1800);
 }
@@ -596,7 +713,7 @@ function armAmbushCall(meta) {
         if (typeof duoLesson !== 'undefined' && duoLesson.hideDialogueBubble) {
           duoLesson.hideDialogueBubble();
         }
-        triggerGoSignal(meta, 750);
+        triggerGoSignal(meta, 1200);
       });
     };
 
@@ -795,18 +912,16 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   // Pravidlo 2: Anticheat na znelú barličku ("Eee..." / "Mmm...") pred neznelou spoluhláskou
   let p2 = true, p2Text = 'Čistý štart fonémy';
   if (meta.type === 'voiceless') {
-    // 2a: Okamžitá znelá samohláska namiesto neznelého šumu (K, P, T, CH, S)
-    const instantVoicedStart = (nucleus === firstSound) && (frames[firstSound].dPrime < 0.20 && frames[firstSound].zcr < 0.12);
-    // 2b: Predĺžená znelá pred-fonácia ("Eee-") pred skutočným začiatkom neznelého slova (> 40 ms)
+    // Overenie: iba ak je pred neznelou spoluhláskou skutočne pretrvávajúca hlasivková barlička ("Eee...") trvajúca > 80 ms
     let preVoicingCount = 0;
-    if (nucleus > firstSound + 4) {
-      for (let i = firstSound; i < nucleus - 1; i++) {
-        if (frames[i].dPrime < 0.25 && frames[i].zcr < 0.16 && frames[i].smoothFDb > sThresh + 2.5) {
+    if (nucleus > firstSound + 5) {
+      for (let i = firstSound; i < nucleus - 2; i++) {
+        if (frames[i].dPrime < 0.22 && frames[i].zcr < 0.14 && frames[i].smoothFDb > sThresh + 4.0) {
           preVoicingCount++;
         }
       }
     }
-    if (instantVoicedStart || preVoicingCount >= 4) {
+    if (preVoicingCount >= 8) {
       p2 = false;
       p2Text = 'Chyba: Znelá barlička ("Eee") pred neznelou hláskou';
     }
@@ -814,13 +929,13 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   setRow('m2', p2Text, p2);
 
   // Pravidlo 3: Trvanie spoluhlásky a medzihlásková tichá diera
-  // Vedecká oprava: Limit pre zhluky (napr. Štvrtok, Kto, Vstup) je adaptívny
+  // Vedecká oprava: Adaptívny limit pre zhluky (napr. Štvrtok, Kto, Vstup, Pravda)
   const consMs = frames[nucleus].t - frames[firstSound].t;
-  const maxConsMs = 280 + (meta.clusterLen * 70);
-  const maxAllowedGap = meta.isPlosive ? 110 : (75 + meta.clusterLen * 20);
+  const maxConsMs = 380 + (meta.clusterLen * 90);
+  const maxAllowedGap = 160 + (meta.clusterLen * 30);
   let maxGap = 0, curGap = 0;
   for (let i = firstSound; i < nucleus; i++) {
-    if (frames[i].rawDb < sThresh - 1.5) {
+    if (frames[i].rawDb < sThresh - 2.0) {
       curGap += 10;
       if (curGap > maxGap) maxGap = curGap;
     } else {
@@ -851,25 +966,25 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
 
   let p4 = true, p4Text = `${vrt.toFixed(1)} ms`;
   if (meta.type === 'vowel') {
-    // Na počiatočných samohláskach sa klinicky vyžaduje jemný nábeh (Gentle Voice Onset)
-    if (vrt < 45) {
+    // Na počiatočných samohláskach:
+    // Glotálny kŕč/úder je len extrémny ráz (< 22 ms). Bežný štart (25–90 ms) a mäkký nábeh (60–180 ms) sú v poriadku.
+    if (vrt < 22) {
       p4 = false;
-      p4Text += ' (Tvrdý glotálny úder! Cieľ ≥ 45 ms)';
-    } else if (vrt > 240) {
-      p4 = false;
-      p4Text += ' (Príliš dychový / šepkaný únik > 240 ms)';
-    } else {
-      p4Text += (vrt >= 60 && vrt <= 150) ? ' (🌟 PERFECT mäkký nábeh)' : ' (Mäkký nábeh)';
-    }
-  } else {
-    // Vedecká oprava: po spoluhláskach je rýchly nábeh hlasiviek (10–30 ms) fyziologicky NORMÁLNY.
-    // Trestáme len extrémny spazmus s mikrofónnym rázom (< 8 ms) alebo neschopnosť otvoriť hlasivky (> 280 ms)
-    if (vrt < 8) {
-      p4 = false;
-      p4Text += ' (Kŕčovitý ráz po spoluhláske!)';
+      p4Text += ' (Tvrdý glotálny kŕč! Cieľ ≥ 25 ms)';
     } else if (vrt > 280) {
       p4 = false;
-      p4Text += ' (Zamknutý prechod do samohlásky > 280 ms)';
+      p4Text += ' (Príliš dychový / šepkaný únik > 280 ms)';
+    } else {
+      p4Text += (vrt >= 50 && vrt <= 160) ? ' (🌟 PERFECT mäkký nábeh)' : ' (Plynulý nábeh)';
+    }
+  } else {
+    // Po spoluhláskach je rýchly nábeh hlasiviek (10–35 ms) fyziologicky NORMÁLNY.
+    if (vrt < 6) {
+      p4 = false;
+      p4Text += ' (Kŕčovitý ráz po spoluhláske!)';
+    } else if (vrt > 320) {
+      p4 = false;
+      p4Text += ' (Zamknutý prechod do samohlásky > 320 ms)';
     } else {
       p4Text += ' (Plynulý artikulačný kontakt)';
     }
@@ -877,11 +992,11 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   setRow('m4', p4Text, p4);
 
   // Pravidlo 5: Kontinuita prvej slabiky a ochrana pred klonickou repetíciou
-  // Skúmame bezprostredné jadro slabiky (140 ms) bez ovplyvnenia prechodu na druhú spoluhlásku
+  // Skúmame bezprostredné jadro slabiky (140 ms) bez ovplyvnenia prechodu na druhú slabiku!
   const nCoreEnd = Math.min(frames.length - 1, nucleus + 14);
   let dropMs = 0, maxDropMs = 0;
   for (let i = nucleus; i <= nCoreEnd; i++) {
-    if (frames[i].smoothFDb < sThresh) {
+    if (frames[i].smoothFDb < sThresh - 2.0) {
       dropMs += 10;
       if (dropMs > maxDropMs) maxDropMs = dropMs;
     } else {
@@ -889,25 +1004,28 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     }
   }
 
-  // Detekcia klonickej repetície ("Ká-káva", "Ko-kopec") vo väčšom okne 400 ms
-  const repWindowEnd = Math.min(frames.length - 1, nucleus + 40);
+  // Detekcia klonickej repetície:
+  // Klonická repetícia je patologické ZOPAKOVANIE počiatočnej hlásky ("K-k-kto", "P-p-pes") v krátkom okne.
+  // V bežných viackladných slovách (napr. "Káva", "Mama", "Pravda") je prechod na ďalšiu slabiku ÚPLNE NORMÁLNY.
   let clonicDetected = false;
-  for (let i = pIdx + 3; i < repWindowEnd - 6; i++) {
-    // Výrazný pokles uprostred (uzavretie articulátorov) nasledovaný novým znelým vrcholom
-    const isValley = (frames[i].smoothFDb < maxFDb - 14) || (frames[i].dPrime > 0.45);
-    if (isValley) {
-      const hasReAttack = frames.slice(i + 2, repWindowEnd).some(f => (f.smoothFDb > maxFDb - 5) && (f.dPrime < 0.28));
-      if (hasReAttack) {
-        clonicDetected = true;
-        break;
+  const firstVowelDuration = (pIdx - nucleus) * 10;
+  // Detekujeme repetíciu IBA ak počiatočná slabika bola prerušená ešte pred jej dokončením (< 70 ms) a reštartovaná:
+  if (firstVowelDuration < 70) {
+    for (let i = pIdx + 2; i < Math.min(frames.length - 4, pIdx + 16); i++) {
+      if (frames[i].smoothFDb < sThresh - 6 && frames[i].dPrime > 0.40) {
+        const hasReAttack = frames.slice(i + 2, i + 10).some(f => f.smoothFDb > sThresh + 6 && f.dPrime < 0.28);
+        if (hasReAttack) {
+          clonicDetected = true;
+          break;
+        }
       }
     }
   }
 
-  const p5 = (maxDropMs <= 40) && !clonicDetected;
+  const p5 = (maxDropMs <= 50) && !clonicDetected;
   let p5Text = 'Plynulá (bez výpadku)';
   if (clonicDetected) {
-    p5Text = 'Chyba: Klonická repetícia slabiky ("Ká-káva")';
+    p5Text = 'Chyba: Klonická repetícia slabiky ("K-k-kto")';
   } else if (maxDropMs > 0) {
     p5Text = `Výpadok v jadre: ${maxDropMs} ms`;
   }

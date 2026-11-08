@@ -297,6 +297,9 @@
 
     setDelay(ms) {
       this.delayMs = Math.max(40, Math.min(140, ms));
+      if (window.dafFafPipeline && typeof window.dafFafPipeline.setDelay === 'function') {
+        window.dafFafPipeline.setDelay(this.delayMs);
+      }
       if (this.audioCtx) {
         const now = this.audioCtx.currentTime;
         if (this.delayNodeA) {
@@ -312,6 +315,9 @@
 
     setVolume(percent) {
       this.volumePercent = Math.max(0, Math.min(100, percent));
+      if (window.dafFafPipeline && typeof window.dafFafPipeline.setVolume === 'function') {
+        window.dafFafPipeline.setVolume(this.volumePercent);
+      }
       if (this.masterGain && this.audioCtx && this.isActive) {
         this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
         this.masterGain.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);

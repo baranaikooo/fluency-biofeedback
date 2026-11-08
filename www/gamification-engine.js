@@ -1369,6 +1369,16 @@ class DuoLessonController {
     // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
     this.enterFocusMode();
 
+    // Okamžitá aktivácia audio potrubia s DAF/FAF odposluchom do slúchadiel
+    if (typeof setupAudio === 'function') {
+      setupAudio().catch(e => console.warn('Audio auto-init error:', e));
+    }
+
+    // Okamžitá aktivácia audio potrubia s DAF/FAF odposluchom do slúchadiel
+    if (typeof setupAudio === 'function') {
+      setupAudio().catch(e => console.warn('Audio auto-init error:', e));
+    }
+
     // Nastavenie režimu a kamery
     if (typeof currentMode !== 'undefined') {
       currentMode = this.currentLevel.mode || 'standard';
@@ -1413,6 +1423,11 @@ class DuoLessonController {
 
     // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
     this.enterFocusMode();
+
+    // Okamžitá aktivácia audio potrubia s DAF/FAF odposluchom do slúchadiel
+    if (typeof setupAudio === 'function') {
+      setupAudio().catch(e => console.warn('Audio auto-init error:', e));
+    }
 
     if (typeof currentMode !== 'undefined') {
       currentMode = selectedMode;
