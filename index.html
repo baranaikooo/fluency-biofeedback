@@ -8,14 +8,14 @@
 </head>
 <body>
 
-<div class="app-layout">
+<div class="app-layout" id="appLayout">
 
-  <!-- ========================================== -->
-  <!-- 1. HORNÝ GAMIFIKOVANÝ DUOLINGO HUD -->
-  <!-- ========================================== -->
-  <header class="duo-header">
+  <!-- ==================================================================== -->
+  <!-- HORNÝ HUD (Viditeľný iba v stave PRIESKUM)                           -->
+  <!-- ==================================================================== -->
+  <header class="duo-header" id="mainHeader">
     <div class="header-inner">
-      <div class="brand-badge" id="brandLogoBtn" title="O aplikácii Fluency">
+      <div class="brand-badge" id="brandLogoBtn" title="Fluency Biofeedback">
         <span class="brand-icon">🦉</span>
         <span class="brand-name">Fluency</span>
       </div>
@@ -28,51 +28,253 @@
         </div>
 
         <!-- XP -->
-        <div class="hud-pill xp" id="hudXpPill" title="Tvoje nazbierané skúsenosti">
+        <div class="hud-pill xp" id="hudXpPill" title="Celkové body XP">
           <span class="hud-icon">⚡</span>
           <span class="hud-val" id="xpVal">0</span>
         </div>
 
         <!-- Srdiečka / Životy -->
-        <div class="hud-pill hearts" id="hudHeartsPill" title="Energia na tréning">
+        <div class="hud-pill hearts" id="hudHeartsPill" title="Životy na lekciu">
           <span class="hud-icon">❤️</span>
           <span class="hud-val" id="heartsVal">5</span>
         </div>
 
-        <!-- Profil / Rank -->
-        <button class="rank-btn" id="profileBtn" title="Tvoj profil a nastavenia">
+        <!-- Rank Odznak -->
+        <div class="rank-badge" id="hudRankBadge" title="Tvoja aktuálna úroveň plynulosti">
           <span class="rank-icon">👑</span>
           <span class="rank-title-short" id="rankTitle">Novice</span>
-        </button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- ========================================== -->
-  <!-- 2. HLAVNÁ OBRAZOVKA: DUOLINGO LEVEL PATH -->
-  <!-- ========================================== -->
-  <main class="world-path-container" id="worldMapScreen">
-    
-    <!-- Banner pre rýchly štart / denný tip -->
-    <div class="daily-quest-card">
-      <div class="quest-left">
-        <div class="quest-tag">DENNÁ VÝZVA</div>
-        <div class="quest-title" id="dailyQuestText">Daj 3x čistý mäkký nábeh bez kŕča</div>
+  <!-- ==================================================================== -->
+  <!-- HLAVNÝ OBSAH (3 STRIKTNE ODDELENÉ ZÁLOŽKY)                          -->
+  <!-- ==================================================================== -->
+  <main class="main-content-viewport">
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- ZÁLOŽKA 1: 🗺️ CESTA (KAMPAŇ / HLAVNÁ HRA)                          -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="tab-pane active" id="tabCesta">
+      
+      <!-- Denná výzva -->
+      <div class="daily-quest-card">
+        <div class="quest-left">
+          <div class="quest-tag">DENNÁ VÝZVA</div>
+          <div class="quest-title" id="dailyQuestText">Zvládni 3 mäkké nábehy bez kŕča</div>
+        </div>
+        <button class="btn-3d green sm" id="continuePathBtn">TRÉNOVAŤ</button>
       </div>
-      <button class="btn-3d green sm" id="continuePathBtn">TRÉNOVAŤ</button>
-    </div>
 
-    <!-- Generované sekcie svetov (World 1 až World 5) -->
-    <div class="worlds-wrapper" id="worldsWrapper">
-      <!-- Dynamicky naplnené z JavaScriptu -->
-    </div>
+      <!-- 5 Svetov s lineárnym stromom úrovní -->
+      <div class="worlds-wrapper" id="worldsWrapper">
+        <!-- Dynamicky vygenerované z gamification-engine.js -->
+      </div>
 
-    <div class="path-footer-padding"></div>
+      <div class="tab-bottom-spacer"></div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- ZÁLOŽKA 2: ⚡ RÝCHLY DRIL (SOS SANDBOX / TERÉNNA PRÍPRAVA)          -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="tab-pane" id="tabDril">
+      <div class="sandbox-container">
+        
+        <!-- Hero karta SOS Drilu -->
+        <div class="sandbox-hero-card">
+          <div class="sandbox-badge">⚡ SOS SANDBOX</div>
+          <h2 class="sandbox-title">Rýchly Dril v Teréne</h2>
+          <p class="sandbox-sub">Čaká ťa pokladňa, telefonát alebo objednávka? Zadaj cieľové slovo a uvoľni sánku v 3 rýchlych pokusoch.</p>
+        </div>
+
+        <!-- Vstup na vlastné slovo / meno -->
+        <div class="sandbox-input-card">
+          <label class="sandbox-label" for="wordInput">Cieľové slovo alebo veta:</label>
+          <div class="sandbox-input-wrap">
+            <input type="text" id="wordInput" class="custom-word-input" value="Peter Novák" placeholder="Zadaj slovo, meno alebo celú vetu..." />
+            <button class="btn-3d blue sm" id="clearWordBtn" title="Vyčistiť text">✕</button>
+          </div>
+
+          <!-- Rýchle SOS čipy -->
+          <div class="sos-chips-label">Rýchly výber SOS fráz:</div>
+          <div class="preset-chips">
+            <span class="chip" data-word="Peter Novák">Peter Novák</span>
+            <span class="chip" data-word="Kartou, prosím">Kartou, prosím</span>
+            <span class="chip" data-word="Dobrý deň, pri telefóne">Dobrý deň, pri telefóne</span>
+            <span class="chip" data-word="Káva s mliekom">Káva s mliekom</span>
+            <span class="chip" data-word="Chlieb">Chlieb (CH)</span>
+            <span class="chip" data-word="Štvrtok o tretej">Štvrtok o tretej</span>
+            <span class="chip" data-word="Isto, ďakujem">Isto, ďakujem</span>
+          </div>
+        </div>
+
+        <!-- Voľba režimu drilu -->
+        <div class="sandbox-mode-card">
+          <div class="sandbox-label">Zvoľ režim tréningu:</div>
+          <div class="mode-select-grid">
+            <label class="mode-card-radio">
+              <input type="radio" name="sandboxMode" value="standard" checked>
+              <div class="mode-card-inner">
+                <span class="mode-card-icon">🧘</span>
+                <span class="mode-card-title">Pacer (Technika)</span>
+                <span class="mode-card-desc">Dychový kruh, pomalý plynulý nábeh VRT</span>
+              </div>
+            </label>
+
+            <label class="mode-card-radio">
+              <input type="radio" name="sandboxMode" value="guillotine">
+              <div class="mode-card-inner">
+                <span class="mode-card-icon">⚡</span>
+                <span class="mode-card-title">Časový tlak</span>
+                <span class="mode-card-desc">Limit 550 ms na odpoveď bez kŕča</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Veľké tlačidlo na spustenie drilu -->
+        <div class="sandbox-action-wrap">
+          <button class="btn-3d green full lg" id="launchSosDrillBtn">
+            <span>SPUSTIŤ SOS DRIL (3 pokusy)</span>
+          </button>
+        </div>
+
+        <div class="tab-bottom-spacer"></div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- ZÁLOŽKA 3: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)                      -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="tab-pane" id="tabTelemetria">
+      <div class="telemetry-container">
+
+        <!-- Hero profil hráča -->
+        <div class="telemetry-hero-card">
+          <div class="profile-hero-top">
+            <div class="profile-avatar-circle">🦉</div>
+            <div class="profile-info-block">
+              <div class="profile-editable-name">
+                <input type="text" id="telemetryNameInput" value="Peter Novák" placeholder="Tvoje celé meno..." />
+                <button class="btn-3d blue sm" id="saveTelemetryNameBtn">Uložiť</button>
+              </div>
+              <div class="profile-rank-tag" id="telemetryRankTitle">Rank 1: Resonator</div>
+            </div>
+          </div>
+
+          <div class="profile-hero-stats">
+            <div class="ph-stat">
+              <span class="ph-label">XP BODY</span>
+              <span class="ph-val gold" id="telemetryXpVal">0</span>
+            </div>
+            <div class="ph-stat">
+              <span class="ph-label">DENNÁ SÉRIA</span>
+              <span class="ph-val orange" id="telemetryStreakVal">1 deň 🔥</span>
+            </div>
+            <div class="ph-stat">
+              <span class="ph-label">SVETY</span>
+              <span class="ph-val green" id="telemetryWorldsVal">1 / 5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Klinický telemetrický panel VRT -->
+        <div class="telemetry-card">
+          <div class="card-header-row">
+            <div>
+              <div class="card-subtitle">KLINICKÁ BIO-METRIKA</div>
+              <h3 class="card-title">Vocal Rise Time (VRT)</h3>
+            </div>
+            <span class="vrt-badge-status" id="vrtStatusBadge">Klinický Sweet-Spot</span>
+          </div>
+
+          <div class="vrt-gauge-box">
+            <div class="vrt-big-number">
+              <span id="avgVrtVal">74.2</span>
+              <span class="vrt-unit">ms</span>
+            </div>
+            <div class="vrt-scale-bar">
+              <div class="vrt-zone hard" title="Tvrdý glotálny úder (< 45 ms)">Tvrdý (< 45 ms)</div>
+              <div class="vrt-zone sweet active" title="Klinický sweet-spot (60–140 ms)">Mäkký nábeh (60–140 ms)</div>
+              <div class="vrt-zone breathy" title="Dychový únik (> 240 ms)">Únik (> 240 ms)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Štatistický prehľad pokusov -->
+        <div class="telemetry-card">
+          <div class="card-subtitle">CELKOVÝ PREHĽAD REČI</div>
+          <h3 class="card-title">Štatistika Pokusov</h3>
+
+          <div class="telemetry-stats-grid">
+            <div class="tstat-box">
+              <span class="tstat-num" id="tStatTotalAttempts">0</span>
+              <span class="tstat-name">Celkovo pokusov</span>
+            </div>
+            <div class="tstat-box">
+              <span class="tstat-num green" id="tStatSuccessRate">100%</span>
+              <span class="tstat-name">Úspešnosť bez kŕča</span>
+            </div>
+            <div class="tstat-box">
+              <span class="tstat-num gold" id="tStatCompletedLessons">0 / 25</span>
+              <span class="tstat-name">Dokončené lekcie</span>
+            </div>
+            <div class="tstat-box">
+              <span class="tstat-num blue" id="tStatAvgLatency">410 ms</span>
+              <span class="tstat-name">Priemerná reakcia</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- História posledných pokusov -->
+        <div class="telemetry-card">
+          <div class="card-subtitle">POSLEDNÉ ZÁZNAMY</div>
+          <h3 class="card-title">História Tréningu</h3>
+
+          <div class="history-list" id="telemetryHistoryList">
+            <div class="history-empty">Zatiaľ žiadne záznamy. Spusti prvú lekciu alebo SOS dril!</div>
+          </div>
+        </div>
+
+        <!-- Správa systému -->
+        <div class="telemetry-card">
+          <div class="card-subtitle">SPRÁVA MIKROFÓNU & SYSTÉMU</div>
+          <h3 class="card-title">Nastavenia a Kalibrácia</h3>
+
+          <div class="telemetry-actions">
+            <button class="btn-3d amber full" id="calibrateFromTelemetryBtn">Kalibrovať šum mikrofónu</button>
+            <button class="btn-3d red full sm" id="resetTelemetryProgressBtn">Resetovať celý herný postup</button>
+          </div>
+        </div>
+
+        <div class="tab-bottom-spacer"></div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- ========================================== -->
-  <!-- 3. POPUP OKNO PRE LEVEL (NODE POPOVER) -->
-  <!-- ========================================== -->
+  <!-- ==================================================================== -->
+  <!-- SPODNÁ NAVIGAČNÁ LIŠTA (Presne 3 záložky, skryje sa v lekcii)        -->
+  <!-- ==================================================================== -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-tab active" data-tab="tabCesta" id="navTabCesta">
+      <span class="nav-icon">🗺️</span>
+      <span class="nav-label">Cesta</span>
+    </button>
+    <button class="nav-tab" data-tab="tabDril" id="navTabDril">
+      <span class="nav-icon">⚡</span>
+      <span class="nav-label">Rýchly Dril</span>
+    </button>
+    <button class="nav-tab" data-tab="tabTelemetria" id="navTabTelemetria">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Telemetria</span>
+    </button>
+  </nav>
+
+  <!-- ==================================================================== -->
+  <!-- POPUP OKNO PRE LEVEL (POPOVER CARD NA MAPE)                          -->
+  <!-- ==================================================================== -->
   <div class="node-popover-backdrop" id="nodePopoverBackdrop">
     <div class="node-popover-card" id="nodePopover">
       <button class="popover-close" id="popoverCloseBtn">✕</button>
@@ -91,12 +293,12 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 4. OBRAZOVKA AKTÍVNEHO TRÉNINGU (LESSON VIEW) -->
-  <!-- ========================================== -->
+  <!-- ==================================================================== -->
+  <!-- STAV 2: AKTÍVNA LEKCIA / POKUS (CELOOBRAZOVKOVÝ FULL-SCREEN REŽIM)   -->
+  <!-- ==================================================================== -->
   <section class="lesson-screen" id="lessonScreen">
     
-    <!-- Horná lišta lekcie s Progress Barom -->
+    <!-- Horná lišta lekcie -->
     <div class="lesson-topbar">
       <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu">✕</button>
       
@@ -113,14 +315,14 @@
     <!-- Minimalistické tréningové javisko počas reči -->
     <div class="lesson-stage">
       
-      <!-- Video zrkadlo kamery (voliteľné pre Boss fighty) -->
+      <!-- Video zrkadlo kamery (pre Boss fighty a očný kontakt) -->
       <video id="cameraFeed" autoplay playsinline muted></video>
       <div class="eye-contact-prompt" id="interlocutorPrompt">👀 Udrž očný kontakt s kamerou!</div>
 
       <!-- Kontext lekcie -->
       <div class="lesson-context-badge" id="lessonContextBadge">Svet 1 • Cvičenie 1 z 4</div>
 
-      <!-- Veľký terč slova -->
+      <!-- Veľký dominantný terč slova -->
       <div class="target-word-container">
         <h1 class="target-word" id="targetWord">AUTO</h1>
         <div class="target-meta" id="targetMeta">Klasifikácia: Samohláska (A) – cieľ VRT 45–160 ms</div>
@@ -128,7 +330,7 @@
 
       <!-- Zen Dýchací Kruh (Pacer) -->
       <div class="pacer-wrapper">
-        <div class="pacer-circle" id="pacerCircle" title="Klikni sem pre okamžité predčasné dokončenie!">
+        <div class="pacer-circle" id="pacerCircle" title="Klikni sem pre okamžité predčasné vyhodnotenie!">
           <span class="pacer-text" id="pacerText">Priprav sa</span>
         </div>
       </div>
@@ -136,13 +338,13 @@
       <!-- Stavové hlásenie pod kruhom -->
       <div class="status-alert" id="statusAlert">Stlač tlačidlo Štart pre začiatok dychového cyklu.</div>
 
-      <!-- Spúšťacie ovládacie tlačidlá lekcie -->
+      <!-- Ovládacie tlačidlá lekcie -->
       <div class="lesson-controls" id="lessonControls">
         <button id="calibrateBtn" class="btn-3d amber sm">1. Kalibrovať ticho</button>
         <button id="startBtn" class="btn-3d green md">▶ Spustiť slovo (Pacer)</button>
       </div>
 
-      <!-- Nastavenia stresorov a kamery -->
+      <!-- Prepínače stresorov -->
       <div class="lesson-toggles">
         <label class="toggle-pill" title="Zapne webkameru do pozadia pre nácvik očného kontaktu">
           <input type="checkbox" id="camToggle">
@@ -155,9 +357,8 @@
         <button id="cardioBtn" class="btn-3d purple sm" style="padding: 6px 12px; font-size: 0.78rem;">⚡ Tepový šok (30s)</button>
       </div>
 
-      <!-- Skryté ovládacie prvky pre spätnú kompatibilitu s dsp-core.js -->
+      <!-- Kompatibilita pre dsp-core.js -->
       <div style="display: none;">
-        <input type="text" id="wordInput" value="Peter Novák" />
         <div id="xpNextLabel"></div>
         <div id="xpFillBar"></div>
         <span id="comboVal">1x</span>
@@ -165,9 +366,7 @@
 
     </div>
 
-    <!-- ========================================== -->
-    <!-- PREPADOVÝ HOVOR OVERLAY (PRE SVET 4 A 5) -->
-    <!-- ========================================== -->
+    <!-- Prepadový hovor Overlay (pre Boss Fighty) -->
     <div class="call-overlay" id="callOverlay">
       <div class="call-box">
         <div class="caller-avatar-circle">📞</div>
@@ -181,13 +380,10 @@
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 5. SPODNÁ SPÄTNÁ VÄZBA (DUOLINGO BOTTOM DRAWER) -->
-    <!-- ========================================== -->
+    <!-- Spodný Feedback Drawer (Duolingo Sheet po pokuse) -->
     <div class="feedback-drawer" id="feedbackDrawer">
       <div class="drawer-inner">
         
-        <!-- Stav a hlavná správa -->
         <div class="drawer-header">
           <div class="drawer-status-icon" id="drawerStatusIcon">✓</div>
           <div class="drawer-text-wrap">
@@ -197,7 +393,7 @@
           <div class="drawer-xp-badge" id="drawerXpBadge">+30 XP</div>
         </div>
 
-        <!-- Akustická miniatúra a tlačidlo podrobností -->
+        <!-- Akustická miniatúra a toggle tlačidlo -->
         <div class="drawer-details-toggle">
           <button class="toggle-matrix-btn" id="toggleMatrixBtn">
             <span>Zobraziť akustickú analýzu (VRT & graf)</span>
@@ -205,7 +401,7 @@
           </button>
         </div>
 
-        <!-- Post-Hoc Výsledková Matica (kompatibilná s dsp-core.js) -->
+        <!-- Matica akustických pravidiel pre dsp-core.js -->
         <div class="matrix-panel" id="matrixPanel">
           <div class="badge-banner" id="verdictBanner"></div>
 
@@ -253,14 +449,14 @@
 
   </section>
 
-  <!-- ========================================== -->
-  <!-- 6. OSLAVNÝ MODAL: DOKONČENÁ LEKCIA (VICTORY) -->
-  <!-- ========================================== -->
+  <!-- ==================================================================== -->
+  <!-- OSLAVNÝ MODAL (LEKCIA / DRIL DOKONČENÝ)                              -->
+  <!-- ==================================================================== -->
   <div class="celebration-overlay" id="celebrationModal">
     <div class="celebration-card">
       <div class="trophy-bounce">🏆</div>
-      <h2 class="celebration-title">Lekcia dokončená!</h2>
-      <p class="celebration-sub">Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.</p>
+      <h2 class="celebration-title" id="celebrationTitle">Lekcia dokončená!</h2>
+      <p class="celebration-sub" id="celebrationSub">Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.</p>
 
       <div class="stats-recap-grid">
         <div class="recap-card">
@@ -278,69 +474,14 @@
       </div>
 
       <button class="btn-3d green full lg" id="celebrationBackBtn">
-        <span>POKRAČOVAŤ NA MAPE</span>
+        <span>POKRAČOVAŤ</span>
       </button>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- 7. PROFIL, ŠTATISTIKY & SANDBOX MODAL -->
-  <!-- ========================================== -->
-  <div class="profile-overlay" id="profileModal">
-    <div class="profile-card">
-      <div class="profile-header">
-        <div class="profile-avatar">🦉</div>
-        <div>
-          <h2 class="profile-name" id="profileNameDisplay">Peter Novák</h2>
-          <div class="profile-rank" id="profileRankDisplay">Rank 1: Resonator</div>
-        </div>
-        <button class="profile-close" id="profileCloseBtn">✕</button>
-      </div>
-
-      <div class="profile-section">
-        <label class="section-label">Tvoje meno (pre realistické simulácie a hovory):</label>
-        <div class="profile-input-row">
-          <input type="text" id="customNameInput" placeholder="Zadaj svoje celé meno..." />
-          <button class="btn-3d blue sm" id="saveNameBtn">Uložiť</button>
-        </div>
-      </div>
-
-      <div class="profile-section">
-        <div class="section-label">Herný postup a štatistiky:</div>
-        <div class="profile-stats-list">
-          <div class="pstat-item">
-            <span>Celkové body (XP):</span>
-            <strong id="pStatXp">0 XP</strong>
-          </div>
-          <div class="pstat-item">
-            <span>Denná séria:</span>
-            <strong id="pStatStreak">1 deň 🔥</strong>
-          </div>
-          <div class="pstat-item">
-            <span>Odomknuté svety:</span>
-            <strong id="pStatWorlds">1 / 5</strong>
-          </div>
-          <div class="pstat-item">
-            <span>Dokončené lekcie:</span>
-            <strong id="pStatCompleted">0 / 25</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="profile-section">
-        <div class="section-label">Kalibrácia a reset:</div>
-        <div class="profile-actions-row">
-          <button class="btn-3d neutral sm" id="calibrateFromProfileBtn">Kalibrovať mikrofón</button>
-          <button class="btn-3d red sm" id="resetProgressBtn">Resetovať herný postup</button>
-        </div>
-      </div>
-
     </div>
   </div>
 
 </div>
 
-<!-- DSP Jadro a Herný Engine -->
+<!-- Skripty -->
 <script src="./dsp-core.js"></script>
 <script src="./gamification-engine.js"></script>
 </body>

@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
 
 :root {
+  /* Slate & Dark Theme Palette */
   --bg: #0b132b;
   --bg-subtle: #111d40;
   --surface: #1c2a4f;
@@ -10,7 +11,7 @@
   --text-muted: #94a3b8;
   --text-dim: #64748b;
 
-  /* Duolingo Iconic Color Palette */
+  /* Duolingo / Haptic Color Palette */
   --duo-green: #58cc02;
   --duo-green-lip: #46a302;
   --duo-green-subtle: rgba(88, 204, 2, 0.16);
@@ -59,7 +60,7 @@ body {
 }
 
 /* ==========================================================================
-   HLAVNÉ ROZLOŽENIE
+   HLAVNÉ ROZLOŽENIE (APP CONTAINER)
    ========================================================================== */
 .app-layout {
   width: 100%;
@@ -72,8 +73,21 @@ body {
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
+.main-content-viewport {
+  flex: 1;
+  width: 100%;
+  position: relative;
+}
+
+/* Dištanc pre spodnú pevnú navigačnú lištu (padding 85px) */
+.tab-bottom-spacer {
+  height: 90px;
+  width: 100%;
+  pointer-events: none;
+}
+
 /* ==========================================================================
-   1. HORNÝ GAMIFIKOVANÝ DUOLINGO HUD
+   1. HORNÝ GAMIFIKOVANÝ DUOLINGO HUD (Viditeľný iba v stave PRIESKUM)
    ========================================================================== */
 .duo-header {
   position: sticky;
@@ -101,7 +115,10 @@ body {
 }
 .brand-badge:active { transform: scale(0.95); }
 
-.brand-icon { font-size: 1.55rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.brand-icon {
+  font-size: 1.55rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
 .brand-name {
   font-size: 1.35rem;
   font-weight: 900;
@@ -151,7 +168,7 @@ body {
   border-color: rgba(255, 75, 75, 0.35);
 }
 
-.rank-btn {
+.rank-badge, .rank-btn {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -162,14 +179,149 @@ body {
   background: linear-gradient(135deg, #2b3964, #1c2a4f);
   border: 2px solid var(--duo-purple);
   color: var(--duo-purple);
-  cursor: pointer;
+  cursor: default;
   outline: none;
   transition: transform 0.1s;
 }
-.rank-btn:active { transform: translateY(2px); }
 
 /* ==========================================================================
-   2. DUOLINGO 3D TACTILE BUTTONS
+   2. SPODNÁ NAVIGAČNÁ LIŠTA (Presne 3 záložky: Cesta, Rýchly Dril, Telemetria)
+   ========================================================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 540px;
+  height: 72px;
+  z-index: 50;
+  background: rgba(17, 29, 64, 0.96);
+  backdrop-filter: blur(14px);
+  border-top: 2px solid var(--surface-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.nav-tab {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: color 0.15s ease, transform 0.1s ease;
+  position: relative;
+  outline: none;
+}
+
+.nav-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.nav-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.15s ease;
+}
+
+.nav-tab:hover {
+  color: var(--text-muted);
+}
+
+.nav-tab:active {
+  transform: scale(0.94);
+}
+
+.nav-tab.active {
+  color: var(--duo-blue);
+}
+
+.nav-tab.active .nav-icon {
+  transform: translateY(-2px) scale(1.12);
+  filter: drop-shadow(0 2px 8px rgba(28, 176, 246, 0.55));
+}
+
+.nav-tab.active .nav-label {
+  color: #fff;
+  font-weight: 900;
+}
+
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 32px;
+  height: 3px;
+  background: var(--duo-blue);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 0 8px var(--duo-blue);
+}
+
+/* ==========================================================================
+   3. PREPÍNANIE ZÁLOŽIEK (TAB PANES)
+   ========================================================================== */
+.tab-pane {
+  display: none;
+  width: 100%;
+}
+
+.tab-pane.active {
+  display: block;
+  animation: tabFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   4. STAV 2: AKTÍVNA LEKCIA / POKUS (Menu ÚPLNE ZMIZNE)
+   ========================================================================== */
+body.in-lesson {
+  overflow: hidden;
+}
+
+body.in-lesson .duo-header,
+body.in-lesson #mainHeader {
+  display: none !important;
+}
+
+body.in-lesson .bottom-nav,
+body.in-lesson #bottomNav {
+  display: none !important;
+}
+
+body.in-lesson .main-content-viewport {
+  display: none !important;
+}
+
+body.in-lesson .lesson-screen.active,
+body.in-lesson #lessonScreen.active {
+  display: flex !important;
+}
+
+/* ==========================================================================
+   5. TAKTILNÉ 3D TLAČIDLÁ (MÄKKÁ SPODNÁ HRANA)
    ========================================================================== */
 .btn-3d {
   position: relative;
@@ -198,12 +350,28 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.btn-3d.sm { padding: 8px 14px; font-size: 0.8rem; border-radius: 12px; border-bottom-width: 4px; }
-.btn-3d.sm:active { transform: translateY(2px); border-bottom-width: 2px; }
+.btn-3d.sm {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  border-radius: 12px;
+  border-bottom-width: 4px;
+}
+.btn-3d.sm:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
 
-.btn-3d.md { padding: 12px 18px; font-size: 0.92rem; }
-.btn-3d.lg { padding: 16px 24px; font-size: 1.05rem; }
-.btn-3d.full { width: 100%; }
+.btn-3d.md {
+  padding: 12px 18px;
+  font-size: 0.92rem;
+}
+.btn-3d.lg {
+  padding: 16px 24px;
+  font-size: 1.05rem;
+}
+.btn-3d.full {
+  width: 100%;
+}
 
 /* Farby tlačidiel */
 .btn-3d.green {
@@ -240,8 +408,9 @@ body {
 }
 
 /* ==========================================================================
-   3. DENNÁ VÝZVA (DAILY QUEST BANNER)
+   6. ZÁLOŽKA 1: 🗺️ CESTA (KAMPAŇ / HLAVNÁ HRA)
    ========================================================================== */
+/* Denná výzva */
 .daily-quest-card {
   margin: 16px 16px 8px;
   background: linear-gradient(135deg, #1e293b, #0f172a);
@@ -268,9 +437,7 @@ body {
   color: #f1f5f9;
 }
 
-/* ==========================================================================
-   4. HLAVNÝ STROM SVETOV (WINDING LEARNING PATH)
-   ========================================================================== */
+/* Strom svetov */
 .world-path-container {
   flex: 1;
   width: 100%;
@@ -281,7 +448,7 @@ body {
 .worlds-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
   padding: 12px 0 32px;
 }
 
@@ -478,12 +645,504 @@ body {
   line-height: 1.2;
 }
 
-.path-footer-padding {
-  height: 60px;
+/* ==========================================================================
+   7. ZÁLOŽKA 2: ⚡ RÝCHLY DRIL (SOS SANDBOX / TERÉNNA PRÍPRAVA)
+   ========================================================================== */
+.sandbox-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.sandbox-hero-card {
+  background: linear-gradient(135deg, #1c2a4f, #111d40);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.sandbox-badge {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--duo-blue);
+  letter-spacing: 1.2px;
+  margin-bottom: 6px;
+}
+
+.sandbox-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+
+.sandbox-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.sandbox-input-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.sandbox-label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.sandbox-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.custom-word-input {
+  flex: 1;
+  background: #0b132b;
+  border: 2px solid var(--surface-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.custom-word-input:focus {
+  border-color: var(--duo-blue);
+  box-shadow: 0 0 12px rgba(28, 176, 246, 0.3);
+}
+
+.sos-chips-label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 4px;
+}
+
+.preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  background: #0f172a;
+  border: 1px solid var(--surface-border);
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.chip:hover {
+  background: #1e293b;
+  color: #fff;
+  border-color: var(--duo-blue);
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.sandbox-mode-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.mode-select-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mode-card-radio {
+  cursor: pointer;
+  position: relative;
+}
+
+.mode-card-radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-card-inner {
+  background: #0b132b;
+  border: 2px solid var(--surface-border);
+  border-radius: 14px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  height: 100%;
+}
+
+.mode-card-radio input[type="radio"]:checked + .mode-card-inner {
+  border-color: var(--duo-green);
+  background: rgba(88, 204, 2, 0.08);
+  box-shadow: 0 0 14px rgba(88, 204, 2, 0.2);
+}
+
+.mode-card-icon {
+  font-size: 1.6rem;
+}
+
+.mode-card-title {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.mode-card-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.sandbox-action-wrap {
+  margin-top: 6px;
 }
 
 /* ==========================================================================
-   5. POPOVER KARTA LEVELU (NODE POPOVER)
+   8. ZÁLOŽKA 3: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)
+   ========================================================================== */
+.telemetry-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.telemetry-hero-card {
+  background: linear-gradient(135deg, #1c2a4f, #111d40);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.profile-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.profile-avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #0b132b;
+  border: 3px solid var(--duo-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.profile-info-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-editable-name {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#telemetryNameInput {
+  flex: 1;
+  background: #0b132b;
+  border: 2px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+#telemetryNameInput:focus {
+  border-color: var(--duo-blue);
+}
+
+.profile-rank-tag {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--duo-purple);
+  letter-spacing: 0.5px;
+}
+
+.profile-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+}
+
+.ph-label {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.ph-val {
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.ph-val.gold { color: var(--duo-gold); }
+.ph-val.orange { color: #ff9600; }
+.ph-val.green { color: var(--duo-green); }
+
+.telemetry-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-subtitle {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: var(--text-dim);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+  margin-top: 2px;
+}
+
+.vrt-badge-status {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--duo-green);
+  background: rgba(88, 204, 2, 0.15);
+  border: 1px solid rgba(88, 204, 2, 0.35);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.vrt-gauge-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0 4px;
+}
+
+.vrt-big-number {
+  font-size: 2.8rem;
+  font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.vrt-unit {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.vrt-scale-bar {
+  width: 100%;
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 26px;
+  border: 2px solid #0b132b;
+}
+
+.vrt-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+.vrt-zone.hard {
+  flex: 2;
+  background: #ea2b2b;
+  opacity: 0.8;
+}
+.vrt-zone.sweet {
+  flex: 5;
+  background: #58cc02;
+  opacity: 1;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3);
+  font-weight: 900;
+}
+.vrt-zone.breathy {
+  flex: 3;
+  background: #a559d9;
+  opacity: 0.8;
+}
+
+.telemetry-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tstat-box {
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tstat-num {
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+}
+.tstat-num.green { color: var(--duo-green); }
+.tstat-num.gold { color: var(--duo-gold); }
+.tstat-num.blue { color: var(--duo-blue); }
+
+.tstat-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 24px 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.history-row {
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-word {
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.history-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.history-vrt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.history-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.history-pill.ok {
+  background: rgba(88, 204, 2, 0.2);
+  color: var(--duo-green);
+}
+.history-pill.warn {
+  background: rgba(255, 150, 0, 0.2);
+  color: var(--duo-amber);
+}
+.history-pill.err {
+  background: rgba(255, 75, 75, 0.2);
+  color: var(--duo-red);
+}
+
+.telemetry-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   9. POPOVER KARTA LEVELU (NODE POPOVER NA MAPE)
    ========================================================================== */
 .node-popover-backdrop {
   position: fixed;
@@ -563,13 +1222,13 @@ body {
 .popover-count { color: #cbd5e1; }
 
 /* ==========================================================================
-   6. OBRAZOVKA AKTÍVNEHO TRÉNINGU (LESSON SCREEN)
+   10. STAV 2: AKTÍVNA LEKCIA (CELOOBRAZOVKOVÝ REŽIM)
    ========================================================================== */
 .lesson-screen {
   position: fixed;
   inset: 0;
   background: var(--bg);
-  z-index: 90;
+  z-index: 100;
   display: none;
   flex-direction: column;
   overflow-y: auto;
@@ -823,7 +1482,7 @@ body {
 .call-actions { display: flex; gap: 14px; width: 100%; }
 
 /* ==========================================================================
-   7. DUOLINGO SPODNÝ DRAWER (FEEDBACK DRAWER)
+   11. DUOLINGO SPODNÝ DRAWER (FEEDBACK DRAWER PO POKUSE)
    ========================================================================== */
 .feedback-drawer {
   position: fixed;
@@ -969,50 +1628,65 @@ canvas#envelopeCanvas {
 .metric-val.ok { color: var(--duo-green); }
 .metric-val.err { color: var(--duo-red); }
 
+.drawer-action-row {
+  margin-top: 4px;
+}
+
 /* ==========================================================================
-   8. OSLAVNÝ MODAL (LEKCIA DOKONČENÁ)
+   12. OSLAVNÝ MODAL (LEKCIA / DRIL DOKONČENÝ)
    ========================================================================== */
 .celebration-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(11, 19, 43, 0.95);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
   z-index: 120;
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
 }
 .celebration-overlay.active { display: flex; }
 
 .celebration-card {
   background: var(--surface);
-  border: 2px solid var(--duo-gold);
+  border: 2px solid var(--surface-border);
   border-radius: 28px;
-  padding: 32px 24px;
+  padding: 28px 24px;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   text-align: center;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-  animation: celebBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  animation: celebPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-@keyframes celebBounce {
-  0% { transform: scale(0.7); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes celebPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .trophy-bounce {
-  font-size: 4rem;
+  font-size: 3.8rem;
   margin-bottom: 12px;
-  animation: trophyFloat 1.8s infinite ease-in-out;
+  animation: trophyFloat 1.2s infinite alternate ease-in-out;
 }
 @keyframes trophyFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0% { transform: translateY(0) rotate(-4deg); }
+  100% { transform: translateY(-8px) rotate(4deg); }
 }
 
-.celebration-title { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
-.celebration-sub { font-size: 0.86rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
+.celebration-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.celebration-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 22px;
+}
 
 .stats-recap-grid {
   display: grid;
@@ -1020,96 +1694,37 @@ canvas#envelopeCanvas {
   gap: 10px;
   margin-bottom: 24px;
 }
+
 .recap-card {
-  background: #0f172a;
+  background: #0b132b;
   border: 1px solid var(--surface-border);
   border-radius: 14px;
-  padding: 10px 6px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.recap-label { font-size: 0.65rem; font-weight: 900; color: var(--text-muted); margin-bottom: 4px; }
-.recap-val { font-size: 1rem; font-weight: 900; }
+.recap-label {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.recap-val {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
 .recap-val.xp { color: var(--duo-gold); }
 .recap-val.green { color: var(--duo-green); }
 .recap-val.fire { color: #ff9600; }
 
 /* ==========================================================================
-   9. PROFIL A ŠTATISTIKY MODAL
+   13. RESPONZIVITA PRE MENŠIE DISPLEJE
    ========================================================================== */
-.profile-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
-  z-index: 110;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+@media (max-width: 420px) {
+  .target-word { font-size: 2.1rem; }
+  .pacer-circle { width: 105px; height: 105px; }
+  .mode-select-grid { grid-template-columns: 1fr; }
+  .profile-hero-stats { grid-template-columns: 1fr 1fr 1fr; }
+  .ph-val { font-size: 1rem; }
 }
-.profile-overlay.active { display: flex; }
-
-.profile-card {
-  background: var(--surface);
-  border: 2px solid var(--surface-border);
-  border-radius: 24px;
-  padding: 24px;
-  width: 100%;
-  max-width: 420px;
-  position: relative;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-}
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-  position: relative;
-}
-.profile-avatar { font-size: 2.4rem; }
-.profile-name { font-size: 1.35rem; font-weight: 900; color: #fff; }
-.profile-rank { font-size: 0.84rem; font-weight: 800; color: var(--duo-purple); }
-.profile-close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: transparent;
-  border: none;
-  font-size: 1.3rem;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.profile-section { margin-bottom: 18px; }
-.section-label { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; display: block; }
-
-.profile-input-row { display: flex; gap: 8px; }
-.profile-input-row input {
-  flex: 1;
-  background: #0f172a;
-  border: 2px solid var(--surface-border);
-  border-radius: 12px;
-  padding: 10px 14px;
-  color: #fff;
-  font-size: 0.92rem;
-  font-weight: 700;
-  outline: none;
-}
-.profile-input-row input:focus { border-color: var(--duo-blue); }
-
-.profile-stats-list {
-  background: #0f172a;
-  border: 1px solid var(--surface-border);
-  border-radius: 14px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pstat-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.84rem;
-  color: #cbd5e1;
-}
-
-.profile-actions-row { display: flex; gap: 10px; }

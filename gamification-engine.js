@@ -1,25 +1,27 @@
 /**
- * FLUENCY BIOFEEDBACK - DUOLINGO GAMIFICATION ENGINE
- * Lineárny strom svetov (World Progression Path) s rotáciou chýb,
- * 3D Duolingo uzlami, zvukovými efektmi Web Audio a prepojením na dsp-core.js.
+ * FLUENCY BIOFEEDBACK - DUOLINGO & STAMURAI GAMIFICATION ENGINE v2.0
+ * 1. Spodná navigácia s 3 záložkami (Cesta, Rýchly Dril, Telemetria)
+ * 2. Dva striktne oddelené stavy (Prieskum vs. Celoobrazovkový Full-Screen Focus Mode)
+ * 3. Rotácia chýb (Mistake Rotation), Web Audio syntetizér radostných zvukov
+ * 4. Plná integrácia s dsp-core.js a telemetria VRT
  */
 
 // ============================================================================
-// 1. DÁTOVÝ MODEL: 5 SVETOV A 25 ÚROVNÍ (CURRICULUM)
+// 1. DÁTOVÝ MODEL: 5 SVETOV A 25 ÚROVNÍ (BOSS FIGHTY VÝLUČNE TU!)
 // ============================================================================
 const WORLDS_DATA = [
   {
     id: 1,
     title: "Svet 1: Samohlásky (Vowel Flow)",
     subtitle: "Tréning mäkkého nábehu hlasiviek (VRT 45–160 ms)",
-    color: "#58cc02",
-    lipColor: "#46a302",
+    color: "#10b981", // Emerald
+    lipColor: "#059669",
     icon: "🌱",
     levels: [
       {
         id: "1.1",
         title: "Úvod do A a O",
-        desc: "Jemný nábeh samohlások A a O bez tvrdého glotálneho úderu.",
+        desc: "Jemný nábeh samohlások A a O bez tvrdého glotálneho úderu v hrtane.",
         mode: "standard",
         words: ["Auto", "Otec", "Áno", "Oko"],
         xp: 30,
@@ -54,11 +56,11 @@ const WORLDS_DATA = [
       },
       {
         id: "1.5",
-        title: "Majster samohlások (Checkpoint)",
-        desc: "Skúška plynulosti: zmes dlhších slov so samohláskovým nábehom.",
+        title: "Boss 1: Samohláskový Majster",
+        desc: "Vyvrcholenie 1. sveta: zmes náročných slov so samohláskovým nábehom.",
         mode: "standard",
         words: ["Autobus", "Inštitút", "Ekonomika", "Úspešný"],
-        xp: 50,
+        xp: 55,
         isBoss: true,
         icon: "👑"
       }
@@ -68,8 +70,8 @@ const WORLDS_DATA = [
     id: 2,
     title: "Svet 2: Znelé spoluhlásky (Resonance & Voicing)",
     subtitle: "Kontinuita kmitania hlasiviek a orofaryngeálna rezonancia",
-    color: "#1cb0f6",
-    lipColor: "#1899d6",
+    color: "#0ea5e9", // Sky Blue
+    lipColor: "#0284c7",
     icon: "🌊",
     levels: [
       {
@@ -110,11 +112,11 @@ const WORLDS_DATA = [
       },
       {
         id: "2.5",
-        title: "Resonančný majster (Checkpoint)",
+        title: "Boss 2: Resonančný Majster",
         desc: "Zložité znelé slová s viacnásobnými prechodmi fonácie.",
         mode: "standard",
         words: ["Bratislava", "Vynikajúci", "Medicína", "Dovolenka"],
-        xp: 60,
+        xp: 65,
         isBoss: true,
         icon: "👑"
       }
@@ -124,8 +126,8 @@ const WORLDS_DATA = [
     id: 3,
     title: "Svet 3: Plozívy a zhluky (Plosive Armor)",
     subtitle: "Tlmenie artikulačného nárazu a zákaz barličky 'Eee...'",
-    color: "#ff9600",
-    lipColor: "#d97e00",
+    color: "#f59e0b", // Amber
+    lipColor: "#d97706",
     icon: "🛡️",
     levels: [
       {
@@ -166,11 +168,11 @@ const WORLDS_DATA = [
       },
       {
         id: "3.5",
-        title: "Plozívny majster (Checkpoint)",
+        title: "Boss 3: Plozívny Majster",
         desc: "Komplexné slová s plozívami bez jediného zárazu sánky.",
         mode: "standard",
         words: ["Knižnica", "Prezident", "Trenčín", "Čokoláda"],
-        xp: 70,
+        xp: 75,
         isBoss: true,
         icon: "👑"
       }
@@ -178,10 +180,10 @@ const WORLDS_DATA = [
   },
   {
     id: 4,
-    title: "Svet 4: Pokladňa & Rýchlosť (Temporal Stress)",
-    subtitle: "Odpovede pod časovým limitom 550 ms (reálne audio predavačky)",
-    color: "#ce82ff",
-    lipColor: "#a559d9",
+    title: "Svet 4: Časový tlak pokladne (Temporal Stress)",
+    subtitle: "Odpovede pod limitom 550 ms (reálne audio zo štúdia)",
+    color: "#8b5cf6", // Purple
+    lipColor: "#7c3aed",
     icon: "🛒",
     levels: [
       {
@@ -226,12 +228,12 @@ const WORLDS_DATA = [
       },
       {
         id: "4.5",
-        title: "Rýchla pokladňa Master (Boss)",
-        desc: "Kompletný dialóg v obchode pod časovým stresom.",
+        title: "Boss 4: Rýchla pokladňa Dialóg",
+        desc: "Kompletný dialóg v obchode pod časovým stresom radu ľudí za tebou.",
         mode: "guillotine",
         scenarioIndex: 1,
         words: ["Kartou", "Nemám kartu", "Bloček netreba", "Dovidenia"],
-        xp: 80,
+        xp: 85,
         isBoss: true,
         icon: "👑"
       }
@@ -239,10 +241,10 @@ const WORLDS_DATA = [
   },
   {
     id: 5,
-    title: "Svet 5: Boss Fights (Real Life Ambush Calls)",
+    title: "Svet 5: Sociálna expozícia (Boss Fights)",
     subtitle: "Prepadové hovory s oponentmi + zrkadlo očného kontaktu",
-    color: "#ff4b4b",
-    lipColor: "#d92525",
+    color: "#f43f5e", // Rose / Red
+    lipColor: "#e11d48",
     icon: "📞",
     levels: [
       {
@@ -252,7 +254,7 @@ const WORLDS_DATA = [
         mode: "ambush",
         scenarioIndex: 0, // Courier
         words: ["Dobrý deň, pri telefóne"],
-        xp: 60,
+        xp: 65,
         icon: "📦"
       },
       {
@@ -262,7 +264,7 @@ const WORLDS_DATA = [
         mode: "ambush",
         scenarioIndex: 2, // Doctor
         words: ["Peter Novák, volám kvôli termínu"],
-        xp: 70,
+        xp: 75,
         icon: "🩺"
       },
       {
@@ -272,12 +274,12 @@ const WORLDS_DATA = [
         mode: "ambush",
         scenarioIndex: 3, // Automechanik
         words: ["Dobrý deň, volám ohľadom auta"],
-        xp: 80,
+        xp: 85,
         icon: "🔧"
       },
       {
         id: "5.4",
-        title: "Mega Boss: Očný kontakt + Zvonenie",
+        title: "Boss 4: Očný kontakt + Zvonenie",
         desc: "Zapnuté zrkadlo kamery! Hovor s kuriérom pri pohľade do objektívu.",
         mode: "ambush",
         scenarioIndex: 0,
@@ -288,8 +290,8 @@ const WORLDS_DATA = [
       },
       {
         id: "5.5",
-        title: "Finálny šampión: Unblockable Flow",
-        desc: "Záverečná certifikácia plynulosti reči pod maximálnym tlakom.",
+        title: "Finálny šampión: Unblockable Champion",
+        desc: "Záverečná certifikácia plynulosti reči pod maximálnym sociálnym tlakom.",
         mode: "ambush",
         scenarioIndex: 2,
         words: ["Ďakujem pekne za pomoc, prajem pekný deň"],
@@ -302,7 +304,7 @@ const WORLDS_DATA = [
 ];
 
 // ============================================================================
-// 2. DUOLINGO WEB AUDIO SYNTHESIZER (Zvukové efekty v reálnom čase)
+// 2. SYNTHESIZER ZVUKOVÝCH EFEKTOV (WEB AUDIO CHIMES)
 // ============================================================================
 class DuoAudioFx {
   constructor() {
@@ -379,13 +381,15 @@ class DuoAudioFx {
 const duoSfx = new DuoAudioFx();
 
 // ============================================================================
-// 3. SPRÁVCA STAVU HRÁČA (PERSISTENT STATE ENGINE)
+// 3. SPRÁVCA STAVU, TELEMETRIE A POKROKU (STATE & TELEMETRY)
 // ============================================================================
-const STORAGE_KEY = 'fluency_duo_save_v2';
+const STORAGE_KEY = 'fluency_duo_save_v3';
+const HISTORY_KEY = 'fluency_telemetry_history_v1';
 
 class DuoStateManager {
   constructor() {
     this.state = this.loadState();
+    this.history = this.loadHistory();
   }
 
   getDefaultState() {
@@ -406,24 +410,28 @@ class DuoStateManager {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return this.getDefaultState();
       const parsed = JSON.parse(raw);
-      // Overenie a aktualizácia streaku
       const today = new Date().toISOString().slice(0, 10);
       if (parsed.lastPlayedDate !== today) {
-        // Kontrola, či hral včera
         const last = new Date(parsed.lastPlayedDate);
         const now = new Date(today);
         const diffDays = Math.round((now - last) / (1000 * 60 * 60 * 24));
-        if (diffDays === 1) {
-          // Pokračovanie streaku
-        } else if (diffDays > 1) {
-          // Streak vypršal
+        if (diffDays > 1) {
           parsed.streak = 1;
         }
       }
       return { ...this.getDefaultState(), ...parsed };
     } catch (e) {
-      console.warn('Chyba načítania stavu, resetujem:', e);
+      console.warn('Chyba načítania stavu:', e);
       return this.getDefaultState();
+    }
+  }
+
+  loadHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
     }
   }
 
@@ -431,9 +439,18 @@ class DuoStateManager {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
       localStorage.setItem('fl_custom_name', this.state.userName);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(this.history));
     } catch (e) {
       console.warn('Chyba ukladania:', e);
     }
+  }
+
+  addAttemptRecord(record) {
+    // Uložiť záznam do histórie telemetrie
+    this.history.unshift(record);
+    if (this.history.length > 50) this.history.pop();
+    this.save();
+    this.renderTelemetry();
   }
 
   addXp(points) {
@@ -474,6 +491,7 @@ class DuoStateManager {
 
     this.save();
     this.renderHud();
+    this.renderTelemetry();
   }
 
   findNextLevelId(currentId) {
@@ -490,11 +508,11 @@ class DuoStateManager {
 
   getRank() {
     const xp = this.state.xp;
-    if (xp < 250) return { title: "Novice", level: 1, icon: "🌱" };
-    if (xp < 750) return { title: "Resonator", level: 2, icon: "🌊" };
-    if (xp < 1600) return { title: "Flow Shaper", level: 3, icon: "⚡" };
-    if (xp < 3000) return { title: "Pacemaker", level: 4, icon: "🎯" };
-    return { title: "Unblockable", level: 5, icon: "👑" };
+    if (xp < 250) return { title: "Novice", level: 1 };
+    if (xp < 750) return { title: "Resonator", level: 2 };
+    if (xp < 1600) return { title: "Flow Shaper", level: 3 };
+    if (xp < 3000) return { title: "Pacemaker", level: 4 };
+    return { title: "Unblockable", level: 5 };
   }
 
   renderHud() {
@@ -509,30 +527,79 @@ class DuoStateManager {
 
     const rank = this.getRank();
     if (rankEl) rankEl.textContent = rank.title;
+  }
 
-    // Aktualizácia profilového okna
-    const pName = document.getElementById('profileNameDisplay');
-    const pRank = document.getElementById('profileRankDisplay');
-    const pXp = document.getElementById('pStatXp');
-    const pStreak = document.getElementById('pStatStreak');
-    const pWorlds = document.getElementById('pStatWorlds');
-    const pCompleted = document.getElementById('pStatCompleted');
+  renderTelemetry() {
+    // Meno a profil
+    const nameInput = document.getElementById('telemetryNameInput');
+    const rankTitle = document.getElementById('telemetryRankTitle');
+    const xpVal = document.getElementById('telemetryXpVal');
+    const streakVal = document.getElementById('telemetryStreakVal');
+    const worldsVal = document.getElementById('telemetryWorldsVal');
 
-    if (pName) pName.textContent = this.state.userName;
-    if (pRank) pRank.textContent = `Rank ${rank.level}: ${rank.title}`;
-    if (pXp) pXp.textContent = `${this.state.xp} XP`;
-    if (pStreak) pStreak.textContent = `${this.state.streak} dní 🔥`;
-    
-    // Počet odomknutých svetov
+    if (nameInput) nameInput.value = this.state.userName;
+    const rank = this.getRank();
+    if (rankTitle) rankTitle.textContent = `Rank ${rank.level}: ${rank.title}`;
+    if (xpVal) xpVal.textContent = `${this.state.xp}`;
+    if (streakVal) streakVal.textContent = `${this.state.streak} dní 🔥`;
+
     let highestWorld = 1;
     this.state.unlockedLevels.forEach(lvlId => {
       const wNum = parseInt(lvlId.split('.')[0], 10);
       if (wNum > highestWorld) highestWorld = wNum;
     });
-    if (pWorlds) pWorlds.textContent = `${highestWorld} / 5`;
+    if (worldsVal) worldsVal.textContent = `${highestWorld} / 5`;
 
-    const completedCount = Object.keys(this.state.completedLevels).length;
-    if (pCompleted) pCompleted.textContent = `${completedCount} / 25`;
+    // Štatistiky pokusov
+    const totalAttempts = this.history.length;
+    const successfulAttempts = this.history.filter(h => h.passed).length;
+    const successRate = totalAttempts > 0 ? Math.round((successfulAttempts / totalAttempts) * 100) : 100;
+
+    const tTotal = document.getElementById('tStatTotalAttempts');
+    const tSuccess = document.getElementById('tStatSuccessRate');
+    const tLessons = document.getElementById('tStatCompletedLessons');
+    const tLatency = document.getElementById('tStatAvgLatency');
+
+    if (tTotal) tTotal.textContent = totalAttempts;
+    if (tSuccess) tSuccess.textContent = `${successRate}%`;
+    if (tLessons) tLessons.textContent = `${Object.keys(this.state.completedLevels).length} / 25`;
+
+    // Výpočet priemerného VRT a latencie
+    const vrts = this.history.filter(h => h.vrt > 0).map(h => h.vrt);
+    const avgVrt = vrts.length > 0 ? (vrts.reduce((a, b) => a + b, 0) / vrts.length) : 74.2;
+    const avgVrtEl = document.getElementById('avgVrtVal');
+    if (avgVrtEl) avgVrtEl.textContent = avgVrt.toFixed(1);
+
+    const latencies = this.history.filter(h => h.latency > 0).map(h => h.latency);
+    const avgLat = latencies.length > 0 ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : 410;
+    if (tLatency) tLatency.textContent = `${avgLat} ms`;
+
+    // História posledných pokusov
+    const historyList = document.getElementById('telemetryHistoryList');
+    if (historyList) {
+      if (this.history.length === 0) {
+        historyList.innerHTML = `<div class="history-empty">Zatiaľ žiadne záznamy. Spusti prvú lekciu alebo SOS dril!</div>`;
+      } else {
+        const topRecent = this.history.slice(0, 8);
+        historyList.innerHTML = topRecent.map(item => `
+          <div class="history-row">
+            <div class="h-word-col">
+              <span class="h-word">${item.word}</span>
+              <span class="h-time">${item.time || 'Dnes'}</span>
+            </div>
+            <div class="h-vrt-col">
+              <span class="h-vrt">${item.vrt ? item.vrt.toFixed(1) + ' ms' : '-'}</span>
+              <span class="h-vrt-sub">VRT</span>
+            </div>
+            <div class="h-badge-col">
+              <span class="h-status-badge ${item.passed ? (item.isPerfect ? 'perfect' : 'ok') : 'err'}">
+                ${item.passed ? (item.isPerfect ? '🌟 PERFECT' : '✓ OK') : '✕ BLOK'}
+              </span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
   }
 }
 
@@ -629,9 +696,7 @@ class DuoPathRenderer {
     const isUnlocked = duoState.isUnlocked(level.id);
     if (!isUnlocked) {
       duoSfx.playMistake();
-      if (typeof statusAlert !== 'undefined' && statusAlert) {
-        statusAlert.textContent = `Tento level je zamknutý. Najprv dokonči predchádzajúce úrovne!`;
-      }
+      alert('Tento level je zatiaľ zamknutý. Najprv dokonči predchádzajúce úrovne v príbehu!');
       return;
     }
 
@@ -641,7 +706,7 @@ class DuoPathRenderer {
 }
 
 // ============================================================================
-// 5. OVLÁDAČ LEKCIÍ A ROTÁCIA CHÝB (LESSON CONTROLLER)
+// 5. OVLÁDAČ LEKCIÍ, STAVU ZOBRAZENIA A ROTÁCIE CHÝB
 // ============================================================================
 class DuoLessonController {
   constructor() {
@@ -653,12 +718,33 @@ class DuoLessonController {
     this.mistakesCount = 0;
     this.totalAttemptsCount = 0;
     this.isLessonActive = false;
+    this.isSosDrill = false;
     this.currentWordItem = null;
 
     this.initDomBindings();
   }
 
   initDomBindings() {
+    // Spodná navigácia – prepínanie 3 záložiek (Cesta, Rýchly Dril, Telemetria)
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const targetId = tab.dataset.tab;
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        const activePane = document.getElementById(targetId);
+        if (activePane) activePane.classList.add('active');
+
+        duoSfx.playTone(520, 'sine', 0.05, 0.08);
+
+        if (targetId === 'tabTelemetria') {
+          duoState.renderTelemetry();
+        }
+      });
+    });
+
     // Popover ovládače
     const closeBtn = document.getElementById('popoverCloseBtn');
     const backdrop = document.getElementById('nodePopoverBackdrop');
@@ -670,7 +756,7 @@ class DuoLessonController {
     });
     if (startBtn) startBtn.addEventListener('click', () => this.launchLesson());
 
-    // Exit lekcie
+    // Exit lekcie (Návrat do Prieskumu a obnovenie spodného menu)
     const exitBtn = document.getElementById('exitLessonBtn');
     if (exitBtn) exitBtn.addEventListener('click', () => this.confirmExitLesson());
 
@@ -678,7 +764,7 @@ class DuoLessonController {
     const drawerBtn = document.getElementById('drawerContinueBtn');
     if (drawerBtn) drawerBtn.addEventListener('click', () => this.handleDrawerContinue());
 
-    // Klávesnica: Enter aktivuje tlačidlo v draweri
+    // Enter klávesová skratka
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const drawer = document.getElementById('feedbackDrawer');
@@ -705,43 +791,67 @@ class DuoLessonController {
     const celebBtn = document.getElementById('celebrationBackBtn');
     if (celebBtn) celebBtn.addEventListener('click', () => this.finishCelebration());
 
-    // Profilový modal
-    const profBtn = document.getElementById('profileBtn');
-    const profModal = document.getElementById('profileModal');
-    const profClose = document.getElementById('profileCloseBtn');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const customNameInput = document.getElementById('customNameInput');
-    const resetProgressBtn = document.getElementById('resetProgressBtn');
+    // SOS Dril: Spustenie terénnej prípravy
+    const launchSosBtn = document.getElementById('launchSosDrillBtn');
+    if (launchSosBtn) {
+      launchSosBtn.addEventListener('click', () => this.launchSosDrill());
+    }
 
-    if (profBtn && profModal) {
-      profBtn.addEventListener('click', () => {
-        if (customNameInput) customNameInput.value = duoState.state.userName;
-        profModal.classList.add('active');
+    // Vyčistenie slova v SOS drilu
+    const clearWordBtn = document.getElementById('clearWordBtn');
+    const wordInputEl = document.getElementById('wordInput');
+    if (clearWordBtn && wordInputEl) {
+      clearWordBtn.addEventListener('click', () => {
+        wordInputEl.value = '';
+        wordInputEl.focus();
       });
     }
-    if (profClose && profModal) {
-      profClose.addEventListener('click', () => profModal.classList.remove('active'));
-    }
-    if (saveNameBtn && customNameInput) {
-      saveNameBtn.addEventListener('click', () => {
-        const newName = customNameInput.value.trim() || 'Peter Novák';
+
+    // SOS Rýchle frázové čipy
+    document.querySelectorAll('.preset-chips .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (wordInputEl) {
+          wordInputEl.value = chip.dataset.word;
+          if (typeof refreshMeta === 'function') refreshMeta();
+        }
+      });
+    });
+
+    // Uloženie mena v Telemetrii
+    const saveTelNameBtn = document.getElementById('saveTelemetryNameBtn');
+    const telNameInput = document.getElementById('telemetryNameInput');
+    if (saveTelNameBtn && telNameInput) {
+      saveTelNameBtn.addEventListener('click', () => {
+        const newName = telNameInput.value.trim() || 'Peter Novák';
         duoState.state.userName = newName;
         duoState.save();
         duoState.renderHud();
+        duoState.renderTelemetry();
         alert('Meno úspešne uložené!');
-        if (profModal) profModal.classList.remove('active');
       });
     }
-    if (resetProgressBtn) {
-      resetProgressBtn.addEventListener('click', () => {
+
+    // Kalibrácia a reset z Telemetrie
+    const calTelBtn = document.getElementById('calibrateFromTelemetryBtn');
+    if (calTelBtn) {
+      calTelBtn.addEventListener('click', () => {
+        const cBtn = document.getElementById('calibrateBtn');
+        if (cBtn) cBtn.click();
+      });
+    }
+
+    const resetTelBtn = document.getElementById('resetTelemetryProgressBtn');
+    if (resetTelBtn) {
+      resetTelBtn.addEventListener('click', () => {
         if (confirm('Naozaj chceš zmazať celý herný postup a začať odznova?')) {
           localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(HISTORY_KEY);
           location.reload();
         }
       });
     }
 
-    // Tlačidlo Trénovať na dennom queste
+    // Denná výzva tlačidlo
     const continuePathBtn = document.getElementById('continuePathBtn');
     if (continuePathBtn) {
       continuePathBtn.addEventListener('click', () => {
@@ -754,6 +864,23 @@ class DuoLessonController {
         }
       });
     }
+  }
+
+  // ========================================================================
+  // PRECHOD MEDZI STAVOM 1 (PRIESKUM) A STAVOM 2 (AKTÍVNA LEKCIA)
+  // ========================================================================
+  enterFocusMode() {
+    // Menu a horný prieskumný HUD kompletne ZMIZNÚ
+    document.body.classList.add('in-lesson');
+    const screen = document.getElementById('lessonScreen');
+    if (screen) screen.classList.add('active');
+  }
+
+  exitFocusMode() {
+    // Obnovenie prieskumu a zobrazenie spodného menu
+    document.body.classList.remove('in-lesson');
+    const screen = document.getElementById('lessonScreen');
+    if (screen) screen.classList.remove('active');
   }
 
   openLevelPopover(level, world, btnElement) {
@@ -789,6 +916,7 @@ class DuoLessonController {
     if (!this.currentLevel) return;
 
     this.isLessonActive = true;
+    this.isSosDrill = false;
     this.completedItemsCount = 0;
     this.mistakesCount = 0;
     this.totalAttemptsCount = 0;
@@ -800,9 +928,8 @@ class DuoLessonController {
     }));
     this.initialWordCount = this.lessonQueue.length;
 
-    // Otvorenie fullscreen obrazovky
-    const screen = document.getElementById('lessonScreen');
-    if (screen) screen.classList.add('active');
+    // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
+    this.enterFocusMode();
 
     // Nastavenie režimu a kamery
     if (typeof currentMode !== 'undefined') {
@@ -812,6 +939,45 @@ class DuoLessonController {
     if (this.currentLevel.forceCam && typeof camToggle !== 'undefined' && camToggle) {
       camToggle.checked = true;
       camToggle.dispatchEvent(new Event('change'));
+    }
+
+    this.updateLessonProgress();
+    this.loadNextItem();
+  }
+
+  launchSosDrill() {
+    const wordInputEl = document.getElementById('wordInput');
+    const chosenWord = (wordInputEl && wordInputEl.value.trim()) ? wordInputEl.value.trim() : 'Peter Novák';
+    
+    // Voľba režimu zo sandboxu
+    const selectedMode = document.querySelector('input[name="sandboxMode"]:checked')?.value || 'standard';
+
+    this.isLessonActive = true;
+    this.isSosDrill = true;
+    this.currentLevel = {
+      id: "sos",
+      title: "Rýchly SOS Dril",
+      mode: selectedMode,
+      words: [chosenWord, chosenWord, chosenWord], // 3 pokusy
+      xp: 25
+    };
+
+    this.completedItemsCount = 0;
+    this.mistakesCount = 0;
+    this.totalAttemptsCount = 0;
+
+    this.lessonQueue = [
+      { word: chosenWord, attempts: 0 },
+      { word: chosenWord, attempts: 0 },
+      { word: chosenWord, attempts: 0 }
+    ];
+    this.initialWordCount = 3;
+
+    // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
+    this.enterFocusMode();
+
+    if (typeof currentMode !== 'undefined') {
+      currentMode = selectedMode;
     }
 
     this.updateLessonProgress();
@@ -830,7 +996,9 @@ class DuoLessonController {
 
     if (context && this.currentLevel) {
       const remaining = this.lessonQueue.length;
-      context.textContent = `${this.currentLevel.title} • Zostáva: ${remaining}`;
+      context.textContent = this.isSosDrill
+        ? `⚡ SOS Dril • Zostáva pokusov: ${remaining}`
+        : `${this.currentLevel.title} • Zostáva: ${remaining}`;
     }
   }
 
@@ -843,10 +1011,8 @@ class DuoLessonController {
     this.currentWordItem = this.lessonQueue[0];
     const word = this.currentWordItem.word;
 
-    // Prepojenie s dsp-core.js prvkami
     const wordInputEl = document.getElementById('wordInput');
     const targetWordEl = document.getElementById('targetWord');
-    const targetMetaEl = document.getElementById('targetMeta');
     const pacerEl = document.getElementById('pacerCircle');
     const statusAlertEl = document.getElementById('statusAlert');
     const matrixPanel = document.getElementById('matrixPanel');
@@ -869,15 +1035,14 @@ class DuoLessonController {
 
     if (statusAlertEl) {
       if (typeof isCalibrated !== 'undefined' && !isCalibrated) {
-        statusAlertEl.textContent = 'Najprv kalibruj mikrofón (1 sekunda ticha).';
+        statusAlertEl.textContent = 'Najprv kalibruj ticho v miestnosti (1 sekunda).';
       } else {
-        statusAlertEl.textContent = 'Stlač "Spustiť slovo" a nasleduj dychový kruh.';
+        statusAlertEl.textContent = 'Stlač "Spustiť slovo" a nasleduj dychový pacer.';
       }
     }
 
     this.updateLessonProgress();
 
-    // Automatický štart, ak je mikrofón už kalibrovaný
     if (typeof isCalibrated !== 'undefined' && isCalibrated) {
       const startBtn = document.getElementById('startBtn');
       if (startBtn) startBtn.disabled = false;
@@ -888,6 +1053,18 @@ class DuoLessonController {
     this.totalAttemptsCount++;
     const { passed, isPerfect, vrt, latency } = result;
 
+    const word = this.currentWordItem ? this.currentWordItem.word : 'Slovo';
+
+    // Zápis telemetrického záznamu
+    duoState.addAttemptRecord({
+      word,
+      passed,
+      isPerfect,
+      vrt: vrt || 0,
+      latency: latency || 0,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
     const drawer = document.getElementById('feedbackDrawer');
     const iconEl = document.getElementById('drawerStatusIcon');
     const headEl = document.getElementById('drawerHeadline');
@@ -896,17 +1073,16 @@ class DuoLessonController {
     const continueBtn = document.getElementById('drawerContinueBtn');
 
     if (passed) {
-      // Úspešný pokus
       if (isPerfect) {
         duoSfx.playPerfect();
         if (headEl) headEl.textContent = '🌟 Dokonalý nábeh (PERFECT)!';
-        if (subEl) subEl.textContent = `Hlasivky naskočili uvoľnene v sweet-spote (VRT ${vrt.toFixed(1)} ms).`;
+        if (subEl) subEl.textContent = `Hlasivky naskočili uvoľnene v sweet-spote (VRT ${vrt ? vrt.toFixed(1) : '70'} ms).`;
         if (xpBadge) xpBadge.textContent = '+50 XP';
         duoState.addXp(50);
       } else {
         duoSfx.playSuccess();
         if (headEl) headEl.textContent = '✅ Úspešný pokus!';
-        if (subEl) subEl.textContent = `Plynulý štart reči bez tonického kŕča (VRT ${vrt.toFixed(1)} ms).`;
+        if (subEl) subEl.textContent = `Plynulý štart reči bez tonického kŕča (VRT ${vrt ? vrt.toFixed(1) : '85'} ms).`;
         if (xpBadge) xpBadge.textContent = '+30 XP';
         duoState.addXp(30);
       }
@@ -920,16 +1096,14 @@ class DuoLessonController {
         continueBtn.innerHTML = '<span>POKRAČOVAŤ (Enter)</span>';
       }
 
-      // Odstránenie úspešného slova z fronty
       this.lessonQueue.shift();
       this.completedItemsCount++;
     } else {
-      // Zaznamenaný kŕč / blok / tvrdý úder
       duoSfx.playMistake();
       this.mistakesCount++;
 
       if (headEl) headEl.textContent = '⚡ Zaznamenaný tvrdý úder alebo blok';
-      if (subEl) subEl.textContent = 'Nevadí! Uvoľni sánku, zopakujeme si toto slovo na konci lekcie. ❤️';
+      if (subEl) subEl.textContent = 'Nevadí! Uvoľni sánku, zopakujeme si toto slovo na konci. ❤️';
       if (xpBadge) xpBadge.textContent = '+0 XP';
 
       if (drawer) {
@@ -941,13 +1115,11 @@ class DuoLessonController {
         continueBtn.innerHTML = '<span>ROZUMIEM, SKÚSIM ĎALEJ</span>';
       }
 
-      // ROTÁCIA CHÝB V ŠTÝLE DUOLINGO:
-      // Presunúť neúspešné slovo na koniec fronty, aby sa zopakovalo!
+      // ROTÁCIA CHÝB (Duolingo Mistake Rotation)
       const failed = this.lessonQueue.shift();
       failed.attempts = (failed.attempts || 0) + 1;
       this.lessonQueue.push(failed);
 
-      // Zníženie životov
       if (duoState.state.lives > 0) {
         duoState.state.lives = Math.max(1, duoState.state.lives - 1);
         duoState.save();
@@ -973,14 +1145,24 @@ class DuoLessonController {
     const baseReward = this.currentLevel.xp || 40;
     const finalXp = baseReward + (accuracy >= 90 ? 20 : 0);
 
-    // Zápis do stavu
-    duoState.completeLevel(this.currentLevel.id, finalXp, accuracy);
+    // Ak ide o úroveň v príbehu, zapíš do kampane
+    if (!this.isSosDrill && this.currentLevel.id !== 'sos') {
+      duoState.completeLevel(this.currentLevel.id, finalXp, accuracy);
+    } else {
+      duoState.addXp(finalXp);
+    }
 
-    // Zobrazenie oslavného modalu
     const modal = document.getElementById('celebrationModal');
+    const title = document.getElementById('celebrationTitle');
+    const sub = document.getElementById('celebrationSub');
     const xpRecap = document.getElementById('recapXpVal');
     const accRecap = document.getElementById('recapAccuracyVal');
     const streakRecap = document.getElementById('recapStreakVal');
+
+    if (title) title.textContent = this.isSosDrill ? 'SOS Dril Dokončený!' : 'Lekcia Dokončená!';
+    if (sub) sub.textContent = this.isSosDrill
+      ? 'Hlasivky sú uvoľnené a pripravené na reálnu konverzáciu v teréne.'
+      : 'Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.';
 
     if (xpRecap) xpRecap.textContent = `+${finalXp} XP`;
     if (accRecap) accRecap.textContent = `${accuracy}%`;
@@ -991,26 +1173,24 @@ class DuoLessonController {
 
   finishCelebration() {
     const modal = document.getElementById('celebrationModal');
-    const screen = document.getElementById('lessonScreen');
-
     if (modal) modal.classList.remove('active');
-    if (screen) screen.classList.remove('active');
 
-    // Vypnutie kamery, ak bola vynútená
+    // Návrat z celoobrazovkového režimu
+    this.exitFocusMode();
+
     if (typeof camToggle !== 'undefined' && camToggle && camToggle.checked) {
       camToggle.checked = false;
       camToggle.dispatchEvent(new Event('change'));
     }
 
-    // Prekreslenie mapy s novým odomknutým uzlom
     duoPath.render();
+    duoState.renderTelemetry();
   }
 
   confirmExitLesson() {
-    if (confirm('Naozaj chceš opustiť prebiehajúcu lekciu? Stratíš rozpracovaný postup.')) {
+    if (confirm('Naozaj chceš opustiť tréning? Stratíš rozpracovaný postup.')) {
       this.isLessonActive = false;
-      const screen = document.getElementById('lessonScreen');
-      if (screen) screen.classList.remove('active');
+      this.exitFocusMode();
 
       if (typeof camToggle !== 'undefined' && camToggle && camToggle.checked) {
         camToggle.checked = false;
@@ -1024,17 +1204,17 @@ const duoLesson = new DuoLessonController();
 const duoPath = new DuoPathRenderer('worldsWrapper');
 
 // ============================================================================
-// 6. PREPOJENIE NA EVALUAČNÉ UDALOSTI Z dsp-core.js
+// 6. EVENT LISTENER PRE DSP VÝSLEDKY
 // ============================================================================
-// Zachytenie vyhodnotenia z dsp-core.js
 window.addEventListener('dsp-evaluation-complete', (e) => {
   if (duoLesson.isLessonActive) {
     duoLesson.handleAttemptResult(e.detail);
   }
 });
 
-// Inicializácia pri načítaní stránky
+// Inicializácia aplikácie
 document.addEventListener('DOMContentLoaded', () => {
   duoState.renderHud();
   duoPath.render();
+  duoState.renderTelemetry();
 });
