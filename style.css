@@ -3086,3 +3086,173 @@ canvas#envelopeCanvas {
   }
 }
 
+/* ==========================================================================
+   17. SUPABASE POUŽÍVATEĽSKÝ PROFIL & CLOUD AUTENTIFIKÁCIA
+   ========================================================================== */
+.header-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-card);
+  border: 1.5px solid var(--surface-border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 2.5px solid rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.header-profile-btn:hover {
+  border-color: var(--brand-cyan);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.header-profile-btn.logged-in {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.card-subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.auth-status-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-status-badge.offline {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.auth-status-badge.online {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.auth-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.auth-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.social-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  border-bottom: 3.5px solid rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.social-login-btn.google {
+  background: #ffffff;
+  color: #1e293b;
+  border-color: #e2e8f0;
+  border-bottom-color: #cbd5e1;
+}
+
+.social-login-btn.google:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+  border-bottom-color: #94a3b8;
+}
+
+.social-login-btn.google:active {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px;
+}
+
+.social-login-btn.facebook {
+  background: #1877f2;
+  color: #ffffff;
+  border-color: #1877f2;
+  border-bottom-color: #0c57b8;
+}
+
+.social-login-btn.facebook:hover {
+  background: #166fe5;
+  transform: translateY(-1px);
+  border-bottom-color: #084294;
+}
+
+.social-login-btn.facebook:active {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px;
+}
+
+.user-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
+}
+
+.user-avatar-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-emerald);
+}
+
+.user-fullname {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.profile-sync-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
