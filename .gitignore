@@ -1,4 +1,9 @@
-﻿*.zip
+node_modules/
+*.zip
 .DS_Store
 Thumbs.db
 .vercel
+.gradle/
+android/.gradle/
+android/app/build/
+android/build/
