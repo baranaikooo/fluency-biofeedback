@@ -1,52 +1,79 @@
-# Fluency – Trenažér plynulej reči (Biofeedback pre každého)
+# 🎙️ Fluency – Evidence-Based Rečový Biofeedback & Asistent
 
-Aplikácia navrhnutá pre ľudí s **balbuties (koktaním)**. Žiadny vizuálny chaos, žiadne herné gýče ani zložité nastavovania. Všetko funguje **úplne automaticky** priamo v prehliadači a je prispôsobiteľná pre **každého človeka**.
+[![Download Android APK](https://img.shields.io/badge/Download_APK-v1.0.0-059669?style=for-the-badge&logo=android&logoColor=white)](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback.apk)
+[![Live Web App](https://img.shields.io/badge/Live_App-Vercel-38bdf8?style=for-the-badge&logo=vercel&logoColor=white)](https://stutterbiofeedbackantigravity.vercel.app)
+[![GitHub Releases](https://img.shields.io/github/v/release/baranaikooo/fluency-biofeedback?style=for-the-badge&color=8b5cf6)](https://github.com/baranaikooo/fluency-biofeedback/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-slate?style=for-the-badge)](LICENSE)
 
----
-
-## 🌟 Hlavné funkcie
-
-### 1. 🗣️ Tréning (Pokojný dych & mäkký nábeh)
-* **Zen Pacer (Dýchací kruh):**
-  * Pokojná 2.2-sekundová fáza nádychu (uvoľnenie sánky a ramien).
-  * 2.2-sekundová fáza výdychu a hovoru s jemnou vizuálnou odozvou na hlas.
-* **Kategórie cvičení:**
-  * Samohlásky (*Auto, Autobus, Okná, Eva, Ihla, Ulica...*)
-  * Ťažké hlásky (*Káva, Kartou, Pes, Peter, Topánka, Tato...*)
-  * Znelé hlásky (*Bicykel, Banka, Dom, Dvere, Gombík...*)
-  * **Moje meno:** Každý používateľ si môže zadať vlastné meno a priezvisko, ktoré si appka pamätá a generuje naň osobné cvičenia.
-* **Zrozumiteľný výsledok v ľudskej reči:**
-  * ✅ *Krásny mäkký nábeh! Hlasivky nabehli plynulo.*
-  * 💡 *Skús ešte jemnejší štart (pred prvou hláskou si predstav jemný výdych).*
-  * 3 jasné ukazovatele: Nábeh hlasu (VRT), Začiatok reči (latencia) a Čistota štartu (bez barličky „Eee“).
+Evidence-based neuroakustický trenažér plynulej reči a osobný rečový asistent navrhnutý pre ľudí s **balbuties (zajakavosťou / koktaním)**. Žiadny vizuálny chaos, žiadne detské gýče ani prázdne teórie. Všetko funguje s objektívnou biometrikou v reálnom čase priamo v zariadení (Edge DSP).
 
 ---
 
-### 2. 📞 Simulácie reálneho života (Univerzálne pre každého)
-Otázky v simuláciách sú naformulované univerzálne a prirodzene, aby ich mohol použiť ktokoľvek:
-* **📦 Kuriér Packeta:** Zazvoní autentický telefón. Po prijatí sa ozve kuriér: *„Dobrý deň, tu je kuriér Packeta, nesiem vám zásielku. S kým hovorím, prosím?“* (Odpovedáš svoje vlastné meno).
-* **🛒 Pri pokladni v obchode:** Predavačka sa pýta: *„Platíte v hotovosti alebo kartou?“* (Odpoveď: *„Kartou, prosím“*).
-* **💼 Predstavenie sa na pohovore / úrade:** *„Dobrý deň, môžete sa mi prosím predstaviť vaším celým menom?“*
+## 📲 Stiahnutie mobilnej aplikácie (Android)
+
+Aplikáciu môžeš okamžite stiahnuť a nainštalovať do Android smartfónu:
+
+| Formát | Odkaz na stiahnutie | Popis |
+| :--- | :--- | :--- |
+| **Android APK** | [**📥 Stiahnuť fluency-biofeedback.apk**](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback.apk) | Priamy inštalačný balíček pre Android (~1.02 MB) |
+| **Google Play Bundle** | [**📦 Stiahnuť Fluency.Biofeedback.aab**](https://github.com/baranaikooo/fluency-biofeedback/releases/download/v1.0.0/Fluency.Biofeedback.aab) | Produkčný balíček pre Google Play Console |
+| **Web / PWA** | [**🌐 Otvoriť v prehliadači**](https://stutterbiofeedbackantigravity.vercel.app) | Funguje na iPhone (iOS), Android aj na PC |
+
+### Postup inštalácie APK na Androide:
+1. Klikni na odkaz vyššie a stiahni súbor `fluency-biofeedback.apk`.
+2. V upozorneniach alebo v správcovi súborov klikni na stiahnutý súbor.
+3. Ak ťa systém vyzve, povoľ *„Inštalovať neznáme aplikácie“* pre daný prehliadač / správcu.
+4. Klikni na **Inštalovať** a po dokončení otvor aplikáciu priamo z plochy.
+5. Vďaka overenému **Digital Asset Links (`assetlinks.json`)** beží aplikácia 100 % natívne cez celú obrazovku bez adresného riadka.
 
 ---
 
-### 3. 🎙️ Ako pridať najrealistickejší hlas (ElevenLabs MP3)
-Aplikácia podporuje vloženie priamych štúdiových nahrávok do zložky `audio/`:
-* `audio/courier.mp3` – nahrávka otázky kuriéra
-* `audio/cashier.mp3` – nahrávka predavačky
-* `audio/interview.mp3` – nahrávka pohovoru
+## 🌟 5 Pilierov a Hlavné funkcie
 
-Keď sú tieto 3 súbory v zložke `audio/`, aplikácia ich okamžite prehrá namiesto syntetizátora – výsledok je 100 % živý ľudský hlas zadarmo pre každého používateľa. Ak tam súbory nie sú, automaticky sa použije najlepší dostupný neurónový hlas z Microsoft Edge (`sk-SK-LukasNeural`).
+### 1. 🎧 Osobný Rečový Asistent (Choral Speech DAF do ucha)
+* **Živý odposluch do slúchadla v reálnom čase:** Navrhnutý na použitie s jedným slúchadlom počas prezentácií, porád, telefonátov či v teréne.
+* **Automatický zborový harmonický tón (+2 poltóny):** Integrovaný `WebAudioPitchShifter` automaticky jemne nadvihne tón oneskoreného hlasu, čím simuluje rozhovor s druhou osobou (Choral Effect). Obchádza časovú dysfunkciu bazálnych ganglií a zabraňuje habituácii (zvyknutiu si mozgu na odposluch).
+* **Intuitívne ovládanie:** Plynulá regulácia oneskorenia (40 – 140 ms, optimálne 70 ms) a hlasitosti v uchu.
+
+### 2. ⚡ Objektívny DSP Biofeedback (Vocal Rise Time)
+* **Žiadne subjektívne hodnotenie:** Aplikácia nenúti používateľa počúvať vlastné zadrhnutia zo záznamu.
+* **Akustická analýza v milisekundách:**
+  * 🔴 **Tvrdý glotálny ráz** (`VRT < 45 ms`): Kŕč v hrtane a hyperaddukcia hlasiviek.
+  * 🟢 **Mäkký nábeh (Gentle Voice Onset)** (`VRT 45–160 ms`): Plynulý začiatok fonácie s uvoľnenými hlasivkami.
+  * Dynamická vizualizácia obálky akustického tlaku a haptická odozva (jemná vibrácia 30 ms pri úspechu).
+
+### 3. 🫁 Valsalvov reflex & SOS Dril
+* **Mechanická dekompresia sánky:** Okamžité prerušenie nevedomého zovretia hrtanových zvieračov (Valsalva reflex) uvoľnením mandibuly o 2–3 mm a znížením ťahu suprahyoidných svalov pred fonáciou.
+
+### 4. 🔐 Trezor obávaných slov (Desenzibilizácia reality)
+* **Tréning osobných spúšťačov:** Každý si môže uložiť vlastné obávané slová (vlastné meno, obľúbená káva, povolanie, slová s náročnými spoluhláskami K, P, T, B).
+* **5 stupňov stresovej inokulácie:** Od tichého cvičenia v kľude až po simuláciu sociálneho tlaku s očným kontaktom v kamere a časovým deficitom 550 ms.
+
+### 5. 📊 Evidence-Based Telemetria & Vedecký základ
+* **Prieskumník klinických modelov:** Detailne rozpracované modely DIVA & GODIVA (Guenther et al.), Gentle Voice Onset (Webster), Choral Speech Effect (Kalinowski et al.) a Valsalvova hypotéza (Parry) s formálnymi citáciami.
+* **Denná séria (Streak) & XP Leveling:** Motivačný systém sledujúci reálny tréningový pokrok.
 
 ---
 
-### 4. 📊 Pokrok & Štatistiky
-* Denné počítadlo úspešných cvičení a mäkkých nábehov.
-* Denná séria (Streak 🔥).
-* Prehľadná mapa slovenských hlások (A až Ž) s percentom úspešnosti.
-* Akustická kalibrácia ticha v izbe a prepínanie tmavého / svetlého motívu.
+## 🔒 Súkromie & Nulová latencia (Edge Audio)
+
+Všetok signálový výpočet (DSP analýza mikrofónu, oneskorenie DAF a modulácia tónu) beží **100 % lokálne na tvojom zariadení** cez štandard Web Audio API. Žiadny hlasový záznam sa nikdy neposiela na externé cloudové servery.
 
 ---
 
-## 🚀 Spustenie
-Dvakrát klikni na súbor `index.html` a otvor ho v prehliadači Google Chrome, Microsoft Edge alebo Brave. Funguje na počítači aj na mobile bez akejkoľvek inštalácie.
+## 🛠️ Vývoj & Spustenie lokálne
+
+Ak si chceš projekt spustiť alebo upraviť lokálne:
+```bash
+git clone https://github.com/baranaikooo/fluency-biofeedback.git
+cd fluency-biofeedback
+```
+Stačí otvoriť `index.html` v ľubovoľnom modernom prehliadači (Chrome, Edge, Brave, Safari) alebo spustiť lokálny HTTP server:
+```bash
+npx serve .
+```
+
+---
+
+## 📄 Licencia
+Tento projekt je poskytovaný ako open-source pod licenciou [MIT](LICENSE).
