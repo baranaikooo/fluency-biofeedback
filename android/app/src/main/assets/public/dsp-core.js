@@ -131,8 +131,8 @@ function computeSignalFeatures(buffer, sampleRate) {
   const zcr = zeroCrossings / len;
 
   // 3. Normalizovaná autokorelácia (NSDF) v pásme F0 (70 Hz – 340 Hz)
-  const minLag = Math.floor(sampleRate / 340);
-  const maxLag = Math.floor(sampleRate / 70);
+  const minLag = Math.floor(sampleRate / 520);
+  const maxLag = Math.floor(sampleRate / 65);
   // N = 1024 vzoriek (pri 48 kHz je to 21.3 ms -> spoľahlivo pokryje hlboký mužský hlas)
   const N = Math.min(len - maxLag, 1024);
   if (N <= 0) return { dPrime: 1.0, zcr };
@@ -731,7 +731,7 @@ function runStandardPacer(meta) {
     statusAlert.textContent = 'Fáza 2: Mäkký nádych do bránice, uvoľni sánku.';
 
     setTimeout(() => {
-      triggerGoSignal(meta, 1200);
+      triggerGoSignal(meta, 1600);
     }, 2200);
   }, 1800);
 }
@@ -955,9 +955,9 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   smoothEnvelopes(frames);
 
   // Akustické prahy: chránené absolútnym prahom (-56 dBFS), aby jemné mľasknutie sánky pred rečou nespustilo meranie
-  const sThresh = Math.max(-56, noiseDb + 7);
-  const nThresh = Math.max(-50, noiseDb + 13);
-  const fullVoiceMin = Math.max(-46, noiseDb + 17);
+  const sThresh = Math.max(-56, noiseDb + 6);
+  const nThresh = Math.max(-50, noiseDb + 10);
+  const fullVoiceMin = Math.max(-52, noiseDb + 9);
 
   const isClipped = frames.some(f => f.clipped);
   const firstSound = frames.findIndex(f => f.rawDb > sThresh);
@@ -968,8 +968,8 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     for (let i = firstSound; i < frames.length - 1; i++) {
       const f0 = frames[i], f1 = frames[i + 1];
       if (
-        f0.smoothFDb > nThresh && f0.dPrime < 0.35 && f0.zcr < 0.25 &&
-        f1.smoothFDb > nThresh && f1.dPrime < 0.38 && f1.zcr < 0.27
+        f0.smoothFDb > nThresh && f0.dPrime < 0.44 && f0.zcr < 0.35 &&
+        f1.smoothFDb > nThresh && f1.dPrime < 0.46 && f1.zcr < 0.35
       ) {
         nucleus = i;
         break;
@@ -978,7 +978,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   }
 
   const maxFDb = Math.max(...frames.map(f => f.smoothFDb));
-  const periodicHoldMs = frames.filter(f => f.smoothFDb > nThresh && f.dPrime < 0.32).length * 10;
+  const periodicHoldMs = frames.filter(f => f.smoothFDb > nThresh && f.dPrime < 0.44).length * 10;
 
   matrixPanel.classList.add('active');
   const banner = document.getElementById('verdictBanner');
@@ -993,7 +993,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     return;
   }
 
-  if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < 80) {
+  if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < 40) {
     banner.className = 'badge-banner fail';
     banner.textContent = '❌ NEÚSPEŠNÝ POKUS: Príliš tichý hlas / šepot alebo úplný tichý blok.';
     setRow('m1', firstSound === -1 ? `Ticho (>${(totalDurationMs / 1000).toFixed(1)}s)` : `${frames[firstSound].t.toFixed(0)} ms`, false);
@@ -1034,26 +1034,34 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   setRow('m2', p2Text, p2);
 
   // Pravidlo 3: Trvanie spoluhlásky a medzihlásková tichá diera
-  // Vedecká oprava: Adaptívny limit pre zhluky (napr. Štvrtok, Kto, Vstup, Pravda)
-  const consMs = frames[nucleus].t - frames[firstSound].t;
-  const maxConsMs = 380 + (meta.clusterLen * 90);
-  const maxAllowedGap = 160 + (meta.clusterLen * 30);
-  let maxGap = 0, curGap = 0;
-  for (let i = firstSound; i < nucleus; i++) {
-    if (frames[i].rawDb < sThresh - 2.0) {
-      curGap += 10;
-      if (curGap > maxGap) maxGap = curGap;
-    } else {
-      curGap = 0;
+  // Na samohláskach (napr. Otec, Áno, Auto, Oko) NIE JE žiadna začiatočná spoluhláska!
+  let p3 = true, p3Text = 'Samohláskový nábeh (čistý štart)';
+  if (meta.type !== 'vowel') {
+    const consMs = frames[nucleus].t - frames[firstSound].t;
+    const maxConsMs = 450 + (meta.clusterLen * 100);
+    const maxAllowedGap = 180 + (meta.clusterLen * 40);
+    let maxGap = 0, curGap = 0;
+    for (let i = firstSound; i < nucleus; i++) {
+      if (frames[i].rawDb < sThresh - 2.0) {
+        curGap += 10;
+        if (curGap > maxGap) maxGap = curGap;
+      } else {
+        curGap = 0;
+      }
     }
+    p3 = (consMs <= maxConsMs) && (maxGap <= maxAllowedGap);
+    p3Text = `${consMs.toFixed(0)} ms | Diera: ${maxGap} ms (max ${maxAllowedGap} ms)`;
   }
-  const p3 = (consMs <= maxConsMs) && (maxGap <= maxAllowedGap);
-  setRow('m3', `${consMs.toFixed(0)} ms | Diera: ${maxGap} ms (max ${maxAllowedGap} ms)`, p3);
+  setRow('m3', p3Text, p3);
 
   // Pravidlo 4: Skutočný akustický Vocal Rise Time (VRT) počítaný na LINEÁRNEJ RMS škále (20% -> 80%)
-  const sEnd = Math.min(frames.length - 1, nucleus + 28);
+  const sEnd = Math.min(frames.length - 1, nucleus + 24);
   let peakRms = 0, pIdx = nucleus;
   for (let i = nucleus; i <= sEnd; i++) {
+    // Ak dB obálka klesne o viac ako 7 dB pod doterajší lokálny vrchol, ide o koniec prvej slabiky / spoluhlásku
+    if (peakRms > 0 && frames[i].smoothFDb < frames[pIdx].smoothFDb - 7.0) {
+      break;
+    }
     if (frames[i].smoothFRms > peakRms) {
       peakRms = frames[i].smoothFRms;
       pIdx = i;
@@ -1071,25 +1079,27 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
 
   let p4 = true, p4Text = `${vrt.toFixed(1)} ms`;
   if (meta.type === 'vowel') {
-    // Na počiatočných samohláskach:
-    // Glotálny kŕč/úder je len extrémny ráz (< 22 ms). Bežný štart (25–90 ms) a mäkký nábeh (60–180 ms) sú v poriadku.
-    if (vrt < 22) {
+    // Na počiatočných samohláskach (Otec, Áno, Auto...):
+    // Tvrdý glotálny kŕč (coup de glotte) je extrémny akustický ráz pod 7 ms alebo prebudenie.
+    // Bežný prirodzený rečový nábeh je 8–45 ms (plynulý štart).
+    // Terapeutický mäkký nábeh (Easy Onset / Gentle Voicing) je 45–180 ms (🌟 PERFECT).
+    if (vrt < 7) {
       p4 = false;
-      p4Text += ' (Tvrdý glotálny kŕč! Cieľ ≥ 25 ms)';
-    } else if (vrt > 280) {
+      p4Text += ' (Tvrdý glotálny kŕč! Cieľ ≥ 10 ms)';
+    } else if (vrt > 340) {
       p4 = false;
-      p4Text += ' (Príliš dychový / šepkaný únik > 280 ms)';
+      p4Text += ' (Príliš oneskorený dychový únik > 340 ms)';
     } else {
-      p4Text += (vrt >= 50 && vrt <= 160) ? ' (🌟 PERFECT mäkký nábeh)' : ' (Plynulý nábeh)';
+      p4Text += (vrt >= 45 && vrt <= 180) ? ' (🌟 PERFECT mäkký nábeh)' : ' (Plynulý nábeh)';
     }
   } else {
-    // Po spoluhláskach je rýchly nábeh hlasiviek (10–35 ms) fyziologicky NORMÁLNY.
-    if (vrt < 6) {
+    // Po spoluhláskach je rýchly nábeh hlasiviek (10–40 ms) fyziologicky normálny.
+    if (vrt < 5) {
       p4 = false;
       p4Text += ' (Kŕčovitý ráz po spoluhláske!)';
-    } else if (vrt > 320) {
+    } else if (vrt > 340) {
       p4 = false;
-      p4Text += ' (Zamknutý prechod do samohlásky > 320 ms)';
+      p4Text += ' (Zamknutý prechod do samohlásky > 340 ms)';
     } else {
       p4Text += ' (Plynulý artikulačný kontakt)';
     }
@@ -1097,25 +1107,28 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   setRow('m4', p4Text, p4);
 
   // Pravidlo 5: Kontinuita prvej slabiky a ochrana pred klonickou repetíciou
-  // Skúmame bezprostredné jadro slabiky (140 ms) bez ovplyvnenia prechodu na druhú slabiku!
+  // Ak bola fonácia počiatočnej hlásky udržaná aspoň 40 ms, akýkoľvek následný pokles
+  // je prirodzený prechod do ďalšej spoluhlásky (napr. 't' v 'O-tec', 'k' v 'O-ko', 'n' v 'Á-no')!
   const nCoreEnd = Math.min(frames.length - 1, nucleus + 14);
-  let dropMs = 0, maxDropMs = 0;
+  let earlyDropMs = 0, sustainedVoicingMs = 0;
   for (let i = nucleus; i <= nCoreEnd; i++) {
-    if (frames[i].smoothFDb < sThresh - 2.0) {
-      dropMs += 10;
-      if (dropMs > maxDropMs) maxDropMs = dropMs;
+    if (frames[i].smoothFDb >= sThresh - 2.0 && frames[i].dPrime < 0.45) {
+      sustainedVoicingMs += 10;
     } else {
-      dropMs = 0;
+      // Ak fonácia padla v prvých 30 ms po nucleus (abortovaný / zaseknutý začiatok):
+      if (sustainedVoicingMs < 40) {
+        earlyDropMs += 10;
+      }
     }
   }
 
-  // Detekcia klonickej repetície:
-  // Klonická repetícia je patologické ZOPAKOVANIE počiatočnej hlásky ("K-k-kto", "P-p-pes") v krátkom okne.
-  // V bežných viackladných slovách (napr. "Káva", "Mama", "Pravda") je prechod na ďalšiu slabiku ÚPLNE NORMÁLNY.
+  // Detekcia klonickej repetície: patologické zopakovanie počiatočnej hlásky v krátkom okne
+  // V bežných viackladných slovách (napr. 'O-tec', 'Á-no', 'Au-to', 'Ká-va') je prechod na ďalšiu slabiku úplne normálny.
+  // Repetícia nastáva IBA ak bol počiatočný pokus useknutý v zárodku (< 35 ms) a reštartovaný!
   let clonicDetected = false;
   const firstVowelDuration = (pIdx - nucleus) * 10;
-  // Detekujeme repetíciu IBA ak počiatočná slabika bola prerušená ešte pred jej dokončením (< 70 ms) a reštartovaná:
-  if (firstVowelDuration < 70) {
+  const minNormalVowelMs = meta.type === 'vowel' ? 35 : 45;
+  if (firstVowelDuration < minNormalVowelMs) {
     for (let i = pIdx + 2; i < Math.min(frames.length - 4, pIdx + 16); i++) {
       if (frames[i].smoothFDb < sThresh - 6 && frames[i].dPrime > 0.40) {
         const hasReAttack = frames.slice(i + 2, i + 10).some(f => f.smoothFDb > sThresh + 6 && f.dPrime < 0.28);
@@ -1127,19 +1140,19 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     }
   }
 
-  const p5 = (maxDropMs <= 50) && !clonicDetected;
+  const p5 = (earlyDropMs <= 30) && !clonicDetected;
   let p5Text = 'Plynulá (bez výpadku)';
   if (clonicDetected) {
     p5Text = 'Chyba: Klonická repetícia slabiky ("K-k-kto")';
-  } else if (maxDropMs > 0) {
-    p5Text = `Výpadok v jadre: ${maxDropMs} ms`;
+  } else if (!p5) {
+    p5Text = `Predčasne prerušená fonácia (${earlyDropMs} ms)`;
   }
   setRow('m5', p5Text, p5);
 
   drawEnvelopeGraph(frames, sThresh, t20, t80, totalDurationMs);
 
   const passed = p1 && p2 && p3 && p4 && p5;
-  const isPerfect = (meta.type === 'vowel' ? (vrt >= 60 && vrt <= 140) : (vrt >= 15 && vrt <= 90)) && latency <= 500;
+  const isPerfect = (meta.type === 'vowel' ? (vrt >= 45 && vrt <= 180) : (vrt >= 15 && vrt <= 100)) && latency <= 700;
   if (passed) {
     updateHud(isPerfect ? 50 : 30, true);
     banner.className = 'badge-banner success';

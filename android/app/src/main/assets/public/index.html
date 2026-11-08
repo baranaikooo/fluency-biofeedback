@@ -158,77 +158,122 @@
       </div>
     </div>
 
-    <!-- KROK 2: VEDECKÝ DOTAZNÍK BALBUTIZMU -->
+        <!-- KROK 2: VEDECKÝ DOTAZNÍK BALBUTIZMU S LIKERTOVOU ŠKÁLOU (1-5) -->
     <div id="welcomeDiagnosticBox" style="display:none;">
       <div class="diagnostic-card">
         <!-- Progress Bar -->
         <div class="diag-progress-header">
           <div class="diag-badge-pill">🔬 VEDECKÁ DIAGNOSTIKA BALBUTIZMU</div>
-          <span class="diag-step-counter" id="diagStepCounter">Krok 1 z 3</span>
+          <span class="diag-step-counter" id="diagStepCounter">Krok 1 z 3: Motorika</span>
         </div>
         <div class="diag-progress-track">
           <div class="diag-progress-bar" id="diagProgressBar" style="width: 33%;"></div>
         </div>
 
-        <!-- Krok 1: Kde vzniká blok / tenzia -->
+        <!-- Krok 1: Motorické kŕče a zárazy (Otázky 1–4, škála 1–5) -->
         <div class="diag-step-view active" id="diagStep1">
-          <h2 class="diag-step-title">Kde vnímaš najväčší kŕč alebo záraz pri reči?</h2>
-          <p class="diag-step-desc">Podľa neurofyziológie balbutizmu sa kŕčové bloky tvoria na odlišných anatomických úrovniach.</p>
+          <h2 class="diag-step-title">Kde a ako silno vnímaš rečové kŕče?</h2>
+          <p class="diag-step-desc">Ohodnoť na logopedickej škále (1 = Vôbec až 5 = Silne), akou intenzitou zažívaš jednotlivé prejavy.</p>
 
-          <div class="diag-options-grid">
-            <div class="diag-option-card" data-val="laryngeal">
-              <span class="doc-icon">🫁</span>
-              <div class="doc-body">
-                <div class="doc-title">Hlasivky & Hrdlo (Glotálny kŕč)</div>
-                <div class="doc-desc">Zaseknutie na samohláskach (A, O, U, E, I), pocit stiahnutého hrdla, Valsalva pretlak.</div>
+          <div class="diag-scale-container">
+            <!-- Otázka 1: Hlasivky (Samohlásky) -->
+            <div class="diag-scale-card" id="cardLaryngeal" data-domain="laryngeal">
+              <div class="diag-scale-header">
+                <span class="diag-scale-icon">🫁</span>
+                <span class="diag-scale-title">1. Hlasivky & Hrdlo (Glotálny kŕč)</span>
               </div>
-              <span class="doc-badge">Odporúča Svet 1</span>
+              <div class="diag-scale-desc">Zaseknutie v hrdle a tvrdý úder na začiatku samohlások (Auto, Otec, Áno, Oko), pocit stiahnutých hlasiviek.</div>
+              <div class="diag-scale-rating-row">
+                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
+                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
+                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
+              </div>
             </div>
 
-            <div class="diag-option-card" data-val="plosives">
-              <span class="doc-icon">👄</span>
-              <div class="doc-body">
-                <div class="doc-title">Pery & Jazyk (Plozívne zárazy)</div>
-                <div class="doc-desc">Silné tlačenie na plozívach (P, B, T, D, K, G), kým slovo s námahou nevystrelí.</div>
+            <!-- Otázka 2: Plozívy (Pery & Jazyk) -->
+            <div class="diag-scale-card" id="cardPlosives" data-domain="plosives">
+              <div class="diag-scale-header">
+                <span class="diag-scale-icon">👄</span>
+                <span class="diag-scale-title">2. Pery & Jazyk (Plozívny artikulačný pretlak)</span>
               </div>
-              <span class="doc-badge">Odporúča Svet 3</span>
+              <div class="diag-scale-desc">Silné tlačenie pier alebo jazyka pri tvrdých spoluhláskach (P, B, T, D, K, G), kým slovo s námahou nevystrelí.</div>
+              <div class="diag-scale-rating-row">
+                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
+                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
+                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
+              </div>
             </div>
 
-            <div class="diag-option-card" data-val="clonic">
-              <span class="doc-icon">⚡</span>
-              <div class="doc-body">
-                <div class="doc-title">Rýchle tempo & Opakovania</div>
-                <div class="doc-desc">Klonické opakovanie slabík, strata dychovej opory, reč uteká dopredu bez kontroly.</div>
+            <!-- Otázka 3: Prolungácie (Znelé spoluhlásky) -->
+            <div class="diag-scale-card" id="cardProlongation" data-domain="prolongation">
+              <div class="diag-scale-header">
+                <span class="diag-scale-icon">⏳</span>
+                <span class="diag-scale-title">3. Predlžovanie hlások (Prolungácie & Ťahanie)</span>
               </div>
-              <span class="doc-badge">Odporúča Svet 4</span>
+              <div class="diag-scale-desc">Dlhé ťahanie zvukov (Mmm, Sss, Zzz, Vvv) s ťažkosťou uvoľniť tón a prejsť do nasledujúcej hlásky.</div>
+              <div class="diag-scale-rating-row">
+                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
+                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
+                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
+              </div>
             </div>
 
-            <div class="diag-option-card" data-val="prolongation">
-              <span class="doc-icon">⏳</span>
-              <div class="doc-body">
-                <div class="doc-title">Predlžovanie hlások (Prolungácie)</div>
-                <div class="doc-desc">Dlhé ťahanie zvukov (Ssss, Mmmm, Zzzz) s ťažkosťou prejsť do nasledujúcej samohlásky.</div>
+            <!-- Otázka 4: Klonické opakovania & Rýchle tempo -->
+            <div class="diag-scale-card" id="cardClonic" data-domain="clonic">
+              <div class="diag-scale-header">
+                <span class="diag-scale-icon">⚡</span>
+                <span class="diag-scale-title">4. Klonické opakovania & Rýchle tempo</span>
               </div>
-              <span class="doc-badge">Odporúča Svet 2</span>
+              <div class="diag-scale-desc">Nekontrolované zrýchlenie reči, strata dychu a rýchle opakovanie slabík (K-k-kto) pri hovorení viet.</div>
+              <div class="diag-scale-rating-row">
+                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
+                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
+                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
+                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
+              </div>
             </div>
           </div>
 
           <button class="btn-3d green full sm" id="diagNext1" type="button" disabled style="margin-top: 16px;">
-            <span>Pokračovať na situácie ➔</span>
+            <span>Pokračovať na sociálny stres ➔</span>
           </button>
         </div>
 
-        <!-- Krok 2: Najstresujúcejšia sociálna situácia -->
+        <!-- Krok 2: Sociálny stres a cieľ -->
         <div class="diag-step-view" id="diagStep2" style="display:none;">
-          <h2 class="diag-step-title">Ktorá situácia ti spôsobuje najväčší rečový stres?</h2>
-          <p class="diag-step-desc">Zaradíme ti ju ako prioritu do SOS Drilu a Trezoru slov pre desenzitizáciu strachu.</p>
+          <h2 class="diag-step-title">Sociálny stres & Prioritný cieľ</h2>
+          <p class="diag-step-desc">Zaradíme ti najstresujúcejšiu situáciu do SOS Drilu a prispôsobíme akustický DAF asistent.</p>
 
-          <div class="diag-options-grid">
-            <div class="diag-option-card" data-val="phone">
+          <!-- Otázka 5: Sociálna úzkosť na škále 1-5 -->
+          <div class="diag-scale-card" id="cardSocial" data-domain="social" style="margin-bottom: 14px;">
+            <div class="diag-scale-header">
+              <span class="diag-scale-icon">👥</span>
+              <span class="diag-scale-title">5. Sociálna úzkosť a obavy z hodnotenia</span>
+            </div>
+            <div class="diag-scale-desc">Intenzita stresu, paniky a vyhýbania sa slovám pri telefonovaní, predstavovaní sa menom či v práci.</div>
+            <div class="diag-scale-rating-row">
+              <button type="button" class="diag-scale-point" data-domain="social" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
+              <button type="button" class="diag-scale-point" data-domain="social" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
+              <button type="button" class="diag-scale-point" data-domain="social" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
+              <button type="button" class="diag-scale-point" data-domain="social" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
+              <button type="button" class="diag-scale-point" data-domain="social" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
+            </div>
+          </div>
+
+          <h3 style="font-size:0.90rem; font-weight:800; color:#f1f5f9; margin: 12px 0 8px 0;">Ktorá konkrétna situácia ťa trápi najviac?</h3>
+          <div class="diag-options-grid" id="diagSituationGrid">
+            <div class="diag-option-card selected" data-val="phone">
               <span class="doc-icon">📱</span>
               <div class="doc-body">
                 <div class="doc-title">Telefonovanie & Nečakané hovory</div>
-                <div class="doc-desc">Kuriér, objednanie sa k lekárovi, úrady – absencia vizuálneho kontaktu stupňuje tlak.</div>
+                <div class="doc-desc">Kuriér, lekár, úradník – absencia vizuálneho kontaktu stupňuje tlak.</div>
               </div>
             </div>
 
@@ -236,86 +281,53 @@
               <span class="doc-icon">🙋‍♂️</span>
               <div class="doc-body">
                 <div class="doc-title">Vyslovenie svojho mena</div>
-                <div class="doc-desc">Predstavenie sa – najčastejší psychologický blok, kde nie je možné slovo nahradiť synonymom.</div>
+                <div class="doc-desc">Predstavenie sa – najčastejší blok, kde sa slovo nedá nahradiť synonymom.</div>
               </div>
             </div>
 
             <div class="diag-option-card" data-val="ordering">
               <span class="doc-icon">☕</span>
               <div class="doc-body">
-                <div class="doc-title">Objednávanie v kaviarni a obchode</div>
-                <div class="doc-desc">Časový stres z čakajúceho radu ľudí za tebou pri pokladni alebo v reštaurácii.</div>
+                <div class="doc-title">Objednávanie v kaviarni a pri pokladni</div>
+                <div class="doc-desc">Časový tlak čakajúceho radu ľudí za tebou.</div>
               </div>
             </div>
 
             <div class="diag-option-card" data-val="authorities">
-              <span class="doc-icon">👥</span>
+              <span class="doc-icon">👔</span>
               <div class="doc-body">
-                <div class="doc-title">Pracovné porady & Pohovory</div>
-                <div class="doc-desc">Sociálna úzkosť z hodnotenia pred kolegami, šéfom alebo v škole pred triedou.</div>
+                <div class="doc-title">Pracovné porady & Prezentácie</div>
+                <div class="doc-desc">Strach z hodnotenia autoritou alebo kolegami.</div>
               </div>
             </div>
           </div>
 
           <div class="diag-nav-row" style="margin-top: 16px;">
             <button class="btn-3d slate sm" id="diagBack2" type="button"><span>⬅ Späť</span></button>
-            <button class="btn-3d green sm" id="diagNext2" type="button" disabled style="flex: 1;"><span>Pokračovať na cieľ ➔</span></button>
+            <button class="btn-3d green sm" id="diagFinishBtn" type="button" disabled style="flex: 1;"><span>Vyhodnotiť a odporučiť štart 🚀</span></button>
           </div>
         </div>
 
-        <!-- Krok 3: Primárny cieľ -->
-        <div class="diag-step-view" id="diagStep3" style="display:none;">
-          <h2 class="diag-step-title">Aký je tvoj hlavný cieľ tréningu?</h2>
-          <p class="diag-step-desc">Podľa toho prispôsobíme akustický DAF asistent a štartovaciu cestu.</p>
-
-          <div class="diag-options-grid">
-            <div class="diag-option-card" data-val="easy_onset">
-              <span class="doc-icon">🎯</span>
-              <div class="doc-body">
-                <div class="doc-title">Naučiť sa jemný mäkký nábeh (Easy Onset)</div>
-                <div class="doc-desc">Uvoľniť zovreté hrdlo a naučiť mozog plynulý nábeh hlasiviek bez kŕča.</div>
-              </div>
-            </div>
-
-            <div class="diag-option-card" data-val="daf_choral">
-              <span class="doc-icon">🎧</span>
-              <div class="doc-body">
-                <div class="doc-title">Okamžitá kontrola cez DAF/FAF slúchadlá</div>
-                <div class="doc-desc">Využiť efekt zborového rečového vnemu (Choral Effect) na okamžité upokojenie tempa.</div>
-              </div>
-            </div>
-
-            <div class="diag-option-card" data-val="desensitization">
-              <span class="doc-icon">🛡️</span>
-              <div class="doc-body">
-                <div class="doc-title">Odbúrať strach z telefonátov a verejnosti</div>
-                <div class="doc-desc">Systematický tréning simulácií a dekompresia pred reálnymi sociálnymi výzvami.</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="diag-nav-row" style="margin-top: 16px;">
-            <button class="btn-3d slate sm" id="diagBack3" type="button"><span>⬅ Späť</span></button>
-            <button class="btn-3d green sm" id="diagFinishBtn" type="button" disabled style="flex: 1;"><span>Vyhodnotiť a zostaviť cestu 🚀</span></button>
-          </div>
-        </div>
-
-        <!-- Krok 4: Výsledok analýzy (Personalizovaný Neuro-profil) -->
+        <!-- Krok 3: Výsledok analýzy (Personalizovaný Neuro-profil) -->
         <div class="diag-step-view" id="diagStepResult" style="display:none;">
           <div class="diag-result-hero">
             <div class="diag-result-check">✨</div>
             <h2 class="diag-result-title">Tvoj Neuro-profil reči je pripravený!</h2>
-            <p class="diag-result-sub" id="diagResultSub">Cesta bola úspešne prispôsobená tvojim rečovým potrebám.</p>
+            <p class="diag-result-sub" id="diagResultSub">Na základe tvojho skóre sme prispôsobili celú vzdelávaciu cestu.</p>
           </div>
 
           <div class="diag-summary-cards">
             <div class="dsc-item">
-              <span class="dsc-label">PRIMÁRNY TYP TENZIE</span>
-              <div class="dsc-val" id="diagSummaryTension">Glotálno-laryngeálny kŕč</div>
+              <span class="dsc-label">DOMINANTNÝ PREJAV BALBUTIZMU</span>
+              <div class="dsc-val" id="diagSummaryTension">Plozívny artikulačný pretlak</div>
             </div>
             <div class="dsc-item">
               <span class="dsc-label">ODPORÚČANÝ ŠTARTOVACÍ SVET</span>
-              <div class="dsc-val highlight" id="diagSummaryWorld">Svet 1: Samohlásky & Easy Onset</div>
+              <div class="dsc-val highlight" id="diagSummaryWorld">Svet 3: Plozívy a zhluky</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">CELKOVÉ SKÓRE ZÁVAŽNOSTI</span>
+              <div class="dsc-val" id="diagSummarySeverity">17 / 25 bodov</div>
             </div>
             <div class="dsc-item">
               <span class="dsc-label">PRIORITNÁ SOCIÁLNA SITUÁCIA</span>
@@ -323,13 +335,16 @@
             </div>
             <div class="dsc-item">
               <span class="dsc-label">DAF ASISTENT NASTAVENIE</span>
-              <div class="dsc-val" id="diagSummaryDaf">Delay 85 ms • Formant Harmonics ON</div>
+              <div class="dsc-val" id="diagSummaryDaf">Delay 90 ms • Pitch Shift +1.5 st</div>
             </div>
           </div>
 
-          <button class="btn-3d green full" id="diagEnterAppBtn" type="button" style="margin-top: 18px;">
-            <span>🚀 Vstúpiť do môjho tréningu na mieru</span>
-          </button>
+          <div class="diag-nav-row" style="margin-top: 18px;">
+            <button class="btn-3d slate sm" id="diagBack3" type="button"><span>⬅ Upraviť</span></button>
+            <button class="btn-3d green full" id="diagEnterAppBtn" type="button" style="flex: 1;">
+              <span>🚀 Začať odporúčaným Svetom 3</span>
+            </button>
+          </div>
         </div>
 
       </div>

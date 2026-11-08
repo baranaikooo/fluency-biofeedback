@@ -20,10 +20,58 @@
 
   // Stav odpovedí dotazníka
   const diagnosticAnswers = {
-    tension: null,
-    situation: null,
-    goal: null
+    laryngeal: 0,
+    plosives: 0,
+    prolongation: 0,
+    clonic: 0,
+    social: 0,
+    situation: 'phone',
+    goal: 'easy_onset',
+    recWorldId: 1,
+    tension: 'plosives'
   };
+
+  function evaluateDiagnosticScores(answers) {
+    const scores = {
+      laryngeal: parseInt(answers.laryngeal, 10) || 1,
+      plosives: parseInt(answers.plosives, 10) || 1,
+      prolongation: parseInt(answers.prolongation, 10) || 1,
+      clonic: parseInt(answers.clonic, 10) || 1,
+      social: parseInt(answers.social, 10) || 1
+    };
+
+    const motor = [
+      { key: 'plosives', worldId: 3, name: 'Plozívny artikulačný pretlak (Pery & Jazyk)', val: scores.plosives },
+      { key: 'clonic', worldId: 4, name: 'Klonické opakovania & Rýchle tempo', val: scores.clonic },
+      { key: 'laryngeal', worldId: 1, name: 'Glotálno-laryngeálny kŕč (Hlasivky)', val: scores.laryngeal },
+      { key: 'prolongation', worldId: 2, name: 'Prolungácie & Ťahanie hlások', val: scores.prolongation }
+    ];
+
+    motor.sort((a, b) => b.val - a.val);
+
+    let recWorldId = motor[0].worldId;
+    let dominantName = motor[0].name;
+    let dominantKey = motor[0].key;
+    let dominantVal = motor[0].val;
+
+    if (scores.social >= 4 && motor[0].val <= 2) {
+      recWorldId = 5;
+      dominantName = 'Sociálna a anticipačná rečová úzkosť';
+      dominantKey = 'social';
+      dominantVal = scores.social;
+    }
+
+    const totalSeverity = scores.laryngeal + scores.prolongation + scores.plosives + scores.clonic + scores.social;
+
+    return {
+      scores,
+      recWorldId,
+      dominantName,
+      dominantKey,
+      dominantVal,
+      totalSeverity
+    };
+  }
 
   function initSupabase() {
     if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
@@ -393,16 +441,13 @@
 
     if (step === 1) {
       if (bar) bar.style.width = '33%';
-      if (counter) counter.textContent = 'Krok 1 z 3: Anatómia zárazu';
+      if (counter) counter.textContent = 'Krok 1 z 3: Motorika & Kŕče';
     } else if (step === 2) {
       if (bar) bar.style.width = '66%';
-      if (counter) counter.textContent = 'Krok 2 z 3: Sociálny spúšťač';
+      if (counter) counter.textContent = 'Krok 2 z 3: Sociálny stres & Situácie';
     } else if (step === 3) {
       if (bar) bar.style.width = '100%';
-      if (counter) counter.textContent = 'Krok 3 z 3: Primárny cieľ';
-    } else if (step === 4) {
-      if (bar) bar.style.width = '100%';
-      if (counter) counter.textContent = 'Diagnostická analýza';
+      if (counter) counter.textContent = 'Osobný Neuro-profil reči';
     }
   }
 
@@ -410,19 +455,16 @@
   function applyDiagnosticPersonalization(diag, doSync = true) {
     if (!diag) return;
 
-    // 1. Zobrazenie výsledkov v modale
-    const tensionMap = {
-      laryngeal: 'Glotálno-laryngeálny kŕč (Hlasivky)',
-      plosives: 'Plozívny artikulačný pretlak (Pery & Jazyk)',
-      clonic: 'Klonické zrýchlené opakovanie',
-      prolongation: 'Prolungácia & ťahanie tónu'
-    };
+    const evalRes = evaluateDiagnosticScores(diag);
+    diag.recWorldId = evalRes.recWorldId;
+    diag.tension = evalRes.dominantKey;
 
-    const worldMap = {
-      laryngeal: 'Svet 1: Samohlásky & Easy Onset',
-      plosives: 'Svet 3: Plozívy & Ľahký dotyk',
-      clonic: 'Svet 4: Rytmizácia, Tempo & Vety',
-      prolongation: 'Svet 2: Znelé spoluhlásky & Rezonancia'
+    const worldNames = {
+      1: 'Svet 1: Samohlásky & Easy Onset',
+      2: 'Svet 2: Znelé spoluhlásky & Rezonancia',
+      3: 'Svet 3: Plozívy a zhluky',
+      4: 'Svet 4: Rytmizácia, Tempo & Vety',
+      5: 'Svet 5: Sociálna expozícia & Dialógy'
     };
 
     const situationMap = {
@@ -433,26 +475,34 @@
     };
 
     const dafMap = {
-      laryngeal: 'Delay 85 ms • Formant Harmonics ON',
-      plosives: 'Delay 90 ms • Pitch Shift +1.5 st',
-      clonic: 'Delay 115 ms • Spomalenie tempa ON',
-      prolongation: 'Delay 75 ms • Rezonančná slučka'
+      1: 'Delay 85 ms • Formant Harmonics ON',
+      2: 'Delay 75 ms • Rezonančná slučka',
+      3: 'Delay 90 ms • Pitch Shift +1.5 st',
+      4: 'Delay 115 ms • Spomalenie tempa ON',
+      5: 'Delay 95 ms • Choral Effect'
     };
 
-    const tensionText = tensionMap[diag.tension] || 'Laryngeálno-glotálna tenzia';
-    const worldText = worldMap[diag.tension] || 'Svet 1: Samohlásky & Easy Onset';
+    const tensionText = `${evalRes.dominantName} (Závažnosť: ${evalRes.dominantVal}/5)`;
+    const worldText = worldNames[evalRes.recWorldId] || 'Svet 3: Plozívy a zhluky';
     const situationText = situationMap[diag.situation] || 'Telefonovanie & Hovory';
-    const dafText = dafMap[diag.tension] || 'Delay 90 ms • Choral Effect';
+    const dafText = dafMap[evalRes.recWorldId] || 'Delay 90 ms • Choral Effect';
 
     const elTension = document.getElementById('diagSummaryTension');
     const elWorld = document.getElementById('diagSummaryWorld');
     const elSituation = document.getElementById('diagSummarySituation');
     const elDaf = document.getElementById('diagSummaryDaf');
+    const elSeverity = document.getElementById('diagSummarySeverity');
+    const elEnterBtn = document.getElementById('diagEnterAppBtn');
 
     if (elTension) elTension.textContent = tensionText;
     if (elWorld) elWorld.textContent = worldText;
     if (elSituation) elSituation.textContent = situationText;
     if (elDaf) elDaf.textContent = dafText;
+    if (elSeverity) elSeverity.textContent = `${evalRes.totalSeverity} / 25 bodov`;
+
+    if (elEnterBtn) {
+      elEnterBtn.innerHTML = `<span>🚀 Začať odporúčaným Svetom ${evalRes.recWorldId}</span>`;
+    }
 
     // Aktualizácia karty v Telemetrii
     const tTension = document.getElementById('telemetryDiagTension');
@@ -465,7 +515,7 @@
     if (tSituation) tSituation.textContent = situationText;
     if (tGoal) tGoal.textContent = diag.goal === 'easy_onset' ? 'Jemný mäkký nábeh hlasiviek' : (diag.goal === 'daf_choral' ? 'DAF/FAF zborový efekt' : 'Desenzitizácia a odbúranie strachu');
 
-    // 2. Personalizácia Trezoru slov a viet podľa situácie
+    // Personalizácia Trezoru slov a viet podľa situácie
     if (window.duoState) {
       const words = window.duoState.loadVaultWords();
       const userName = (currentProfile && currentProfile.full_name) || window.duoState.state.userName || 'Používateľ';
@@ -482,7 +532,6 @@
         customItems.push({ id: 'diag_auth', word: 'Rád by som sa vyjadril k tomuto bodu', category: 'Práca', successes: 0, attempts: 0, isMastered: false, date: new Date().toISOString().slice(0, 10) });
       }
 
-      // Vložiť unikátne
       customItems.forEach(item => {
         if (!words.some(w => w.word === item.word)) {
           words.unshift(item);
@@ -491,17 +540,23 @@
       window.duoState.saveVaultWords(words);
     }
 
-    // 3. Kalibrácia DAF Asistenta
-    if (diag.tension === 'clonic') {
+    // Kalibrácia DAF Asistenta
+    if (evalRes.recWorldId === 4) {
       const delaySlider = document.getElementById('dafDelaySlider');
       if (delaySlider) {
         delaySlider.value = 115;
         delaySlider.dispatchEvent(new Event('input'));
       }
-    } else if (diag.tension === 'laryngeal') {
+    } else if (evalRes.recWorldId === 1) {
       const delaySlider = document.getElementById('dafDelaySlider');
       if (delaySlider) {
         delaySlider.value = 85;
+        delaySlider.dispatchEvent(new Event('input'));
+      }
+    } else if (evalRes.recWorldId === 3) {
+      const delaySlider = document.getElementById('dafDelaySlider');
+      if (delaySlider) {
+        delaySlider.value = 90;
         delaySlider.dispatchEvent(new Event('input'));
       }
     }
@@ -674,19 +729,35 @@
   }
 
   function setupDiagnosticSteps() {
-    // Krok 1 karty
-    const step1Cards = document.querySelectorAll('#diagStep1 .diag-option-card');
+    // 1. Obsluha 1-5 škály pre Krok 1 (Motorické prejavy)
+    const step1Points = document.querySelectorAll('#diagStep1 .diag-scale-point');
     const diagNext1 = document.getElementById('diagNext1');
 
-    step1Cards.forEach(card => {
-      card.addEventListener('click', () => {
-        step1Cards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        diagnosticAnswers.tension = card.getAttribute('data-val');
-        if (diagNext1) diagNext1.disabled = false;
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(520, 'sine', 0.04, 0.08);
+    function checkStep1Complete() {
+      const isDone = diagnosticAnswers.laryngeal > 0 &&
+                     diagnosticAnswers.plosives > 0 &&
+                     diagnosticAnswers.prolongation > 0 &&
+                     diagnosticAnswers.clonic > 0;
+      if (diagNext1) diagNext1.disabled = !isDone;
+    }
+
+    step1Points.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const domain = btn.getAttribute('data-domain');
+        const val = parseInt(btn.getAttribute('data-val'), 10);
+        diagnosticAnswers[domain] = val;
+
+        const parentCard = btn.closest('.diag-scale-card');
+        if (parentCard) {
+          parentCard.classList.add('has-val');
+          parentCard.querySelectorAll('.diag-scale-point').forEach(p => p.classList.remove('selected'));
         }
+        btn.classList.add('selected');
+
+        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+          duoSfx.playTone(400 + val * 55, 'sine', 0.04, 0.08);
+        }
+        checkStep1Complete();
       });
     });
 
@@ -694,65 +765,85 @@
       diagNext1.addEventListener('click', () => goToDiagStep(2));
     }
 
-    // Krok 2 karty
-    const step2Cards = document.querySelectorAll('#diagStep2 .diag-option-card');
-    const diagNext2 = document.getElementById('diagNext2');
+    // 2. Obsluha Kroku 2 (Sociálny stres, situácie a cieľ)
+    const step2Points = document.querySelectorAll('#diagStep2 .diag-scale-point');
+    const diagFinishBtn = document.getElementById('diagFinishBtn');
     const diagBack2 = document.getElementById('diagBack2');
 
-    step2Cards.forEach(card => {
+    function checkStep2Complete() {
+      const isDone = diagnosticAnswers.social > 0 && !!diagnosticAnswers.situation;
+      if (diagFinishBtn) diagFinishBtn.disabled = !isDone;
+    }
+
+    step2Points.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseInt(btn.getAttribute('data-val'), 10);
+        diagnosticAnswers.social = val;
+
+        const parentCard = btn.closest('.diag-scale-card');
+        if (parentCard) {
+          parentCard.classList.add('has-val');
+          parentCard.querySelectorAll('.diag-scale-point').forEach(p => p.classList.remove('selected'));
+        }
+        btn.classList.add('selected');
+
+        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+          duoSfx.playTone(480 + val * 60, 'sine', 0.04, 0.08);
+        }
+        checkStep2Complete();
+      });
+    });
+
+    const situationCards = document.querySelectorAll('#diagSituationGrid .diag-option-card');
+    situationCards.forEach(card => {
       card.addEventListener('click', () => {
-        step2Cards.forEach(c => c.classList.remove('selected'));
+        situationCards.forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
         diagnosticAnswers.situation = card.getAttribute('data-val');
-        if (diagNext2) diagNext2.disabled = false;
         if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(580, 'sine', 0.04, 0.08);
+          duoSfx.playTone(560, 'sine', 0.04, 0.08);
         }
+        checkStep2Complete();
       });
     });
 
-    if (diagBack2) diagBack2.addEventListener('click', () => goToDiagStep(1));
-    if (diagNext2) diagNext2.addEventListener('click', () => goToDiagStep(3));
-
-    // Krok 3 karty
-    const step3Cards = document.querySelectorAll('#diagStep3 .diag-option-card');
-    const diagFinishBtn = document.getElementById('diagFinishBtn');
-    const diagBack3 = document.getElementById('diagBack3');
-
-    step3Cards.forEach(card => {
-      card.addEventListener('click', () => {
-        step3Cards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        diagnosticAnswers.goal = card.getAttribute('data-val');
-        if (diagFinishBtn) diagFinishBtn.disabled = false;
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(660, 'sine', 0.05, 0.08);
-        }
-      });
-    });
-
-    if (diagBack3) diagBack3.addEventListener('click', () => goToDiagStep(2));
+    if (diagBack2) {
+      diagBack2.addEventListener('click', () => goToDiagStep(1));
+    }
 
     if (diagFinishBtn) {
       diagFinishBtn.addEventListener('click', () => {
         applyDiagnosticPersonalization(diagnosticAnswers, true);
-        goToDiagStep(4);
+        goToDiagStep(3);
         if (typeof duoSfx !== 'undefined' && duoSfx.playLevelComplete) {
           duoSfx.playLevelComplete();
         }
       });
     }
 
-    // Krok 4: Vstup do aplikácie
+    const diagBack3 = document.getElementById('diagBack3');
+    if (diagBack3) {
+      diagBack3.addEventListener('click', () => goToDiagStep(2));
+    }
+
+    // 3. Vstup do aplikácie a okamžitý štart odporúčaným svetom
     const diagEnterAppBtn = document.getElementById('diagEnterAppBtn');
     if (diagEnterAppBtn) {
       diagEnterAppBtn.addEventListener('click', () => {
+        const evalRes = evaluateDiagnosticScores(diagnosticAnswers);
+        diagnosticAnswers.recWorldId = evalRes.recWorldId;
+        diagnosticAnswers.tension = evalRes.dominantKey;
+
         localStorage.setItem('fl_diagnostic', JSON.stringify(diagnosticAnswers));
         localStorage.setItem('fl_onboarding_completed', '1');
+
+        if (window.duoState && window.duoState.startAtRecommendedWorld) {
+          window.duoState.startAtRecommendedWorld(evalRes.recWorldId);
+        }
+
         hideWelcomeOverlay();
         updateUI();
 
-        // Prepnutie na záložku Cesta
         const navTabCesta = document.getElementById('navTabCesta');
         if (navTabCesta) navTabCesta.click();
       });

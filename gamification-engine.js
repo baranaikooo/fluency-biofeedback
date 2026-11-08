@@ -580,7 +580,39 @@ class DuoStateManager {
     this.renderTelemetry();
   }
 
-  findNextLevelId(currentId) {
+  startAtRecommendedWorld(recWorldId) {
+    const wNum = parseInt(recWorldId, 10) || 1;
+    WORLDS_DATA.forEach(w => {
+      if (w.id < wNum) {
+        w.levels.forEach(lvl => {
+          if (!this.state.unlockedLevels.includes(lvl.id)) {
+            this.state.unlockedLevels.push(lvl.id);
+          }
+          if (!this.state.completedLevels[lvl.id]) {
+            this.state.completedLevels[lvl.id] = { stars: 3, score: 100, completedAt: new Date().toISOString() };
+          }
+        });
+      } else if (w.id === wNum) {
+        const firstLevelId = `${wNum}.1`;
+        if (!this.state.unlockedLevels.includes(firstLevelId)) {
+          this.state.unlockedLevels.push(firstLevelId);
+        }
+      }
+    });
+
+    this.save();
+    this.renderHud();
+    this.renderTelemetry();
+
+    if (typeof duoPath !== 'undefined') {
+      duoPath.render();
+      setTimeout(() => {
+        duoPath.scrollToWorld(wNum);
+      }, 350);
+    }
+  }
+
+    findNextLevelId(currentId) {
     let allLevels = [];
     WORLDS_DATA.forEach(w => {
       w.levels.forEach(l => allLevels.push(l.id));
@@ -712,6 +744,7 @@ class DuoPathRenderer {
 
     WORLDS_DATA.forEach((world) => {
       const worldEl = document.createElement('div');
+      worldEl.id = `world-section-${world.id}`;
       worldEl.className = 'world-section';
       worldEl.style.setProperty('--world-theme', world.color);
       worldEl.style.setProperty('--world-theme-lip', world.lipColor);
@@ -722,7 +755,7 @@ class DuoPathRenderer {
         const rawDiag = localStorage.getItem('fl_diagnostic');
         if (rawDiag) {
           const d = JSON.parse(rawDiag);
-          const recWorldId = d.tension === 'laryngeal' ? 1 : (d.tension === 'plosives' ? 3 : (d.tension === 'clonic' ? 4 : 2));
+          const recWorldId = d.recWorldId || (d.tension === 'laryngeal' ? 1 : (d.tension === 'plosives' ? 3 : (d.tension === 'clonic' ? 4 : 2)));
           if (world.id === recWorldId) {
             diagBadge = '<div class="world-recommended-badge">🎯 Odporúčaný štart podľa tvojej diagnostiky</div>';
           }
@@ -1672,6 +1705,7 @@ class DuoLessonController {
 
 const duoLesson = new DuoLessonController();
 const duoPath = new DuoPathRenderer('worldsWrapper');
+window.duoPath = duoPath;
 
 // ============================================================================
 // 6. EVENT LISTENER PRE DSP VÝSLEDKY
