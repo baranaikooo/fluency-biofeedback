@@ -2,6 +2,7 @@
  * ============================================================================
  * SUPABASE AUTH & CLOUD PROFILE SYNC
  * Projekt: Fluency Biofeedback (valdfrjvcvxosjtxhqqb)
+ * Podpora: Google OAuth, Email/Heslo & Magic Link (bez hesla)
  * ============================================================================
  */
 
@@ -33,6 +34,14 @@
     return true;
   }
 
+  function setFeedback(msg, isSuccess = false) {
+    const el = document.getElementById('authFeedbackMsg');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.className = isSuccess ? 'auth-feedback-msg success' : 'auth-feedback-msg error';
+  }
+
   // Prihlásenie cez Google
   async function signInWithGoogle() {
     if (!initSupabase()) return;
@@ -47,25 +56,92 @@
       return data;
     } catch (err) {
       console.error('[Supabase Auth] Chyba pri Google prihlásení:', err);
-      alert('Chyba prihlásenia cez Google: ' + (err.message || err));
+      setFeedback('Chyba Google prihlásenia: ' + (err.message || err));
     }
   }
 
-  // Prihlásenie cez Facebook
-  async function signInWithFacebook() {
+  // Prihlásenie / Registrácia cez Email a Heslo
+  async function signInOrSignUpWithEmail(email, password) {
     if (!initSupabase()) return;
+    if (!email || !email.includes('@')) {
+      setFeedback('Zadaj prosím platnú emailovú adresu.');
+      return;
+    }
+    if (!password || password.length < 6) {
+      setFeedback('Heslo musí mať aspoň 6 znakov.');
+      return;
+    }
+
+    setFeedback('Overujem údaje v cloude...', true);
+
     try {
-      const { data, error } = await client.auth.signInWithOAuth({
-        provider: 'facebook',
+      // 1. Skúsime sa prihlásiť
+      const { data: signInData, error: signInErr } = await client.auth.signInWithPassword({
+        email: email.trim(),
+        password: password
+      });
+
+      if (!signInErr && signInData.user) {
+        currentUser = signInData.user;
+        await fetchProfile(currentUser);
+        setFeedback('Úspešne prihlásený!', true);
+        return;
+      }
+
+      // 2. Ak používateľ neexistuje, zaregistrujeme ho
+      if (signInErr && (signInErr.message.includes('Invalid login credentials') || signInErr.status === 400)) {
+        console.log('[Supabase Auth] Používateľ neexistuje, registrujem nový účet...');
+        const { data: signUpData, error: signUpErr } = await client.auth.signUp({
+          email: email.trim(),
+          password: password,
+          options: {
+            data: {
+              full_name: email.split('@')[0],
+              preferred_name: email.split('@')[0]
+            }
+          }
+        });
+
+        if (signUpErr) throw signUpErr;
+
+        if (signUpData.user) {
+          currentUser = signUpData.user;
+          await fetchProfile(currentUser);
+          setFeedback('Účet vytvorený a úspešne prihlásený!', true);
+        } else {
+          setFeedback('Skontroluj si schránku a potvrď registračný email.', true);
+        }
+      } else if (signInErr) {
+        throw signInErr;
+      }
+    } catch (err) {
+      console.error('[Supabase Auth] Chyba pri email prihlásení:', err);
+      setFeedback('Chyba: ' + (err.message || err));
+    }
+  }
+
+  // Bezheslové prihlásenie cez Magic Link (Email OTP)
+  async function sendMagicLink(email) {
+    if (!initSupabase()) return;
+    if (!email || !email.includes('@')) {
+      setFeedback('Zadaj prosím platnú emailovú adresu pre odoslanie odkazu.');
+      return;
+    }
+
+    setFeedback('Odosielam prihlasovací link do schránky...', true);
+
+    try {
+      const { error } = await client.auth.signInWithOtp({
+        email: email.trim(),
         options: {
-          redirectTo: window.location.origin + window.location.pathname
+          emailRedirectTo: window.location.origin + window.location.pathname
         }
       });
       if (error) throw error;
-      return data;
+      setFeedback('✨ Skontroluj si email! Poslali sme ti priamy prihlasovací link.', true);
     } catch (err) {
-      console.error('[Supabase Auth] Chyba pri Facebook prihlásení:', err);
-      alert('Chyba prihlásenia cez Facebook: ' + (err.message || err));
+      console.error('[Supabase Auth] Chyba pri odoslaní Magic Linku:', err);
+      setFeedback('Chyba pri odosielaní: ' + (err.message || err));
     }
   }
 
@@ -78,6 +154,7 @@
       currentUser = null;
       currentProfile = null;
       updateUI();
+      setFeedback('Bol si odhlásený.', true);
       if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
         duoSfx.playTone(340, 'sine', 0.05, 0.1);
       }
@@ -112,7 +189,6 @@
           const xpEl = document.getElementById('xpVal');
           if (xpEl) xpEl.textContent = currentProfile.xp;
         } else if (localXp > currentProfile.xp) {
-          // Aktualizácia cloudu vyšším lokálnym XP
           await updateCloudStats(localXp, parseInt(localStorage.getItem('fluency_streak') || '0', 10));
         }
       }
@@ -204,30 +280,21 @@
     }
   }
 
-  function setupAuthModal() {
-    const authModalBackdrop = document.getElementById('authModalBackdrop');
-    const headerProfileBtn = document.getElementById('headerProfileBtn');
-    const authModalCloseBtn = document.getElementById('authModalCloseBtn');
+  function setupAuthEvents() {
     const btnGoogleLogin = document.getElementById('btnGoogleLogin');
-    const btnFacebookLogin = document.getElementById('btnFacebookLogin');
+    const btnEmailLogin = document.getElementById('btnEmailLogin');
+    const btnMagicLink = document.getElementById('btnMagicLink');
     const btnLogout = document.getElementById('btnLogout');
+    const headerProfileBtn = document.getElementById('headerProfileBtn');
 
-    if (headerProfileBtn && authModalBackdrop) {
+    if (headerProfileBtn) {
       headerProfileBtn.addEventListener('click', () => {
-        authModalBackdrop.classList.add('active');
-      });
-    }
-
-    if (authModalCloseBtn && authModalBackdrop) {
-      authModalCloseBtn.addEventListener('click', () => {
-        authModalBackdrop.classList.remove('active');
-      });
-    }
-
-    if (authModalBackdrop) {
-      authModalBackdrop.addEventListener('click', (e) => {
-        if (e.target === authModalBackdrop) {
-          authModalBackdrop.classList.remove('active');
+        // Prepne na záložku Telemetria a zascrolluje na profil
+        const navTabTelemetria = document.getElementById('navTabTelemetria');
+        if (navTabTelemetria) navTabTelemetria.click();
+        const profileCard = document.getElementById('telemetryProfileCard');
+        if (profileCard) {
+          profileCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
     }
@@ -236,8 +303,22 @@
       btnGoogleLogin.addEventListener('click', () => signInWithGoogle());
     }
 
-    if (btnFacebookLogin) {
-      btnFacebookLogin.addEventListener('click', () => signInWithFacebook());
+    if (btnEmailLogin) {
+      btnEmailLogin.addEventListener('click', () => {
+        const emailEl = document.getElementById('authEmailInput');
+        const passEl = document.getElementById('authPasswordInput');
+        const email = emailEl ? emailEl.value : '';
+        const pass = passEl ? passEl.value : '';
+        signInOrSignUpWithEmail(email, pass);
+      });
+    }
+
+    if (btnMagicLink) {
+      btnMagicLink.addEventListener('click', () => {
+        const emailEl = document.getElementById('authEmailInput');
+        const email = emailEl ? emailEl.value : '';
+        sendMagicLink(email);
+      });
     }
 
     if (btnLogout) {
@@ -252,7 +333,7 @@
       return;
     }
 
-    setupAuthModal();
+    setupAuthEvents();
 
     // Načítanie existujúceho session
     try {
@@ -284,7 +365,8 @@
 
   window.fluencyAuth = {
     signInWithGoogle,
-    signInWithFacebook,
+    signInOrSignUpWithEmail,
+    sendMagicLink,
     signOut,
     getCurrentUser: () => currentUser,
     getCurrentProfile: () => currentProfile,
