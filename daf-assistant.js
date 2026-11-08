@@ -9,15 +9,144 @@
 (function (window) {
   'use strict';
 
+  // ========================================================================
+  // WEBAUDIO REAL-TIME PITCH SHIFTER PRE FAF (FREQUENCY ALTERED FEEDBACK)
+  // Cross-faded dual modulated delay algorithm s nulovým oneskorením pri 0 st
+  // ========================================================================
+  class WebAudioPitchShifter {
+    constructor(audioCtx, bufferTime = 0.08) {
+      this.audioCtx = audioCtx;
+      this.bufferTime = bufferTime;
+      this.semitones = 0;
+
+      this.input = audioCtx.createGain();
+      this.output = audioCtx.createGain();
+      this.bypassGain = audioCtx.createGain();
+      this.pitchGain = audioCtx.createGain();
+
+      this.input.connect(this.bypassGain);
+      this.bypassGain.connect(this.output);
+      this.bypassGain.gain.setValueAtTime(1, audioCtx.currentTime);
+      this.pitchGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+      this.initShifterNodes();
+    }
+
+    initShifterNodes() {
+      const ctx = this.audioCtx;
+      const sampleRate = ctx.sampleRate || 44100;
+      const bufferSize = Math.max(1024, Math.floor(sampleRate * this.bufferTime));
+
+      this.delayA = ctx.createDelay(1.0);
+      this.delayB = ctx.createDelay(1.0);
+      this.gainA = ctx.createGain();
+      this.gainB = ctx.createGain();
+
+      // Sawtooth rampa
+      const rampBuffer = ctx.createBuffer(1, bufferSize, sampleRate);
+      const rampData = rampBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        rampData[i] = i / bufferSize;
+      }
+
+      // Hanning envelope pre plynulý cross-fade bez klikov
+      const envBuffer = ctx.createBuffer(1, bufferSize, sampleRate);
+      const envData = envBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        const x = i / bufferSize;
+        envData[i] = 0.5 * (1 - Math.cos(2 * Math.PI * x));
+      }
+
+      this.rampSourceA = ctx.createBufferSource();
+      this.rampSourceA.buffer = rampBuffer;
+      this.rampSourceA.loop = true;
+
+      this.rampSourceB = ctx.createBufferSource();
+      this.rampSourceB.buffer = rampBuffer;
+      this.rampSourceB.loop = true;
+
+      this.modGainA = ctx.createGain();
+      this.modGainB = ctx.createGain();
+
+      this.rampSourceA.connect(this.modGainA);
+      this.modGainA.connect(this.delayA.delayTime);
+
+      this.rampSourceB.connect(this.modGainB);
+      this.modGainB.connect(this.delayB.delayTime);
+
+      this.envSourceA = ctx.createBufferSource();
+      this.envSourceA.buffer = envBuffer;
+      this.envSourceA.loop = true;
+
+      this.envSourceB = ctx.createBufferSource();
+      this.envSourceB.buffer = envBuffer;
+      this.envSourceB.loop = true;
+
+      this.envSourceA.connect(this.gainA.gain);
+      this.envSourceB.connect(this.gainB.gain);
+
+      this.input.connect(this.delayA);
+      this.input.connect(this.delayB);
+
+      this.delayA.connect(this.gainA);
+      this.delayB.connect(this.gainB);
+
+      this.gainA.connect(this.pitchGain);
+      this.gainB.connect(this.pitchGain);
+      this.pitchGain.connect(this.output);
+
+      const now = ctx.currentTime;
+      const halfPeriod = this.bufferTime / 2;
+      this.rampSourceA.start(now);
+      this.envSourceA.start(now);
+      this.rampSourceB.start(now + halfPeriod);
+      this.envSourceB.start(now + halfPeriod);
+
+      this.setSemitones(0);
+    }
+
+    setSemitones(semitones) {
+      this.semitones = semitones;
+      const now = this.audioCtx.currentTime;
+
+      if (semitones === 0) {
+        // Čistý bypass pre 100% prirodzený DAF
+        this.bypassGain.gain.setValueAtTime(1, now);
+        this.pitchGain.gain.setValueAtTime(0, now);
+        return;
+      }
+
+      this.bypassGain.gain.setValueAtTime(0, now);
+      this.pitchGain.gain.setValueAtTime(1, now);
+
+      const ratio = Math.pow(2, semitones / 12);
+      const modDepth = (1 - ratio) * this.bufferTime;
+
+      if (modDepth >= 0) {
+        this.delayA.delayTime.setValueAtTime(0, now);
+        this.delayB.delayTime.setValueAtTime(0, now);
+        this.modGainA.gain.setValueAtTime(modDepth, now);
+        this.modGainB.gain.setValueAtTime(modDepth, now);
+      } else {
+        this.delayA.delayTime.setValueAtTime(-modDepth, now);
+        this.delayB.delayTime.setValueAtTime(-modDepth, now);
+        this.modGainA.gain.setValueAtTime(modDepth, now);
+        this.modGainB.gain.setValueAtTime(modDepth, now);
+      }
+    }
+  }
+
   class DafAssistantEngine {
     constructor() {
       this.isActive = false;
       this.delayMs = 70;
       this.volumePercent = 85;
+      this.fafSemitones = 0;
 
       this.audioCtx = null;
       this.mediaStreamSource = null;
       this.delayNode = null;
+      this.pitchShifter = null;
       this.gainNode = null;
       this.dafAnalyser = null;
       this.animFrameId = null;
@@ -136,6 +265,36 @@
           });
         }
       }
+
+      // 5. FAF Frekvenčný posun čipy (-2 st, 0 st, +2 st, +4 st)
+      const fafChips = document.querySelectorAll('.faf-chip');
+      if (fafChips && fafChips.forEach) {
+        fafChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            const rawVal = chip.dataset ? chip.dataset.semitones : (chip.getAttribute ? chip.getAttribute('data-semitones') : '0');
+            const semitones = parseInt(rawVal, 10) || 0;
+            this.setFaf(semitones);
+
+            fafChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+
+            const fafValEl = document.getElementById('assistantFafVal');
+            if (fafValEl) {
+              const labelMap = {
+                '-2': '-2 st (Hlbší barytón)',
+                '0': '0 st (Prirodzený)',
+                '2': '+2 st (Vyšší tón)',
+                '4': '+4 st (Výrazný posun)'
+              };
+              fafValEl.textContent = labelMap[String(semitones)] || `${semitones} st`;
+            }
+
+            if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+              duoSfx.playTone(semitones < 0 ? 360 : (semitones > 0 ? 680 : 520), 'sine', 0.04, 0.08);
+            }
+          });
+        });
+      }
     }
 
     async ensureAudioPipeline() {
@@ -171,10 +330,14 @@
         }
       }
 
-      // 3. Zostav paralelnú DAF vetvu: mediaStreamSource -> DelayNode -> GainNode -> destination
+      // 3. Zostav paralelnú DAF + FAF vetvu:
+      // mediaStreamSource -> DelayNode -> PitchShifter -> GainNode -> destination
       if (!this.delayNode) {
         this.delayNode = this.audioCtx.createDelay(1.0);
         this.delayNode.delayTime.setValueAtTime(this.delayMs / 1000, this.audioCtx.currentTime);
+
+        this.pitchShifter = new WebAudioPitchShifter(this.audioCtx, 0.07);
+        this.pitchShifter.setSemitones(this.fafSemitones);
 
         this.gainNode = this.audioCtx.createGain();
         this.gainNode.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
@@ -185,7 +348,8 @@
         this.dafAnalyser.smoothingTimeConstant = 0.2;
 
         this.mediaStreamSource.connect(this.delayNode);
-        this.delayNode.connect(this.gainNode);
+        this.delayNode.connect(this.pitchShifter.input);
+        this.pitchShifter.output.connect(this.gainNode);
         this.gainNode.connect(this.dafAnalyser);
       }
     }
@@ -256,6 +420,13 @@
       if (this.gainNode && this.audioCtx && this.isActive) {
         this.gainNode.gain.cancelScheduledValues(this.audioCtx.currentTime);
         this.gainNode.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
+      }
+    }
+
+    setFaf(semitones) {
+      this.fafSemitones = semitones;
+      if (this.pitchShifter) {
+        this.pitchShifter.setSemitones(semitones);
       }
     }
 

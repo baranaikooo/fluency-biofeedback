@@ -395,11 +395,32 @@ const duoSfx = new DuoAudioFx();
 // ============================================================================
 const STORAGE_KEY = 'fluency_duo_save_v3';
 const HISTORY_KEY = 'fluency_telemetry_history_v1';
+const VAULT_KEY = 'fluency_feared_words_v1';
 
 class DuoStateManager {
   constructor() {
     this.state = this.loadState();
     this.history = this.loadHistory();
+  }
+
+  loadVaultWords() {
+    try {
+      const raw = localStorage.getItem(VAULT_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (_) {}
+    return [
+      { id: 'fw_1', word: 'Peter Novák', category: 'Meno', successes: 1, attempts: 2, isMastered: false, date: new Date().toISOString().slice(0, 10) },
+      { id: 'fw_2', word: 'Dve veľké kávy', category: 'Kaviareň', successes: 0, attempts: 1, isMastered: false, date: new Date().toISOString().slice(0, 10) },
+      { id: 'fw_3', word: 'Bratislava hlavná stanica', category: 'Cestovanie', successes: 0, attempts: 0, isMastered: false, date: new Date().toISOString().slice(0, 10) }
+    ];
+  }
+
+  saveVaultWords(words) {
+    try {
+      localStorage.setItem(VAULT_KEY, JSON.stringify(words));
+    } catch (e) {
+      console.warn('Chyba ukladania trezoru:', e);
+    }
   }
 
   getDefaultState() {
@@ -574,6 +595,12 @@ class DuoStateManager {
     if (tSuccess) tSuccess.textContent = `${successRate}%`;
     if (tLessons) tLessons.textContent = `${Object.keys(this.state.completedLevels).length} / 25`;
 
+    // Štatistika trezoru v telemetrii
+    const vWords = this.loadVaultWords();
+    const vMastered = vWords.filter(w => w.isMastered).length;
+    const tVault = document.getElementById('tStatVaultMastered');
+    if (tVault) tVault.textContent = `${vMastered} / ${vWords.length} 🏆`;
+
     // Výpočet priemerného VRT a latencie
     const vrts = this.history.filter(h => h.vrt > 0).map(h => h.vrt);
     const avgVrt = vrts.length > 0 ? (vrts.reduce((a, b) => a + b, 0) / vrts.length) : 74.2;
@@ -730,6 +757,7 @@ class DuoLessonController {
     this.isLessonActive = false;
     this.isSosDrill = false;
     this.currentWordItem = null;
+    this.vaultFilter = 'all';
 
     this.initDomBindings();
   }
@@ -936,6 +964,42 @@ class DuoLessonController {
         }
       });
     });
+
+    // ======================================================================
+    // TREZOR OBÁVANÝCH SLOV (FEARED WORDS VAULT)
+    // ======================================================================
+    const vaultAddBtn = document.getElementById('vaultAddBtn');
+    const vaultInput = document.getElementById('vaultWordInput');
+    if (vaultAddBtn) {
+      vaultAddBtn.addEventListener('click', () => this.addVaultWord());
+    }
+    if (vaultInput) {
+      vaultInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.addVaultWord();
+        }
+      });
+    }
+
+    const vaultRandomBtn = document.getElementById('vaultRandomChallengeBtn');
+    if (vaultRandomBtn) {
+      vaultRandomBtn.addEventListener('click', () => this.randomVaultChallenge());
+    }
+
+    const filterPills = document.querySelectorAll('.vault-pill');
+    filterPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        this.vaultFilter = pill.dataset.filter || 'all';
+        this.renderVaultList();
+        duoSfx.playTone(480, 'sine', 0.04, 0.05);
+      });
+    });
+
+    // Počiatočné vykreslenie trezoru
+    this.renderVaultList();
   }
 
   // ========================================================================
@@ -953,6 +1017,193 @@ class DuoLessonController {
     if (!modal) return;
     modal.classList.remove('active');
     duoSfx.playTone(380, 'sine', 0.05, 0.05);
+  }
+
+  // ========================================================================
+  // METÓDY PRE TREZOR OBÁVANÝCH SLOV (FEARED WORDS VAULT)
+  // ========================================================================
+  renderVaultList() {
+    const listEl = document.getElementById('vaultList');
+    const badgeEl = document.getElementById('vaultMasteryBadge');
+    const countAllEl = document.getElementById('vCountAll');
+    const countTrainEl = document.getElementById('vCountTraining');
+    const countMastEl = document.getElementById('vCountMastered');
+
+    const words = duoState.loadVaultWords();
+    const total = words.length;
+    const mastered = words.filter(w => w.isMastered).length;
+    const unmastered = total - mastered;
+
+    if (badgeEl) badgeEl.textContent = `${mastered} / ${total} Odblokované 🏆`;
+    if (countAllEl) countAllEl.textContent = total;
+    if (countTrainEl) countTrainEl.textContent = unmastered;
+    if (countMastEl) countMastEl.textContent = mastered;
+
+    const tVaultStat = document.getElementById('tStatVaultMastered');
+    if (tVaultStat) tVaultStat.textContent = `${mastered} / ${total} 🏆`;
+
+    if (!listEl) return;
+
+    let filtered = words;
+    if (this.vaultFilter === 'mastered') {
+      filtered = words.filter(w => w.isMastered);
+    } else if (this.vaultFilter === 'unmastered') {
+      filtered = words.filter(w => !w.isMastered);
+    }
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `
+        <div class="vault-empty">
+          ${this.vaultFilter === 'mastered'
+            ? 'Zatiaľ žiadne odblokované slová. Zvládni 3 úspešné nábehy a získaj trofej 🏆!'
+            : 'Trezor je prázdny. Zadaj vyššie slovo, ktoré v tebe vyvoláva blok, a pridaj ho do tréningu.'}
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(item => `
+      <div class="vault-item ${item.isMastered ? 'mastered' : ''}" data-id="${item.id}">
+        <div class="vault-item-left">
+          <div class="vault-item-word">${item.word}</div>
+          <div class="vault-item-meta">
+            <span class="vault-item-cat">${item.category || 'Všeobecné'}</span>
+            <span class="vault-item-score ${item.isMastered ? 'mastered' : ''}">
+              ${item.isMastered ? '🏆 ODBLOKOVANÉ' : `${item.successes || 0}/3 pokusov bez kŕča`}
+            </span>
+          </div>
+        </div>
+        <div class="vault-item-actions">
+          <button class="btn-3d ${item.isMastered ? 'neutral' : 'amber'} sm vault-train-btn" data-id="${item.id}">
+            <span>${item.isMastered ? 'Zopakovať' : '⚡ Trénovať'}</span>
+          </button>
+          <button class="vault-del-btn" data-id="${item.id}" title="Zmazať slovo">✕</button>
+        </div>
+      </div>
+    `).join('');
+
+    // Event listenery na tlačidlá v zozname
+    if (listEl.querySelectorAll) {
+      const trainBtns = listEl.querySelectorAll('.vault-train-btn');
+      if (trainBtns && trainBtns.forEach) {
+        trainBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset ? btn.dataset.id : btn.getAttribute('data-id');
+            this.trainVaultWord(id);
+          });
+        });
+      }
+
+      const delBtns = listEl.querySelectorAll('.vault-del-btn');
+      if (delBtns && delBtns.forEach) {
+        delBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset ? btn.dataset.id : btn.getAttribute('data-id');
+            this.deleteVaultWord(id);
+          });
+        });
+      }
+    }
+  }
+
+  addVaultWord() {
+    const input = document.getElementById('vaultWordInput');
+    const select = document.getElementById('vaultCategorySelect');
+    if (!input) return;
+
+    const word = input.value.trim();
+    if (!word) {
+      alert('Zadaj prosím slovo alebo frázu.');
+      input.focus();
+      return;
+    }
+
+    const category = select ? select.value : 'Iné';
+    const words = duoState.loadVaultWords();
+
+    if (words.some(w => w.word.toLowerCase() === word.toLowerCase())) {
+      alert('Toto slovo už v trezore máš!');
+      return;
+    }
+
+    const newItem = {
+      id: 'fw_' + Date.now(),
+      word,
+      category,
+      successes: 0,
+      attempts: 0,
+      isMastered: false,
+      date: new Date().toISOString().slice(0, 10)
+    };
+
+    words.unshift(newItem);
+    duoState.saveVaultWords(words);
+    input.value = '';
+    this.renderVaultList();
+    duoSfx.playTone(660, 'triangle', 0.06, 0.08);
+  }
+
+  deleteVaultWord(id) {
+    if (!confirm('Naozaj chceš zmazať toto slovo z trezoru?')) return;
+    let words = duoState.loadVaultWords();
+    words = words.filter(w => w.id !== id);
+    duoState.saveVaultWords(words);
+    this.renderVaultList();
+    duoSfx.playTone(350, 'sine', 0.04, 0.05);
+  }
+
+  trainVaultWord(id) {
+    const words = duoState.loadVaultWords();
+    const item = words.find(w => w.id === id);
+    if (!item) return;
+
+    const wordInputEl = document.getElementById('wordInput');
+    if (wordInputEl) {
+      wordInputEl.value = item.word;
+    }
+
+    duoSfx.playTone(550, 'sine', 0.05, 0.08);
+    this.launchSosDrill();
+  }
+
+  randomVaultChallenge() {
+    const words = duoState.loadVaultWords();
+    if (words.length === 0) {
+      alert('V trezore zatiaľ nemáš žiadne slová. Pridaj si prvé slovo vyššie.');
+      return;
+    }
+
+    const unmastered = words.filter(w => !w.isMastered);
+    const pool = unmastered.length > 0 ? unmastered : words;
+    const randomItem = pool[Math.floor(Math.random() * pool.length)];
+
+    this.trainVaultWord(randomItem.id);
+  }
+
+  updateVaultProgress(wordText, success) {
+    if (!wordText) return;
+    const cleanTrained = wordText.trim().toLowerCase();
+    const words = duoState.loadVaultWords();
+    let updated = false;
+
+    words.forEach(item => {
+      if (item.word.trim().toLowerCase() === cleanTrained) {
+        item.attempts = (item.attempts || 0) + 1;
+        if (success) {
+          item.successes = (item.successes || 0) + 1;
+          if (item.successes >= 3) {
+            item.isMastered = true;
+          }
+        }
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      duoState.saveVaultWords(words);
+      this.renderVaultList();
+      duoState.renderTelemetry();
+    }
   }
 
   // ========================================================================
@@ -1216,9 +1467,17 @@ class DuoLessonController {
 
       this.lessonQueue.shift();
       this.completedItemsCount++;
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(30);
+      }
     } else {
       duoSfx.playMistake();
       this.mistakesCount++;
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([40, 60, 40]);
+      }
 
       if (headEl) headEl.textContent = '⚡ Zaznamenaný tvrdý úder alebo blok';
       if (subEl) subEl.textContent = 'Nevadí! Uvoľni sánku, zopakujeme si toto slovo na konci. ❤️';
@@ -1268,6 +1527,15 @@ class DuoLessonController {
       duoState.completeLevel(this.currentLevel.id, finalXp, accuracy);
     } else {
       duoState.addXp(finalXp);
+    }
+
+    // Aktualizácia Trezoru obávaných slov a haptická fanfára
+    const trainedWord = this.currentWordItem ? this.currentWordItem.word : (document.getElementById('wordInput')?.value || '');
+    if (trainedWord) {
+      this.updateVaultProgress(trainedWord, accuracy >= 66);
+    }
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([30, 50, 30]);
     }
 
     const modal = document.getElementById('celebrationModal');

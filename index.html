@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Fluency – Rečový Biofeedback Trenažér</title>
+
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0b132b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fluency">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -140,6 +151,58 @@
           </button>
         </div>
 
+        <!-- ============================================================== -->
+        <!-- TREZOR OBÁVANÝCH SLOV (FEARED WORDS VAULT)                     -->
+        <!-- ============================================================== -->
+        <div class="telemetry-card feared-words-card" id="fearedWordsCard">
+          <div class="card-header-row">
+            <div>
+              <div class="card-subtitle orange">DESENZIBILIZAČNÝ MODUL</div>
+              <h3 class="card-title">🔐 Trezor Obávaných Slov</h3>
+            </div>
+            <span class="vault-status-badge" id="vaultMasteryBadge">0 / 0 Odblokované 🏆</span>
+          </div>
+
+          <p class="vault-lead">
+            Ulož si slová, mená či objednávky, ktoré v tebe vyvolávajú anticipačný kŕč. Trénuj ich v SOS drilu až do ich plného odblokovania (3 úspešné nábehy = trofej 🏆).
+          </p>
+
+          <!-- Pridanie nového slova do trezoru -->
+          <div class="vault-add-form">
+            <div class="vault-input-row">
+              <input type="text" id="vaultWordInput" class="vault-input" placeholder="Nové obávané slovo, meno alebo objednávka..." />
+              <select id="vaultCategorySelect" class="vault-select" title="Kategória slova">
+                <option value="Meno">👤 Meno</option>
+                <option value="Kaviareň">☕ Kaviareň</option>
+                <option value="Cestovanie">📍 Mesto</option>
+                <option value="Číslo">🔢 Číslo</option>
+                <option value="Práca">💼 Práca</option>
+                <option value="Iné">⚡ Iné</option>
+              </select>
+              <button class="btn-3d amber sm" id="vaultAddBtn">
+                <span>+ Pridať</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filtre a akcie trezoru -->
+          <div class="vault-toolbar">
+            <button class="btn-3d purple sm" id="vaultRandomChallengeBtn" title="Vyberie náhodné obávané slovo a spustí dril">
+              <span>🎲 Náhodná výzva</span>
+            </button>
+            <div class="vault-filter-pills" id="vaultFilterPills">
+              <button class="vault-pill active" data-filter="all" id="vFilterAll">Všetky (<span id="vCountAll">0</span>)</button>
+              <button class="vault-pill" data-filter="unmastered" id="vFilterTraining">V tréningu (<span id="vCountTraining">0</span>)</button>
+              <button class="vault-pill" data-filter="mastered" id="vFilterMastered">🏆 (<span id="vCountMastered">0</span>)</button>
+            </div>
+          </div>
+
+          <!-- Zoznam kariet slov v trezore -->
+          <div class="vault-list" id="vaultList">
+            <!-- Dynamicky generované z gamification-engine.js -->
+          </div>
+        </div>
+
         <div class="tab-bottom-spacer"></div>
       </div>
     </section>
@@ -260,6 +323,42 @@
             </div>
           </div>
 
+          <!-- 3. Frekvenčná modulácia (FAF - Výška hlasu v uchu) -->
+          <div class="assistant-control-group faf-group">
+            <div class="control-header-row">
+              <div class="control-title-wrap">
+                <span class="control-icon">🎵</span>
+                <span class="control-name">Frekvenčný posun výšky (FAF):</span>
+              </div>
+              <span class="control-val-badge purple" id="assistantFafVal">0 st (Prirodzený)</span>
+            </div>
+
+            <p class="control-desc">Kombinácia DAF + FAF zabraňuje tomu, aby si mozog na odposluch zvykol (habituácia).</p>
+
+            <div class="faf-chips-grid" id="fafChipsGrid">
+              <button class="faf-chip" data-semitones="-2" id="fafChipMinus2" type="button">
+                <span class="faf-chip-icon">⬇️</span>
+                <span class="faf-chip-name">-2 st</span>
+                <span class="faf-chip-tag">Hlbší (Barytón)</span>
+              </button>
+              <button class="faf-chip active" data-semitones="0" id="fafChip0" type="button">
+                <span class="faf-chip-icon">🔘</span>
+                <span class="faf-chip-name">0 st</span>
+                <span class="faf-chip-tag">Prirodzený (DAF)</span>
+              </button>
+              <button class="faf-chip" data-semitones="2" id="fafChipPlus2" type="button">
+                <span class="faf-chip-icon">⬆️</span>
+                <span class="faf-chip-name">+2 st</span>
+                <span class="faf-chip-tag">Vyšší tón</span>
+              </button>
+              <button class="faf-chip" data-semitones="4" id="fafChipPlus4" type="button">
+                <span class="faf-chip-icon">⚡</span>
+                <span class="faf-chip-name">+4 st</span>
+                <span class="faf-chip-tag">Výrazný posun</span>
+              </button>
+            </div>
+          </div>
+
         </div>
 
         <div class="tab-bottom-spacer"></div>
@@ -375,6 +474,14 @@
               <span class="tstat-num blue" id="tStatAvgLatency">410 ms</span>
               <span class="tstat-name">Priemerná reakcia</span>
             </div>
+            <div class="tstat-box">
+              <span class="tstat-num orange" id="tStatVaultMastered">0 / 3 🏆</span>
+              <span class="tstat-name">Odblokované v trezore</span>
+            </div>
+            <div class="tstat-box">
+              <span class="tstat-num purple" id="tStatDafMode">DAF + FAF</span>
+              <span class="tstat-name">Sluchová modulácia</span>
+            </div>
           </div>
         </div>
 
@@ -394,6 +501,7 @@
           <h3 class="card-title">Nastavenia a Kalibrácia</h3>
 
           <div class="telemetry-actions">
+            <button class="btn-3d green full sm" id="pwaInstallBtn" style="display:none;">📲 Inštalovať aplikáciu na plochu (PWA)</button>
             <button class="btn-3d amber full" id="calibrateFromTelemetryBtn">Kalibrovať šum mikrofónu</button>
             <button class="btn-3d red full sm" id="resetTelemetryProgressBtn">Resetovať celý herný postup</button>
           </div>
@@ -1028,5 +1136,47 @@
 <script src="./dsp-core.js"></script>
 <script src="./gamification-engine.js"></script>
 <script src="./daf-assistant.js"></script>
+
+<!-- PWA Service Worker & Install Manager -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('[PWA] Service Worker aktívny:', reg.scope))
+        .catch(err => console.warn('[PWA] Service Worker registrácia zlyhala:', err));
+    });
+  }
+
+  // PWA Install prompt listener
+  let deferredPrompt = null;
+  const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (pwaInstallBtn) pwaInstallBtn.style.display = 'block';
+  });
+
+  if (pwaInstallBtn) {
+    pwaInstallBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) {
+        alert('Aplikáciu môžeš nainštalovať cez ponuku prehliadača: Zdieľať (alebo ⋮) -> Pridať na plochu.');
+        return;
+      }
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      if (choiceResult.outcome === 'accepted') {
+        console.log('[PWA] Používateľ prijal inštaláciu');
+      }
+      deferredPrompt = null;
+      pwaInstallBtn.style.display = 'none';
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] Fluency bola úspešne nainštalovaná!');
+    if (pwaInstallBtn) pwaInstallBtn.style.display = 'none';
+  });
+</script>
 </body>
 </html>
