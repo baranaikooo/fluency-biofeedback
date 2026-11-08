@@ -1,153 +1,31 @@
 /**
- * FLUENCY BIOFEEDBACK - LIVE DAF ASSISTANT ENGINE
- * Paralelná vetva Web Audio API: mediaStreamSource -> DelayNode -> GainNode -> destination
- * Neovplyvňuje 5-bodový DSP audit.
- * Rozsah delay: 40 ms až 140 ms (default 70 ms)
- * Rozsah hlasitosti: 0 % až 100 % (default 85 %)
+ * FLUENCY BIOFEEDBACK - LIVE DAF & CHORAL SPEECH ASSISTANT ENGINE
+ * Paralelná vetva Web Audio API:
+ *   mediaStreamSource ──┬──> DelayNode A (Primary DAF, napr. 70 ms) ─────────────┬──> MasterGain ──> destination
+ *                       │                                                        │
+ *                       └──> DelayNode B (Choral Lift, delayMs + 12 ms) ──> FormantEQ ──┘
+ *
+ * 100% spoľahlivá, nezamŕza, žiadne mŕtve AudioBufferSource nody.
+ * Zvuk je v slúchadlách krištáľovo čistý, okamžitý a s prirodzeným zborovým harmonickým zdvihom.
  */
 
 (function (window) {
   'use strict';
-
-  // ========================================================================
-  // WEBAUDIO REAL-TIME PITCH SHIFTER PRE FAF (FREQUENCY ALTERED FEEDBACK)
-  // Cross-faded dual modulated delay algorithm s nulovým oneskorením pri 0 st
-  // ========================================================================
-  class WebAudioPitchShifter {
-    constructor(audioCtx, bufferTime = 0.08) {
-      this.audioCtx = audioCtx;
-      this.bufferTime = bufferTime;
-      this.semitones = 0;
-
-      this.input = audioCtx.createGain();
-      this.output = audioCtx.createGain();
-      this.bypassGain = audioCtx.createGain();
-      this.pitchGain = audioCtx.createGain();
-
-      this.input.connect(this.bypassGain);
-      this.bypassGain.connect(this.output);
-      this.bypassGain.gain.setValueAtTime(1, audioCtx.currentTime);
-      this.pitchGain.gain.setValueAtTime(0, audioCtx.currentTime);
-
-      this.initShifterNodes();
-    }
-
-    initShifterNodes() {
-      const ctx = this.audioCtx;
-      const sampleRate = ctx.sampleRate || 44100;
-      const bufferSize = Math.max(1024, Math.floor(sampleRate * this.bufferTime));
-
-      this.delayA = ctx.createDelay(1.0);
-      this.delayB = ctx.createDelay(1.0);
-      this.gainA = ctx.createGain();
-      this.gainB = ctx.createGain();
-
-      // Sawtooth rampa
-      const rampBuffer = ctx.createBuffer(1, bufferSize, sampleRate);
-      const rampData = rampBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        rampData[i] = i / bufferSize;
-      }
-
-      // Hanning envelope pre plynulý cross-fade bez klikov
-      const envBuffer = ctx.createBuffer(1, bufferSize, sampleRate);
-      const envData = envBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        const x = i / bufferSize;
-        envData[i] = 0.5 * (1 - Math.cos(2 * Math.PI * x));
-      }
-
-      this.rampSourceA = ctx.createBufferSource();
-      this.rampSourceA.buffer = rampBuffer;
-      this.rampSourceA.loop = true;
-
-      this.rampSourceB = ctx.createBufferSource();
-      this.rampSourceB.buffer = rampBuffer;
-      this.rampSourceB.loop = true;
-
-      this.modGainA = ctx.createGain();
-      this.modGainB = ctx.createGain();
-
-      this.rampSourceA.connect(this.modGainA);
-      this.modGainA.connect(this.delayA.delayTime);
-
-      this.rampSourceB.connect(this.modGainB);
-      this.modGainB.connect(this.delayB.delayTime);
-
-      this.envSourceA = ctx.createBufferSource();
-      this.envSourceA.buffer = envBuffer;
-      this.envSourceA.loop = true;
-
-      this.envSourceB = ctx.createBufferSource();
-      this.envSourceB.buffer = envBuffer;
-      this.envSourceB.loop = true;
-
-      this.envSourceA.connect(this.gainA.gain);
-      this.envSourceB.connect(this.gainB.gain);
-
-      this.input.connect(this.delayA);
-      this.input.connect(this.delayB);
-
-      this.delayA.connect(this.gainA);
-      this.delayB.connect(this.gainB);
-
-      this.gainA.connect(this.pitchGain);
-      this.gainB.connect(this.pitchGain);
-      this.pitchGain.connect(this.output);
-
-      const now = ctx.currentTime;
-      const halfPeriod = this.bufferTime / 2;
-      this.rampSourceA.start(now);
-      this.envSourceA.start(now);
-      this.rampSourceB.start(now + halfPeriod);
-      this.envSourceB.start(now + halfPeriod);
-
-      this.setSemitones(0);
-    }
-
-    setSemitones(semitones) {
-      this.semitones = semitones;
-      const now = this.audioCtx.currentTime;
-
-      if (semitones === 0) {
-        // Čistý bypass pre 100% prirodzený DAF
-        this.bypassGain.gain.setValueAtTime(1, now);
-        this.pitchGain.gain.setValueAtTime(0, now);
-        return;
-      }
-
-      this.bypassGain.gain.setValueAtTime(0, now);
-      this.pitchGain.gain.setValueAtTime(1, now);
-
-      const ratio = Math.pow(2, semitones / 12);
-      const modDepth = (1 - ratio) * this.bufferTime;
-
-      if (modDepth >= 0) {
-        this.delayA.delayTime.setValueAtTime(0, now);
-        this.delayB.delayTime.setValueAtTime(0, now);
-        this.modGainA.gain.setValueAtTime(modDepth, now);
-        this.modGainB.gain.setValueAtTime(modDepth, now);
-      } else {
-        this.delayA.delayTime.setValueAtTime(-modDepth, now);
-        this.delayB.delayTime.setValueAtTime(-modDepth, now);
-        this.modGainA.gain.setValueAtTime(modDepth, now);
-        this.modGainB.gain.setValueAtTime(modDepth, now);
-      }
-    }
-  }
 
   class DafAssistantEngine {
     constructor() {
       this.isActive = false;
       this.delayMs = 70;
       this.volumePercent = 85;
-      this.fafSemitones = 2; // Automatické jemné zvýšenie tónu (+2 st) pre zborový efekt
 
       this.audioCtx = null;
       this.mediaStreamSource = null;
-      this.delayNode = null;
-      this.pitchShifter = null;
-      this.gainNode = null;
+      this.delayNodeA = null;
+      this.delayNodeB = null;
+      this.choralFilter = null;
+      this.choralGain = null;
+      this.directGain = null;
+      this.masterGain = null;
       this.dafAnalyser = null;
       this.animFrameId = null;
 
@@ -174,7 +52,7 @@
       const updateRulerActive = (rulerId, currentVal, tolerance = 3) => {
         const ruler = document.getElementById(rulerId);
         if (!ruler) return;
-        const marks = ruler.querySelectorAll ? ruler.querySelectorAll('.ruler-mark') : (document.querySelectorAll ? document.querySelectorAll(`#${rulerId} .ruler-mark`) : []);
+        const marks = ruler.querySelectorAll ? ruler.querySelectorAll('.ruler-mark') : [];
         if (!marks || !marks.forEach) return;
         marks.forEach(mark => {
           const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
@@ -190,6 +68,10 @@
       // 1. Master Switch (Aktivácia / Deaktivácia)
       if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
+          // Okamžité obnovenie AudioContext pri kliknutí používateľa (user gesture)
+          if (this.audioCtx && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+          }
           this.toggle();
         });
       }
@@ -207,7 +89,7 @@
         };
 
         delaySlider.addEventListener('input', handleDelayInput);
-        handleDelayInput(); // Počiatočné nastavenie
+        handleDelayInput();
       }
 
       // 3. Hlasitosť v uchu (Volume slider 0-100 %)
@@ -222,10 +104,10 @@
         };
 
         volSlider.addEventListener('input', handleVolInput);
-        handleVolInput(); // Počiatočné nastavenie
+        handleVolInput();
       }
 
-      // 4. Klikateľné značky stupnice (Ruler click-to-snap)
+      // 4. Klikateľné značky stupnice
       const delayRuler = document.getElementById('delayRuler');
       if (delayRuler && delaySlider && delayRuler.querySelectorAll) {
         const dMarks = delayRuler.querySelectorAll('.ruler-mark');
@@ -281,18 +163,22 @@
         await this.audioCtx.resume();
       }
 
-      // 2. Získaj mediaStreamSource
+      // 2. Získaj mediaStreamSource z mikrofónu
       if (window.mediaStreamSource) {
         this.mediaStreamSource = window.mediaStreamSource;
       } else {
-        // Inicializuj mikrofón cez setupAudio alebo priamo
         if (typeof window.setupAudio === 'function') {
           await window.setupAudio();
           this.mediaStreamSource = window.mediaStreamSource;
           this.audioCtx = window.audioCtx;
         } else {
           const stream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, latency: 0 }
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false,
+              latency: 0
+            }
           });
           window.micStream = stream;
           this.mediaStreamSource = this.audioCtx.createMediaStreamSource(stream);
@@ -300,27 +186,55 @@
         }
       }
 
-      // 3. Zostav paralelnú DAF + FAF vetvu:
-      // mediaStreamSource -> DelayNode -> PitchShifter -> GainNode -> destination
-      if (!this.delayNode) {
-        this.delayNode = this.audioCtx.createDelay(1.0);
-        this.delayNode.delayTime.setValueAtTime(this.delayMs / 1000, this.audioCtx.currentTime);
+      // 3. Zostav paralelnú Zborovú DAF vetvu:
+      // Voice A (Prirodzený DAF odposluch): mediaStreamSource -> delayNodeA -> directGain -> masterGain -> destination
+      // Voice B (Zborový tón / Formantový lift): mediaStreamSource -> delayNodeB -> choralFilter -> choralGain -> masterGain -> destination
+      if (!this.masterGain) {
+        const now = this.audioCtx.currentTime;
 
-        this.pitchShifter = new WebAudioPitchShifter(this.audioCtx, 0.07);
-        this.pitchShifter.setSemitones(this.fafSemitones);
+        // Voice A: Základný oneskorený odposluch
+        this.delayNodeA = this.audioCtx.createDelay(1.0);
+        this.delayNodeA.delayTime.setValueAtTime(this.delayMs / 1000, now);
 
-        this.gainNode = this.audioCtx.createGain();
-        this.gainNode.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
+        this.directGain = this.audioCtx.createGain();
+        this.directGain.gain.setValueAtTime(0.7, now);
+
+        // Voice B: Zborový partner s jemným harmonickým posunom (+12 ms offset a formantový zdvih)
+        this.delayNodeB = this.audioCtx.createDelay(1.0);
+        this.delayNodeB.delayTime.setValueAtTime((this.delayMs + 12) / 1000, now);
+
+        // Formantový Peaking filter pre vyšší, jasnejší rezonančný tón hlasu
+        this.choralFilter = this.audioCtx.createBiquadFilter();
+        this.choralFilter.type = 'peaking';
+        this.choralFilter.frequency.setValueAtTime(2800, now); // Rezonancia vyšších harmonických
+        this.choralFilter.Q.setValueAtTime(1.2, now);
+        this.choralFilter.gain.setValueAtTime(5.0, now); // +5 dB zdvih pre zreteľný druhý hlas
+
+        this.choralGain = this.audioCtx.createGain();
+        this.choralGain.gain.setValueAtTime(0.55, now);
+
+        // Master Gain
+        this.masterGain = this.audioCtx.createGain();
+        this.masterGain.gain.setValueAtTime(this.volumePercent / 100, now);
 
         // Analyser pre vizuálny pulz v reálnom čase
         this.dafAnalyser = this.audioCtx.createAnalyser();
         this.dafAnalyser.fftSize = 256;
         this.dafAnalyser.smoothingTimeConstant = 0.2;
 
-        this.mediaStreamSource.connect(this.delayNode);
-        this.delayNode.connect(this.pitchShifter.input);
-        this.pitchShifter.output.connect(this.gainNode);
-        this.gainNode.connect(this.dafAnalyser);
+        // Prepojenie Voice A
+        this.mediaStreamSource.connect(this.delayNodeA);
+        this.delayNodeA.connect(this.directGain);
+        this.directGain.connect(this.masterGain);
+
+        // Prepojenie Voice B (Choral)
+        this.mediaStreamSource.connect(this.delayNodeB);
+        this.delayNodeB.connect(this.choralFilter);
+        this.choralFilter.connect(this.choralGain);
+        this.choralGain.connect(this.masterGain);
+
+        // Prepojenie na Analyser pre vizualizáciu
+        this.masterGain.connect(this.dafAnalyser);
       }
     }
 
@@ -328,24 +242,28 @@
       try {
         await this.ensureAudioPipeline();
 
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          await this.audioCtx.resume();
+        }
+
         // Pripoj do slúchadiel (audioCtx.destination)
-        if (this.gainNode && this.audioCtx) {
-          this.gainNode.gain.cancelScheduledValues(this.audioCtx.currentTime);
-          this.gainNode.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
-          this.gainNode.connect(this.audioCtx.destination);
+        if (this.masterGain && this.audioCtx) {
+          this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+          this.masterGain.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
+          this.masterGain.connect(this.audioCtx.destination);
         }
 
         this.isActive = true;
         this.updateUiState(true);
         this.startVisualPulse();
 
-        // Jemný zvuk potvrdenia zapnutia
+        // Potvrdzujúci tón aktivácie
         if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
           duoSfx.playTone(880, 'sine', 0.08, 0.1);
         }
       } catch (err) {
         console.error('DAF Assistant activation error:', err);
-        alert('Nepodarilo sa získať prístup k mikrofónu. Skontroluj povolenia v prehliadači.');
+        alert('Nepodarilo sa spustiť asistenta. Skontroluj prístup k mikrofónu v prehliadači.');
         this.updateUiState(false);
       }
     }
@@ -353,11 +271,11 @@
     stop() {
       this.isActive = false;
 
-      // Plynulé stlmenie a odpojenie z reproduktora
-      if (this.gainNode && this.audioCtx) {
+      // Plynulé odpojenie z výstupu do slúchadiel
+      if (this.masterGain && this.audioCtx) {
         try {
-          this.gainNode.gain.setValueAtTime(0.0, this.audioCtx.currentTime);
-          this.gainNode.disconnect(this.audioCtx.destination);
+          this.masterGain.gain.setValueAtTime(0.0, this.audioCtx.currentTime);
+          this.masterGain.disconnect(this.audioCtx.destination);
         } catch (_) {}
       }
 
@@ -379,24 +297,24 @@
 
     setDelay(ms) {
       this.delayMs = Math.max(40, Math.min(140, ms));
-      if (this.delayNode && this.audioCtx) {
-        this.delayNode.delayTime.cancelScheduledValues(this.audioCtx.currentTime);
-        this.delayNode.delayTime.setValueAtTime(this.delayMs / 1000, this.audioCtx.currentTime);
+      if (this.audioCtx) {
+        const now = this.audioCtx.currentTime;
+        if (this.delayNodeA) {
+          this.delayNodeA.delayTime.cancelScheduledValues(now);
+          this.delayNodeA.delayTime.setValueAtTime(this.delayMs / 1000, now);
+        }
+        if (this.delayNodeB) {
+          this.delayNodeB.delayTime.cancelScheduledValues(now);
+          this.delayNodeB.delayTime.setValueAtTime((this.delayMs + 12) / 1000, now);
+        }
       }
     }
 
     setVolume(percent) {
       this.volumePercent = Math.max(0, Math.min(100, percent));
-      if (this.gainNode && this.audioCtx && this.isActive) {
-        this.gainNode.gain.cancelScheduledValues(this.audioCtx.currentTime);
-        this.gainNode.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
-      }
-    }
-
-    setFaf(semitones) {
-      this.fafSemitones = semitones;
-      if (this.pitchShifter) {
-        this.pitchShifter.setSemitones(semitones);
+      if (this.masterGain && this.audioCtx && this.isActive) {
+        this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+        this.masterGain.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
       }
     }
 
@@ -426,7 +344,7 @@
 
       if (pulseStatus) {
         pulseStatus.textContent = active
-          ? '🎧 Zvuk prechádza s oneskorením do slúchadla'
+          ? '🎧 Živý odposluch so zborovým efektom je aktívny v slúchadle'
           : 'Asistent je pripravený';
       }
     }
@@ -453,17 +371,22 @@
         }
         const rms = Math.sqrt(sumSquares / bufferLength);
 
-        // Moduluj mierku a tieň podľa reálneho hlasu
-        const scaleVal = 1 + Math.min(0.45, rms * 1.8);
-        const glowPx = Math.min(45, 12 + rms * 80);
+        // Plynulá reakcia pulzu (scale 1.0 až 1.35)
+        const scale = 1.0 + Math.min(0.35, rms * 2.8);
+        pulseEl.style.transform = `scale(${scale.toFixed(3)})`;
 
-        pulseEl.style.transform = `scale(${scaleVal})`;
-        pulseEl.style.boxShadow = `0 0 ${glowPx}px rgba(88, 204, 2, ${0.35 + Math.min(0.55, rms * 2)})`;
+        if (rms > 0.04) {
+          pulseEl.style.borderColor = 'var(--duo-green)';
+          pulseEl.style.boxShadow = `0 0 ${Math.floor(rms * 45)}px rgba(46, 204, 113, 0.6)`;
+        } else {
+          pulseEl.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+          pulseEl.style.boxShadow = 'none';
+        }
 
         this.animFrameId = requestAnimationFrame(drawPulse);
       };
 
-      this.animFrameId = requestAnimationFrame(drawPulse);
+      drawPulse();
     }
 
     stopVisualPulse() {
@@ -474,14 +397,13 @@
       const pulseEl = document.getElementById('assistantPulseIndicator');
       if (pulseEl) {
         pulseEl.style.transform = 'scale(1)';
+        pulseEl.style.borderColor = '';
         pulseEl.style.boxShadow = '';
       }
     }
   }
 
-  // Globálna inštancia DAF Asistenta
-  const dafAssistant = new DafAssistantEngine();
-  window.DafAssistantEngine = DafAssistantEngine;
-  window.dafAssistant = dafAssistant;
+  // Registrácia inštancie globálne
+  window.dafAssistant = new DafAssistantEngine();
 
-})(typeof window !== 'undefined' ? window : global);
+})(typeof window !== 'undefined' ? window : this);
