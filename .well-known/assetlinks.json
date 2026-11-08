@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.stutterbiofeedbackantigravity.twa",
+        "sha256_cert_fingerprints": ["DD:00:02:72:27:4D:C1:39:C7:68:18:AF:51:B4:D3:96:EE:33:D4:49:AB:AF:5C:8A:76:E8:57:1E:99:D6:5C:DD"]
+      }
+    }]
