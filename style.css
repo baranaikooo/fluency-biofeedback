@@ -2372,10 +2372,12 @@ canvas#envelopeCanvas {
 .science-accordion {
   padding: 18px 24px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   gap: 14px;
   flex: 1 1 auto;
+  min-height: 0;
   scrollbar-width: thin;
   scrollbar-color: #2a3c6d #0b132b;
 }
@@ -2397,9 +2399,12 @@ canvas#envelopeCanvas {
 /* Karta piliera */
 .science-card {
   background: #111d40;
-  border: 1px solid #2a3c6d;
+  border: 1.5px solid #2a3c6d;
   border-radius: 16px;
   overflow: hidden;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
@@ -2409,7 +2414,7 @@ canvas#envelopeCanvas {
 
 .science-card.active {
   border-color: #0ea5e9;
-  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.12);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.16);
   background: #14224b;
 }
 
@@ -2417,17 +2422,19 @@ canvas#envelopeCanvas {
 .sc-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 16px 18px;
   cursor: pointer;
   user-select: none;
   background: transparent;
   transition: background 0.15s ease;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sc-header:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .sc-header:focus-visible {
@@ -2439,20 +2446,29 @@ canvas#envelopeCanvas {
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .sc-icon {
-  font-size: 1.8rem;
+  font-size: 1.65rem;
   line-height: 1;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
 }
 
 .sc-title-wrap {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .sc-lead-tag {
@@ -2462,33 +2478,42 @@ canvas#envelopeCanvas {
   letter-spacing: 0.6px;
   text-transform: uppercase;
   font-family: 'JetBrains Mono', monospace;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .sc-title {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.3;
+  line-height: 1.35;
   margin: 0;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .sc-summary {
   font-size: 0.8rem;
   color: #94a3b8;
   line-height: 1.4;
-  margin: 0;
+  margin: 2px 0 0 0;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .sc-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
-  margin-left: 14px;
+  margin-left: 12px;
+  margin-top: 4px;
 }
 
 .sc-badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 800;
   font-family: 'JetBrains Mono', monospace;
   color: #10b981;
@@ -2497,14 +2522,20 @@ canvas#envelopeCanvas {
   padding: 3px 8px;
   border-radius: 8px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .sc-chevron {
   font-size: 0.85rem;
   color: #94a3b8;
   transition: transform 0.25s ease, color 0.25s ease;
-  width: 16px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .science-card.active .sc-chevron {
@@ -2704,32 +2735,82 @@ canvas#envelopeCanvas {
 /* Responzivita pre Vedecký základ */
 @media (max-width: 640px) {
   .science-modal-card {
-    max-height: 96vh;
+    max-height: 94vh;
     border-radius: 18px;
+    margin: 4px;
   }
   .science-modal-header {
-    padding: 18px 16px 14px;
+    padding: 16px 16px 12px;
   }
   .smh-title {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+  }
+  .smh-sub {
+    font-size: 0.78rem;
+  }
+  .science-intro-banner {
+    padding: 10px 14px;
+    font-size: 0.8rem;
   }
   .science-accordion {
-    padding: 14px 16px;
+    padding: 12px 14px;
+    gap: 10px;
   }
   .sc-header {
-    padding: 14px;
+    padding: 12px 14px;
+  }
+  .sc-icon {
+    font-size: 1.45rem;
+    width: 28px;
+    height: 28px;
+  }
+  .sc-title {
+    font-size: 0.92rem;
+  }
+  .sc-summary {
+    font-size: 0.74rem;
   }
   .sc-header-right {
     margin-left: 8px;
+    gap: 6px;
   }
   .sc-badge {
     display: none;
   }
   .sc-body {
-    padding: 0 14px 16px 14px;
+    padding: 0 14px 14px 14px;
   }
   .science-modal-footer {
-    padding: 14px 16px;
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .smh-title {
+    font-size: 1.05rem;
+  }
+  .science-modal-header {
+    padding: 14px 12px 10px;
+  }
+  .science-accordion {
+    padding: 10px 10px;
+    gap: 8px;
+  }
+  .sc-header {
+    padding: 10px 12px;
+  }
+  .sc-title {
+    font-size: 0.88rem;
+  }
+  .sc-body {
+    padding: 0 12px 12px 12px;
+  }
+  .sc-tags {
+    gap: 4px;
+  }
+  .sc-tag {
+    font-size: 0.68rem;
+    padding: 2px 6px;
   }
 }
 
