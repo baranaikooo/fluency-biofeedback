@@ -19,6 +19,107 @@
 </head>
 <body>
 
+<!-- ==================================================================== -->
+<!-- ÚVODNÁ OBRAZOVKA & AUTENTIFIKAČNÁ BRÁNA (WELCOME & LOGIN GATEWAY)     -->
+<!-- ==================================================================== -->
+<div class="welcome-auth-overlay" id="welcomeAuthOverlay" style="display:none;">
+  <div class="welcome-auth-modal">
+    <!-- Branding & Title -->
+    <div class="welcome-hero">
+      <div class="welcome-logo-badge">
+        <span class="welcome-logo-icon">🦉</span>
+      </div>
+      <h1 class="welcome-title">Fluency Biofeedback</h1>
+      <p class="welcome-tagline">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
+
+      <div class="welcome-features-grid">
+        <div class="wf-item">
+          <span class="wf-icon">🎧</span>
+          <div class="wf-text">
+            <strong>DAF & FAF</strong>
+            <span>Sluchová spätná väzba</span>
+          </div>
+        </div>
+        <div class="wf-item">
+          <span class="wf-icon">🎯</span>
+          <div class="wf-text">
+            <strong>5 Svetov / 25 Úrovní</strong>
+            <span>Neuro-tréning nábehu</span>
+          </div>
+        </div>
+        <div class="wf-item">
+          <span class="wf-icon">☁️</span>
+          <div class="wf-text">
+            <strong>Cloud Záloha</strong>
+            <span>Ukladanie sérií & XP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="welcome-auth-card">
+      <div class="welcome-auth-header">
+        <h2 class="welcome-auth-heading" id="welcomeAuthHeading">Prihlásenie do profilu</h2>
+        <p class="welcome-auth-sub" id="welcomeAuthSub">Prihlás sa a tvoj tréningový postup, série dní a XP sa automaticky zálohujú v cloude.</p>
+      </div>
+
+      <!-- Google Sign-in 1-Click -->
+      <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
+        <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Pokračovať cez Google účet</span>
+      </button>
+
+      <div class="auth-divider">
+        <span>ALEBO CEZ EMAIL</span>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="auth-mode-toggle">
+        <button class="amt-btn active" id="amtLoginBtn" type="button">Prihlásenie</button>
+        <button class="amt-btn" id="amtRegisterBtn" type="button">Nový účet</button>
+        <button class="amt-btn" id="amtMagicBtn" type="button">Link bez hesla</button>
+      </div>
+
+      <!-- Form -->
+      <div class="welcome-auth-form">
+        <div class="auth-field-group" id="welcomeNameGroup" style="display:none;">
+          <label class="auth-field-label" for="welcomeNameInput">Tvoje Meno / Prezývka</label>
+          <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Peter Novák" autocomplete="name" />
+        </div>
+
+        <div class="auth-field-group">
+          <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
+          <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
+        </div>
+
+        <div class="auth-field-group" id="welcomePasswordGroup">
+          <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
+          <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
+        </div>
+
+        <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
+
+        <button class="btn-3d green full" id="welcomeSubmitBtn" type="button">
+          <span id="welcomeSubmitText">🔑 Prihlásiť sa</span>
+        </button>
+      </div>
+
+      <!-- Guest bypass -->
+      <div class="welcome-guest-row">
+        <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
+          <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="app-layout" id="appLayout">
 
   <!-- ==================================================================== -->
@@ -473,7 +574,11 @@
 
           <!-- Odhlásený stav -->
           <div class="auth-view-box" id="authLoggedOutView">
-            <p class="auth-card-desc">Prihlás sa svojím emailom a zálohuj si rečový tréning, históriu mäkkých nábehov a Trezor slov do cloudu.</p>
+            <p class="auth-card-desc">Prihlás sa svojím emailom alebo Google účtom a zálohuj si rečový tréning, históriu mäkkých nábehov a Trezor slov do cloudu.</p>
+
+            <button class="btn-3d green full" id="openAuthModalFromTelemetryBtn" type="button" style="margin-bottom: 14px;">
+              <span>🚀 Otvoriť prihlasovaciu obrazovku</span>
+            </button>
 
             <!-- Primárne prihlásenie cez Email -->
             <div class="email-auth-form">
@@ -518,7 +623,7 @@
             </div>
             <div class="profile-sync-badge">
               <span class="sync-icon">☁️</span>
-              <span class="sync-text">Cloud synchronizácia aktívna (Postgres)</span>
+              <span class="sync-text" id="profileSyncText">Cloud synchronizácia aktívna (Postgres)</span>
             </div>
             <button class="btn-3d red full sm" id="btnLogout" type="button">Odhlásiť sa</button>
           </div>

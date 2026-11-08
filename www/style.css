@@ -3329,3 +3329,247 @@ canvas#envelopeCanvas {
   color: #34d399;
 }
 
+/* ==========================================================================
+   16. ÚVODNÁ OBRAZOVKA & AUTENTIFIKAČNÁ BRÁNA (WELCOME & ONBOARDING GATEWAY)
+   ========================================================================== */
+.welcome-auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: radial-gradient(circle at 50% 15%, #0f2347 0%, #091224 55%, #030712 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.welcome-auth-modal {
+  max-width: 480px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.welcome-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.welcome-logo-badge {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.35);
+  margin-bottom: 14px;
+}
+
+.welcome-logo-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.welcome-title {
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.welcome-tagline {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 6px 0 16px 0;
+  max-width: 380px;
+}
+
+.welcome-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.wf-item {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 14px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.wf-icon {
+  font-size: 1.35rem;
+}
+
+.wf-text strong {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+.wf-text span {
+  display: block;
+  font-size: 0.66rem;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.welcome-auth-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(56, 189, 248, 0.22);
+  border-radius: 22px;
+  padding: 22px 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+.welcome-auth-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.welcome-auth-heading {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.welcome-auth-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.social-login-btn.full-width {
+  width: 100%;
+}
+
+.auth-mode-toggle {
+  display: flex;
+  background: #091224;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.amt-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 8px 6px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.amt-btn.active {
+  background: #1e293b;
+  color: #38bdf8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.welcome-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auth-field-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-left: 2px;
+}
+
+.welcome-guest-row {
+  margin-top: 16px;
+  text-align: center;
+  padding-top: 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.guest-bypass-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.guest-bypass-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.guest-bypass-btn:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 480px) {
+  .welcome-auth-modal {
+    gap: 16px;
+  }
+  .welcome-title {
+    font-size: 1.55rem;
+  }
+  .welcome-features-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .wf-item {
+    padding: 8px 4px;
+  }
+  .wf-text strong {
+    font-size: 0.7rem;
+  }
+  .wf-text span {
+    font-size: 0.6rem;
+  }
+  .welcome-auth-card {
+    padding: 18px 14px;
+  }
+}
+

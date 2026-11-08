@@ -471,8 +471,63 @@ class DuoStateManager {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
       localStorage.setItem('fl_custom_name', this.state.userName);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(this.history));
+      // Okamžitá synchronizácia s cloudom ak je používateľ prihlásený
+      if (typeof window.fluencyAuth !== 'undefined' && window.fluencyAuth.syncCloudProgress) {
+        window.fluencyAuth.syncCloudProgress(this.state);
+      }
     } catch (e) {
       console.warn('Chyba ukladania:', e);
+    }
+  }
+
+  applyCloudState(cloudProfile) {
+    if (!cloudProfile) return;
+    let changed = false;
+
+    // Synchronizácia XP (berieme vyššiu hodnotu)
+    if (typeof cloudProfile.xp === 'number' && cloudProfile.xp > this.state.xp) {
+      this.state.xp = cloudProfile.xp;
+      changed = true;
+    }
+    // Synchronizácia série dní (streak)
+    if (typeof cloudProfile.streak === 'number' && cloudProfile.streak > this.state.streak) {
+      this.state.streak = cloudProfile.streak;
+      changed = true;
+    }
+    // Meno používateľa
+    const profileName = cloudProfile.preferred_name || cloudProfile.full_name;
+    if (profileName && profileName !== this.state.userName) {
+      this.state.userName = profileName;
+      changed = true;
+    }
+    // Úrovne a postup
+    if (cloudProfile.progress && typeof cloudProfile.progress === 'object') {
+      const p = cloudProfile.progress;
+      if (Array.isArray(p.unlockedLevels) && p.unlockedLevels.length > 0) {
+        const mergedUnlocked = Array.from(new Set([...this.state.unlockedLevels, ...p.unlockedLevels]));
+        if (mergedUnlocked.length > this.state.unlockedLevels.length) {
+          this.state.unlockedLevels = mergedUnlocked;
+          changed = true;
+        }
+      }
+      if (p.completedLevels && typeof p.completedLevels === 'object') {
+        this.state.completedLevels = { ...this.state.completedLevels, ...p.completedLevels };
+        changed = true;
+      }
+      if (typeof p.lives === 'number') {
+        this.state.lives = p.lives;
+      }
+    }
+
+    if (changed) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+        localStorage.setItem('fl_custom_name', this.state.userName);
+      } catch (_) {}
+      this.renderHud();
+      if (typeof duoPath !== 'undefined') duoPath.render();
+      this.renderTelemetry();
+      console.log('[Gamification] Cloud progres úspešne aplikovaný do lokálneho stavu');
     }
   }
 
@@ -641,6 +696,7 @@ class DuoStateManager {
 }
 
 const duoState = new DuoStateManager();
+window.duoState = duoState;
 
 // ============================================================================
 // 4. RENDEROVANIE LINEÁRNEHO STROMU ÚROVNÍ (WINDING PATH)
