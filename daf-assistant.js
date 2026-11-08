@@ -1,5 +1,5 @@
 /**
- * FLUENCY BIOFEEDBACK - LIVE DAF SPEECHEASY ASSISTANT ENGINE
+ * FLUENCY BIOFEEDBACK - LIVE DAF ASSISTANT ENGINE
  * Paralelná vetva Web Audio API: mediaStreamSource -> DelayNode -> GainNode -> destination
  * Neovplyvňuje 5-bodový DSP audit.
  * Rozsah delay: 40 ms až 140 ms (default 70 ms)
