@@ -2156,3 +2156,580 @@ canvas#envelopeCanvas {
   .profile-hero-stats { grid-template-columns: 1fr 1fr 1fr; }
   .ph-val { font-size: 1rem; }
 }
+
+/* ==========================================================================
+   14. VEDECKÝ ZÁKLAD & KLINICKÉ MODELY (SCIENTIFIC FOUNDATION & ACCORDION)
+   ========================================================================== */
+
+/* Nové farebné varianty 3D tlačidiel */
+.btn-3d.cyan {
+  background: #0ea5e9;
+  border-bottom-color: #0284c7;
+  color: #ffffff;
+}
+.btn-3d.cyan:hover {
+  background: #38bdf8;
+}
+
+.btn-3d.slate {
+  background: #1e293b;
+  border-bottom-color: #0f172a;
+  color: #94a3b8;
+}
+.btn-3d.slate:hover {
+  color: #f8fafc;
+  background: #27354f;
+}
+
+.card-subtitle.cyan {
+  color: #38bdf8;
+}
+
+/* Vstupná karta v Telemetrii */
+.science-entry-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(16, 185, 129, 0.05) 50%, rgba(28, 42, 79, 0.95) 100%);
+  border: 1.5px solid rgba(14, 165, 233, 0.35);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.08);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.science-entry-card:hover {
+  border-color: rgba(14, 165, 233, 0.6);
+  box-shadow: 0 12px 32px rgba(14, 165, 233, 0.16);
+  transform: translateY(-2px);
+}
+
+.science-tag-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+}
+
+.science-card-lead {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 10px 0 14px;
+}
+
+.science-mini-pillars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.s-pillar-chip {
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  padding: 4px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.science-card-action {
+  margin-top: 6px;
+}
+
+/* Modálne okno - pozadie (Backdrop) */
+.science-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 19, 43, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.science-modal-backdrop.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Modálna karta (Dialog container) */
+.science-modal-card {
+  background: #0f172a;
+  border: 1.5px solid #2a3c6d;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(14, 165, 233, 0.15);
+  animation: scienceModalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scienceModalPop {
+  0% { transform: scale(0.92) translateY(12px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Hlavička modálu */
+.science-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 24px 18px;
+  background: #111d40;
+  border-bottom: 1px solid #1e293b;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.smh-badge {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #38bdf8;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.smh-title {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.smh-sub {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.science-close-btn {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  font-weight: 800;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.science-close-btn:hover {
+  background: #334155;
+  color: #ffffff;
+  border-color: #475569;
+  transform: scale(1.05);
+}
+
+/* Úvodný banner */
+.science-intro-banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 24px;
+  background: rgba(14, 165, 233, 0.08);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+  flex-shrink: 0;
+}
+
+.sib-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.sib-text {
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.48;
+}
+
+/* Akordeón zoznam - skrolovateľná oblasť */
+.science-accordion {
+  padding: 18px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1 1 auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a3c6d #0b132b;
+}
+
+.science-accordion::-webkit-scrollbar {
+  width: 8px;
+}
+.science-accordion::-webkit-scrollbar-track {
+  background: #0b132b;
+}
+.science-accordion::-webkit-scrollbar-thumb {
+  background: #2a3c6d;
+  border-radius: 4px;
+}
+.science-accordion::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
+
+/* Karta piliera */
+.science-card {
+  background: #111d40;
+  border: 1px solid #2a3c6d;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.science-card:hover {
+  border-color: rgba(14, 165, 233, 0.5);
+}
+
+.science-card.active {
+  border-color: #0ea5e9;
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.12);
+  background: #14224b;
+}
+
+/* Hlavička karty (Accordion trigger) */
+.sc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  transition: background 0.15s ease;
+  outline: none;
+}
+
+.sc-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sc-header:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: -2px;
+}
+
+.sc-header-left {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.sc-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  flex-shrink: 0;
+}
+
+.sc-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sc-lead-tag {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.sc-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.sc-summary {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.sc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: 14px;
+}
+
+.sc-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.sc-chevron {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  transition: transform 0.25s ease, color 0.25s ease;
+  width: 16px;
+  text-align: center;
+}
+
+.science-card.active .sc-chevron {
+  color: #38bdf8;
+  transform: rotate(180deg);
+}
+
+/* Telo karty (Accordion body) */
+.sc-body {
+  display: none;
+  padding: 0 20px 20px 20px;
+  border-top: 1px solid rgba(42, 60, 109, 0.6);
+  animation: fadeInAccordion 0.25s ease forwards;
+}
+
+.science-card.active .sc-body {
+  display: block;
+}
+
+@keyframes fadeInAccordion {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Značky piliera */
+.sc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 16px;
+}
+
+.sc-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #cbd5e1;
+  background: #0b132b;
+  border: 1px solid #1e293b;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* Sekcia obsahu */
+.sc-section {
+  margin-bottom: 16px;
+}
+
+.sc-sec-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin: 0 0 6px 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.sc-section p {
+  font-size: 0.87rem;
+  color: #e2e8f0;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.sc-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sc-list li {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+  padding-left: 14px;
+  position: relative;
+}
+
+.sc-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #0ea5e9;
+  font-weight: bold;
+}
+
+.sc-stat-pill {
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.sc-stat-pill.red {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.sc-stat-pill.green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.sc-stat-pill.purple {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+/* APA Citácie blok */
+.sc-citations {
+  background: #060b18;
+  border: 1px solid #1e293b;
+  border-left: 3px solid #0ea5e9;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 18px;
+}
+
+.cit-header {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.cit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cit-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #94a3b8;
+}
+
+.cit-ref {
+  color: #cbd5e1;
+}
+
+.cit-doi {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #38bdf8;
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.15s ease;
+}
+
+.cit-doi:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+/* Pätička modálu */
+.science-modal-footer {
+  padding: 16px 24px;
+  background: #0b132b;
+  border-top: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.smf-disclaimer {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+/* Responzivita pre Vedecký základ */
+@media (max-width: 640px) {
+  .science-modal-card {
+    max-height: 96vh;
+    border-radius: 18px;
+  }
+  .science-modal-header {
+    padding: 18px 16px 14px;
+  }
+  .smh-title {
+    font-size: 1.2rem;
+  }
+  .science-accordion {
+    padding: 14px 16px;
+  }
+  .sc-header {
+    padding: 14px;
+  }
+  .sc-header-right {
+    margin-left: 8px;
+  }
+  .sc-badge {
+    display: none;
+  }
+  .sc-body {
+    padding: 0 14px 16px 14px;
+  }
+  .science-modal-footer {
+    padding: 14px 16px;
+  }
+}
+

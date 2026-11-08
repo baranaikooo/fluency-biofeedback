@@ -774,12 +774,21 @@ class DuoLessonController {
     const drawerBtn = document.getElementById('drawerContinueBtn');
     if (drawerBtn) drawerBtn.addEventListener('click', () => this.handleDrawerContinue());
 
-    // Enter klávesová skratka
+    // Enter & Escape klávesové skratky
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const drawer = document.getElementById('feedbackDrawer');
         if (drawer && drawer.classList.contains('active')) {
           this.handleDrawerContinue();
+        }
+      } else if (e.key === 'Escape') {
+        const sciModal = document.getElementById('scienceModalBackdrop');
+        if (sciModal && sciModal.classList.contains('active')) {
+          this.closeScienceModal();
+        }
+        const popover = document.getElementById('nodePopoverBackdrop');
+        if (popover && popover.classList.contains('active')) {
+          this.closePopover();
         }
       }
     });
@@ -874,6 +883,76 @@ class DuoLessonController {
         }
       });
     }
+
+    // ======================================================================
+    // VEDECKÝ ZÁKLAD & KLINICKÉ MODELY MODAL A AKORDEÓN
+    // ======================================================================
+    const openSciBtn = document.getElementById('openScienceModalBtn');
+    if (openSciBtn) {
+      openSciBtn.addEventListener('click', () => this.openScienceModal());
+    }
+
+    const brandBtn = document.getElementById('brandLogoBtn');
+    if (brandBtn) {
+      brandBtn.style.cursor = 'pointer';
+      brandBtn.addEventListener('click', () => this.openScienceModal());
+    }
+
+    const closeSciBtn = document.getElementById('scienceModalCloseBtn');
+    if (closeSciBtn) {
+      closeSciBtn.addEventListener('click', () => this.closeScienceModal());
+    }
+
+    const closeSciFootBtn = document.getElementById('closeScienceModalBtn');
+    if (closeSciFootBtn) {
+      closeSciFootBtn.addEventListener('click', () => this.closeScienceModal());
+    }
+
+    const sciBackdrop = document.getElementById('scienceModalBackdrop');
+    if (sciBackdrop) {
+      sciBackdrop.addEventListener('click', (e) => {
+        if (e.target === sciBackdrop) {
+          this.closeScienceModal();
+        }
+      });
+    }
+
+    // Interaktívny akordeón (rozklikávanie pilierov)
+    const sciHeaders = document.querySelectorAll('.sc-header');
+    sciHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const card = header.closest('.science-card');
+        if (!card) return;
+        const wasActive = card.classList.contains('active');
+        card.classList.toggle('active');
+        header.setAttribute('aria-expanded', String(!wasActive));
+        duoSfx.playTone(wasActive ? 350 : 500, 'sine', 0.04, 0.06);
+      });
+
+      header.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          header.click();
+        }
+      });
+    });
+  }
+
+  // ========================================================================
+  // OBSLUHA MODÁLU VEDECKÝ ZÁKLAD
+  // ========================================================================
+  openScienceModal() {
+    const modal = document.getElementById('scienceModalBackdrop');
+    if (!modal) return;
+    modal.classList.add('active');
+    duoSfx.playTone(540, 'triangle', 0.08, 0.08);
+  }
+
+  closeScienceModal() {
+    const modal = document.getElementById('scienceModalBackdrop');
+    if (!modal) return;
+    modal.classList.remove('active');
+    duoSfx.playTone(380, 'sine', 0.05, 0.05);
   }
 
   // ========================================================================

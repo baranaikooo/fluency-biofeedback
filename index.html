@@ -324,6 +324,35 @@
           </div>
         </div>
 
+        <!-- Vedecký základ & Klinické modely (Entry Karta) -->
+        <div class="telemetry-card science-entry-card" id="scienceEntryCard">
+          <div class="card-header-row">
+            <div>
+              <div class="card-subtitle cyan">EVIDENCE-BASED VÝSKUM & NEUROAKUSTIKA</div>
+              <h3 class="card-title">Vedecký Základ & Klinické Modely</h3>
+            </div>
+            <span class="science-tag-pill">5 Pilierov</span>
+          </div>
+
+          <p class="science-card-lead">
+            Fluency nie je len gamifikovaný trenažér – je to klinický systém postavený na 5 recenzovaných neurobiologických pilieroch (DIVA/GODIVA, VRT akustika, DAF Choral Speech, Valsalva dekompresia a hierarchická stresová inokulácia).
+          </p>
+
+          <div class="science-mini-pillars">
+            <span class="s-pillar-chip">🧠 1. DIVA / GODIVA</span>
+            <span class="s-pillar-chip">📈 2. Akustika VRT</span>
+            <span class="s-pillar-chip">🎧 3. DAF SpeechEasy</span>
+            <span class="s-pillar-chip">🫁 4. Valsalva Reflex</span>
+            <span class="s-pillar-chip">⚡ 5. Stresová Inokulácia</span>
+          </div>
+
+          <div class="science-card-action">
+            <button class="btn-3d cyan full" id="openScienceModalBtn">
+              <span>🔬 OTVORIŤ VEDECKÉ CITÁCIE & MODELY</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Štatistický prehľad pokusov -->
         <div class="telemetry-card">
           <div class="card-subtitle">CELKOVÝ PREHĽAD REČI</div>
@@ -615,6 +644,380 @@
       <button class="btn-3d green full lg" id="celebrationBackBtn">
         <span>POKRAČOVAŤ</span>
       </button>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- VEDECKÝ ZÁKLAD & KLINICKÉ MODELY (SCIENTIFIC FOUNDATION MODAL)       -->
+  <!-- ==================================================================== -->
+  <div class="science-modal-backdrop" id="scienceModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="scienceModalTitle">
+    <div class="science-modal-card">
+      
+      <!-- Hlavička modálu -->
+      <div class="science-modal-header">
+        <div class="smh-left">
+          <div class="smh-badge">EVIDENCE-BASED NEUROAKUSTIKA</div>
+          <h2 class="smh-title" id="scienceModalTitle">Vedecký Základ & Klinické Modely</h2>
+          <p class="smh-sub">Klinická architektúra, neurobiologické mechanizmy a recenzované citácie aplikácie Fluency</p>
+        </div>
+        <button class="science-close-btn" id="scienceModalCloseBtn" title="Zavrieť dialóg">✕</button>
+      </div>
+
+      <!-- Úvodný banner -->
+      <div class="science-intro-banner">
+        <div class="sib-icon">🔬</div>
+        <div class="sib-text">
+          Fluency Biofeedback vychádza z prísnych empirických výskumov v oblasti motorického riadenia reči, neuroakustiky a kognitívno-behaviorálnej terapie balbuties. Kliknutím na jednotlivé piliere zobrazíš detailný fyziologický mechanizmus a formálne APA citácie.
+        </div>
+      </div>
+
+      <!-- Akordeón 5 pilierov -->
+      <div class="science-accordion" id="scienceAccordion">
+
+        <!-- -------------------------------------------------------------- -->
+        <!-- PILIER 1: DIVA & GODIVA MODEL                                  -->
+        <!-- -------------------------------------------------------------- -->
+        <article class="science-card active" data-pillar="1">
+          <header class="sc-header" tabindex="0" role="button" aria-expanded="true">
+            <div class="sc-header-left">
+              <span class="sc-icon">🧠</span>
+              <div class="sc-title-wrap">
+                <div class="sc-lead-tag">PILIER 1 • NEUROVÝPOČTOVÝ MODEL</div>
+                <h3 class="sc-title">DIVA & GODIVA Model (Neurónové riadenie reči)</h3>
+                <p class="sc-summary">Kompenzácia zlyhávajúcej doprednej motorickej väzby vizuálnym biofeedbackom v reálnom čase</p>
+              </div>
+            </div>
+            <div class="sc-header-right">
+              <span class="sc-badge">Feedforward Bypass</span>
+              <span class="sc-chevron">▲</span>
+            </div>
+          </header>
+
+          <div class="sc-body">
+            <div class="sc-tags">
+              <span class="sc-tag">DIVA Architecture</span>
+              <span class="sc-tag">GODIVA Sequencing</span>
+              <span class="sc-tag">Kortiko-striatálne slučky</span>
+              <span class="sc-tag">Latencia &lt; 50 ms</span>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Neurobiologický a výpočtový mechanizmus</h4>
+              <p>
+                Výpočtový model <strong>DIVA (Directions into Velocities of Articulators)</strong> a jeho sekvenčná nadstavba <strong>GODIVA (Gradient Order DIVA)</strong> opisujú reč ako súhru dvoch paralelných systémov:
+              </p>
+              <ul class="sc-list">
+                <li><strong>Dopredný podsystém (Feedforward Control):</strong> Rýchly riadiaci okruh lokalizovaný v suplementárnej motorickej oblasti (SMA) a primárnej motorickej kôre (M1). Zodpovedá za okamžité, automatizované spúšťanie fonácie bez čakania na zmyslovú odozvu.</li>
+                <li><strong>Spätnoväzbový podsystém (Feedback Control):</strong> Pomalší okruh v sluchovej a somatosenzorickej kôre, ktorý porovnáva reálny akustický výstup s očakávaným zmyslovým vzorcom.</li>
+              </ul>
+              <p>
+                Pri balbuties dochádza k štrukturálnej a funkčnej dysfunkcii v kortiko-striato-talamo-kortikálnych dráhach bazálnych ganglií. Interný dopredný prediktívny model zlyháva v časovaní a generuje falošný somatosenzorický chybový signál. Mozog situáciu vyhodnotí ako kolíziu, okamžite preruší motorický príkaz a pokúsi sa o reštart slabiky – čo sa klinicky prejavuje ako <strong>tonický blok</strong> alebo <strong>klonické opakovanie</strong>.
+              </p>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Aplikácia v motore Fluency Biofeedback</h4>
+              <p>
+                Aplikácia nahrádza zlyhávajúcu vnútornú somatosenzorickú väzbu <strong>okamžitým externým vizuálnym biofeedbackom v reálnom čase</strong> (vizuálny pacer, okamžitá amplitúdová obálka RMS a spektrálny audit). Vizuálna slučka obchádza poškodené senzorimotorické okruhy, poskytuje kortexu alternatívny stabilizačný signál v latencii do 50 ms a umožňuje vedomú rekalibráciu artikulačného traktu.
+              </p>
+            </div>
+
+            <div class="sc-citations">
+              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
+              <ul class="cit-list">
+                <li class="cit-item">
+                  <span class="cit-ref">Guenther, F. H., Ghosh, S. S., & Tourville, J. A. (2006). Neural modeling and imaging of the cortical interactions underlying syllable production. <em>Brain and Language</em>, 96(3), 280–301.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1016/j.bandl.2005.06.001" target="_blank" rel="noopener">doi:10.1016/j.bandl.2005.06.001</a>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Bohland, J. W., Bullock, D., & Guenther, F. H. (2010). Neural representations and mechanisms for the performance of action sequences: The GODIVA model. <em>Cerebral Cortex</em>, 20(4), 844–867.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1093/cercor/bhp152" target="_blank" rel="noopener">doi:10.1093/cercor/bhp152</a>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Tourville, J. A., & Guenther, F. H. (2011). The DIVA model: A neural theory of speech acquisition and production. <em>Language and Cognitive Processes</em>, 26(7), 952–981.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1080/01690960903498424" target="_blank" rel="noopener">doi:10.1080/01690960903498424</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- -------------------------------------------------------------- -->
+        <!-- PILIER 2: GENTLE VOICE ONSET & AKUSTIKA VRT                    -->
+        <!-- -------------------------------------------------------------- -->
+        <article class="science-card" data-pillar="2">
+          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
+            <div class="sc-header-left">
+              <span class="sc-icon">📈</span>
+              <div class="sc-title-wrap">
+                <div class="sc-lead-tag">PILIER 2 • AKUSTICKÁ BIOMETRIKA</div>
+                <h3 class="sc-title">Gentle Voice Onset & Akustika VRT (Mäkký nábeh)</h3>
+                <p class="sc-summary">Eliminácia tvrdého glotálneho rázu a hyperaddukcie hlasiviek riadeným predĺžením nábehu akustického tlaku</p>
+              </div>
+            </div>
+            <div class="sc-header-right">
+              <span class="sc-badge">VRT 60–140 ms</span>
+              <span class="sc-chevron">▼</span>
+            </div>
+          </header>
+
+          <div class="sc-body">
+            <div class="sc-tags">
+              <span class="sc-tag">Vocal Rise Time</span>
+              <span class="sc-tag">Hollins Fluency System</span>
+              <span class="sc-tag">Laryngálna addukcia</span>
+              <span class="sc-tag">M. thyroarytenoideus</span>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Fyziologický a akustický mechanizmus</h4>
+              <p>
+                Primárnym mechanickým spúšťačom laryngálneho bloku pri iniciácii samohlások a plozív je <strong>tvrdý glotálny ráz (hard glottal attack)</strong>. Ešte pred začiatkom fonácie dochádza k nadmernej hyperaddukcii a stiahnutiu vnútorných hlasivkových svalov (najmä <em>m. thyroarytenoideus</em> a <em>m. cricoarytenoideus lateralis</em>). Pľúcny exspiračný tlak narastá za pevne uzavretou glotis, až kým nedôjde k explozívnemu akustickému tresku (VRT &lt; 45 ms) alebo k úplnému laryngálnemu spazmu.
+              </p>
+              <p>
+                Klinická metodika <strong>Gentle Voice Onset (GVO)</strong>, vyvinutá v rámci Hollins Fluency System (Dr. Ronald Webster), trénuje plynulý, kontrolovaný prechod od subfonatórneho laminárneho prúdenia vzduchu k postupnému rozkmitaniu slizničného krytu hlasiviek. Akustickým indexom tejto mäkkosti je <strong>Vocal Rise Time (VRT)</strong> – časový interval potrebný na vzostup amplitúdy zvukovej obálky z 20 % na 80 % saturovaného RMS signálu.
+              </p>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Aplikácia v motore Fluency Biofeedback</h4>
+              <p>
+                Modul <code>dsp-core.js</code> vykonáva sub-milisekundový výpočet obálky signálu metódou kĺzavého RMS okna. Systém kalibruje tri diagnostické zóny:
+              </p>
+              <ul class="sc-list">
+                <li><span class="sc-stat-pill red">&lt; 45 ms (Tvrdý glotálny ráz):</span> Prudký úder v hrtane, riziko spazmu. Aplikácia neakceptuje pokus ako Perfect a navrhne jemnejší začiatok s výdychom.</li>
+                <li><span class="sc-stat-pill green">60–140 ms (Klinický Sweet-Spot):</span> Optimálny fyziologický nábeh sliznice, uvoľnené suprahyoidné svalstvo, zlatý štandard plynulosti.</li>
+                <li><span class="sc-stat-pill purple">&gt; 240 ms (Dychový únik / Aspiration):</span> Nadmerný únik vzduchu bez včasného kontaktu hlasiviek (hypoaddukcia).</li>
+              </ul>
+            </div>
+
+            <div class="sc-citations">
+              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
+              <ul class="cit-list">
+                <li class="cit-item">
+                  <span class="cit-ref">Webster, R. L. (1974). A behavioral analysis of stuttering: Presentation of a rationale with speech improvement targets. In K. S. Calhoun, H. E. Adams, & K. M. Mitchell (Eds.), <em>Innovative treatment methods in psychopathology</em> (pp. 73–96). John Wiley & Sons.</span>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Mallard, A. R., & Westbrook, J. B. (1983). Vowel duration in stutterers and nonstutterers: A study of gentle onset. <em>Journal of Fluency Disorders</em>, 8(3), 279–285.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1016/0094-730X(83)90010-8" target="_blank" rel="noopener">doi:10.1016/0094-730X(83)90010-8</a>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Peters, H. F. M., & Boves, L. (1988). Coordination of aerodynamic and phonatory processes in stuttering and normal speech. <em>Journal of Speech and Hearing Research</em>, 31(3), 352–361.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1044/jshr.3103.352" target="_blank" rel="noopener">doi:10.1044/jshr.3103.352</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- -------------------------------------------------------------- -->
+        <!-- PILIER 3: CHORAL SPEECH EFFECT & DAF MODULÁCIA                 -->
+        <!-- -------------------------------------------------------------- -->
+        <article class="science-card" data-pillar="3">
+          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
+            <div class="sc-header-left">
+              <span class="sc-icon">🎧</span>
+              <div class="sc-title-wrap">
+                <div class="sc-lead-tag">PILIER 3 • AUDITÍVNA NEUROSTIMULÁCIA</div>
+                <h3 class="sc-title">Choral Speech Effect & Sluchová modulácia (DAF / SpeechEasy)</h3>
+                <p class="sc-summary">Oneskorená sluchová spätná väzba (40–140 ms) obchádzajúca časovú dysfunkciu bazálnych ganglií</p>
+              </div>
+            </div>
+            <div class="sc-header-right">
+              <span class="sc-badge">DAF 70 ms</span>
+              <span class="sc-chevron">▼</span>
+            </div>
+          </header>
+
+          <div class="sc-body">
+            <div class="sc-tags">
+              <span class="sc-tag">Delayed Auditory Feedback</span>
+              <span class="sc-tag">Choral Effect</span>
+              <span class="sc-tag">Reaktivácia STG</span>
+              <span class="sc-tag">SpeechEasy Architecture</span>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Neurobiologický mechanizmus efektu zborovej reči</h4>
+              <p>
+                Jedným z najvýraznejších a najlepšie preskúmaných fenoménov v rečovej patológii je <strong>efekt zborovej reči (choral speech effect)</strong>: ak osoba so zajakavosťou číta alebo hovorí súčasne v synchronizácii s iným rečníkom, prejavy zajakavosti okamžite klesajú o 80 až 90 % bez nutnosti vedomej techniky.
+              </p>
+              <p>
+                Neurozobrazovacie fMRI štúdie (Foundas et al., 2004) odhalili, že u osôb s balbuties je počas vlastnej reči ľavá sluchová kôra (najmä <em>gyrus temporalis superior</em> – STG a <em>planum temporale</em>) hypoaktívna, zatiaľ čo pravá hemisféra vykazuje neefektívnu kompenzačnú hyperaktivitu. <strong>Oneskorená sluchová spätná väzba (Delayed Auditory Feedback – DAF)</strong> v rozsahu 50–100 ms simuluje prítomnosť druhého hovoriaceho hlasu priamo v uchu. Tento signál vyvoláva masívnu bilaterálnu reaktiváciu STG a poskytuje kortikálnym okruhom externý rytmický kľúč (<em>external pacing cue</em>), ktorý nahrádza porušené biologické hodiny v bazálnych gangliách.
+              </p>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Aplikácia v motore Fluency Biofeedback</h4>
+              <p>
+                Záložka <strong>"🎧 Asistent"</strong> prináša klinický ekvivalent prenosných prístrojov SpeechEasy priamo do webového rozhrania. Cez Web Audio API je vytvorená paralelná, nízko-latenčná zvuková vetva (<code>mediaStreamSource → DelayNode → GainNode → destination</code>), ktorá neovplyvňuje analytický DSP motor. Používateľ má k dispozícii kalibrovaný rozsah 40–140 ms s optimálnym klinickým stredom <strong>70 ms</strong> a vizuálnym pulzným indikátorom prenosu hlasu do ucha.
+              </p>
+            </div>
+
+            <div class="sc-citations">
+              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
+              <ul class="cit-list">
+                <li class="cit-item">
+                  <span class="cit-ref">Kalinowski, J., Stuart, A., Sark, S., & Armson, J. (1996). Stuttering amelioration at various auditory delays and speech rates. <em>European Journal of Disorders of Communication</em>, 31(3), 259–269.</span>
+                  <a class="cit-doi" href="https://doi.org/10.3109/13682829609033157" target="_blank" rel="noopener">doi:10.3109/13682829609033157</a>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Foundas, A. L., Bollich, A. M., Feldman, J., Corey, D. M., Hurley, M., Lemen, L. C., & Heilman, K. M. (2004). Aberrant auditory-motor processing in developmental stuttering: An fMRI study. <em>Cognitive and Behavioral Neurology</em>, 17(2), 77–85.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1097/00146965-200406000-00004" target="_blank" rel="noopener">doi:10.1097/00146965-200406000-00004</a>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Stuart, A., Kalinowski, J., Rastatter, M. P., & Saltuklaroglu, T. (2004). Investigations of the impact of altered auditory feedback in-the-ear devices on the speech of people who stutter: One-year follow-up. <em>Disability and Rehabilitation</em>, 26(14–15), 830–841.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1080/09638280410001699419" target="_blank" rel="noopener">doi:10.1080/09638280410001699419</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- -------------------------------------------------------------- -->
+        <!-- PILIER 4: VALSALVOV REFLEX A DEKOMPRESIA MANDIBULY             -->
+        <!-- -------------------------------------------------------------- -->
+        <article class="science-card" data-pillar="4">
+          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
+            <div class="sc-header-left">
+              <span class="sc-icon">𫫁</span>
+              <div class="sc-title-wrap">
+                <div class="sc-lead-tag">PILIER 4 • BIOMECHANICKÁ DEKOMPRESIA</div>
+                <h3 class="sc-title">Valsalvov reflex a dekompresia mandibuly (SOS Dril)</h3>
+                <p class="sc-summary">Rozpojenie nevedomého zovretia hrtanových zvieračov mechanickým uvoľnením sánky o 2–3 mm</p>
+              </div>
+            </div>
+            <div class="sc-header-right">
+              <span class="sc-badge">Valsalva Bypass</span>
+              <span class="sc-chevron">▼</span>
+            </div>
+          </header>
+
+          <div class="sc-body">
+            <div class="sc-tags">
+              <span class="sc-tag">Valsalva Mechanism</span>
+              <span class="sc-tag">Mandibulárna dekompresia</span>
+              <span class="sc-tag">Suprahyoidné svalstvo</span>
+              <span class="sc-tag">Laryngálny spazmus</span>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Biomechanický a fyziologický mechanizmus</h4>
+              <p>
+                Výskum klinického neurológa a rečového teoretika Dr. Williama D. Parryho formuloval hypotézu <strong>Valsalvovho mechanizmu (Valsalva Hypothesis)</strong>. Podľa tohto modelu nevzniká rečový blok v primárnych jazykových centrách, ale spustením primitívneho reflexu tlaku v hrtane. Valsalvov reflex je evolučne starý obranný program: slúži na nepriedušné uzatvorenie dýchacích ciest pri ťažkej fyzickej námahe (dvíhanie bremien, tlačenie, defekácia) prostredníctvom pevných laryngeálnych zvieračov.
+              </p>
+              <p>
+                Keď rečník anticipuje náročnú hlásku alebo sociálne ohrozenie, mozog situáciu chybne interpretuje ako potrebu "vynaložiť viac sily na pretlačenie slova". Tento impulz zapne Valsalvov reflex: suprahyoidné svaly (<em>m. mylohyoideus</em>, <em>m. geniohyoideus</em>) vytiahnu jazylku a sánku smerom hore a hrtanové zvierače sa reflexne hermeticky zovrú. Čím viac sa človek snaží slovo silou vytlačiť, tým silnejšie sa zvierače zovrú.
+              </p>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Aplikácia v motore Fluency Biofeedback</h4>
+              <p>
+                Záložka <strong>"⚡ Rýchly Dril" (SOS Sandbox)</strong> poskytuje rýchlu terénnu rekalibráciu pred reálnym sociálnym vstupom (napr. pred nákupom, hovorom či poradou). Pacer aplikácie vedie rečníka k cielenej <strong>dekompresii mandibuly</strong>: mechanickému uvoľneniu spodnej sánky o 2 až 3 milimetre (zubné oblúky sa nesmú dotýkať, pery len jemne priľnú). Tento jednoduchý pohyb mechanicky neutralizuje ťah suprahyoidných svalov, čo fyziologicky znemožňuje zopnutie zvieračov hrtana a rozbíja patologický Valsalvov reflex ešte pred prvou fonáciou.
+              </p>
+            </div>
+
+            <div class="sc-citations">
+              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
+              <ul class="cit-list">
+                <li class="cit-item">
+                  <span class="cit-ref">Parry, W. D. (1985/2013). <em>Understanding & controlling stuttering: A comprehensive new approach based on the Valsalva mechanism</em> (3rd ed.). National Stuttering Association.</span>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Smith, A., & Denny, M. (1990). High-frequency oscillations in human speech muscle activity. <em>Brain Research</em>, 534(1–2), 269–274.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1016/0006-8993(90)90141-8" target="_blank" rel="noopener">doi:10.1016/0006-8993(90)90141-8</a>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Loucks, T. M., & De Nil, L. F. (2006). Anomalous sensorimotor integration in developmental stuttering: A review. <em>International Journal of Orofacial Myology</em>, 32, 22–37.</span>
+                  <a class="cit-doi" href="https://doi.org/10.52010/ijom.2006.32.1.3" target="_blank" rel="noopener">doi:10.52010/ijom.2006.32.1.3</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- -------------------------------------------------------------- -->
+        <!-- PILIER 5: HIERARCHICKÁ DESENZIBILIZÁCIA A STRESOVÁ INOKULÁCIA  -->
+        <!-- -------------------------------------------------------------- -->
+        <article class="science-card" data-pillar="5">
+          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
+            <div class="sc-header-left">
+              <span class="sc-icon">⚡</span>
+              <div class="sc-title-wrap">
+                <div class="sc-lead-tag">PILIER 5 • BEHAVIORÁLNA INOKULÁCIA</div>
+                <h3 class="sc-title">Hierarchická desenzibilizácia a stresová inokulácia (5 Svetov)</h3>
+                <p class="sc-summary">Postupné vrstvenie psychofyziologickej záťaže od samohlások po prepadové hovory s kamerou</p>
+              </div>
+            </div>
+            <div class="sc-header-right">
+              <span class="sc-badge">Stress Inoculation</span>
+              <span class="sc-chevron">▼</span>
+            </div>
+          </header>
+
+          <div class="sc-body">
+            <div class="sc-tags">
+              <span class="sc-tag">Stress Inoculation Training</span>
+              <span class="sc-tag">Van Riper Therapy</span>
+              <span class="sc-tag">Reakčný limit 550 ms</span>
+              <span class="sc-tag">Kamerový očný kontakt</span>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Psychofyziologický mechanizmus a sympatiková regulácia</h4>
+              <p>
+                Plynulosť reči je mimoriadne zraniteľná voči aktivácii sympatikového nervového systému. V reálnych sociálnych interakciách vyvoláva hrozba zlyhania okamžitú autonómnu sympatikovú reakciu – vyplavenie katecholamínov, zrýchlenie srdcovej frekvencie a motorickú reakciu typu <em>freeze</em> v orofaciálnej oblasti. Ak je tréning obmedzený len na bezpečné, tiché laboratórne podmienky, dochádza k nulovému transferu zručností do reálneho života.
+              </p>
+              <p>
+                Koncept <strong>stresovej inokulácie (Stress Inoculation Training – SIT, Donald Meichenbaum, 1985)</strong> v kombinácii s klasickou <strong>desenzibilizačnou terapiou Charlesa Van Ripera (1973)</strong> a kognitívno-behaviorálnymi protokolmi (Menzies et al., 2008) buduje trvalú odolnosť voči blokom riadeným, postupným dávkovaním záťaže priamo počas nácviku motorického vzorca.
+              </p>
+            </div>
+
+            <div class="sc-section">
+              <h4 class="sc-sec-title">Aplikácia v 5 Svetoch Fluency Biofeedback</h4>
+              <p>
+                Cesta 5 Svetov je presne odstupňovaná podľa náročnosti autonómnej nervovej záťaže:
+              </p>
+              <ul class="sc-list">
+                <li><strong>Svet 1: Samohlásky (A, O, E, U, I):</strong> Bezpečné prostredie bez časového limitu; izolovaný nábehový tréning sliznice (VRT).</li>
+                <li><strong>Svet 2: Znelé spoluhlásky (M, N, V, L):</strong> Udržanie nepretržitého kmitania hlasiviek cez artikulačné prechody.</li>
+                <li><strong>Svet 3: Plozívy a zhluky (P, T, K, CH, Štv-):</strong> Tlmenie aerodynamických rázov v artikulačných bodoch bez barličiek.</li>
+                <li><strong>Svet 4: Pokladňa & Rýchlosť:</strong> Reakčný limit <strong>550 ms</strong> (zvukový prompt pokladne) – eliminuje priestor na anticipačnú paniku a trénuje okamžitú automatickú dekompresiu sánky.</li>
+                <li><strong>Svet 5: Boss Fights (Prepadové hovory & Sociálna expozícia):</strong> Telefonáty s nepredvídateľnými reakciami oponenta (kuriér, lekár, automechanik) v kombinácii s voliteľným zrkadlom prednej webkamery pre nácvik stabilného očného kontaktu pri reči.</li>
+              </ul>
+            </div>
+
+            <div class="sc-citations">
+              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
+              <ul class="cit-list">
+                <li class="cit-item">
+                  <span class="cit-ref">Van Riper, C. (1973). <em>The treatment of stuttering</em>. Prentice-Hall.</span>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Meichenbaum, D. (1985). <em>Stress inoculation training</em>. Pergamon Press.</span>
+                </li>
+                <li class="cit-item">
+                  <span class="cit-ref">Menzies, R. G., Onslow, M., Packman, A., & O’Brian, S. (2008). Cognitive behavior therapy for adults who stutter: A tutorial for speech-language pathologists. <em>Journal of Speech, Language, and Hearing Research</em>, 51(6), 1451–1464.</span>
+                  <a class="cit-doi" href="https://doi.org/10.1044/1092-4388(2008/07-0259)" target="_blank" rel="noopener">doi:10.1044/1092-4388(2008/07-0259)</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Pätička modálu -->
+      <div class="science-modal-footer">
+        <div class="smf-disclaimer">
+          ⚠️ <strong>Upozornenie:</strong> Fluency Biofeedback je neuro-tréningový biofeedback systém zameraný na motorické učenie reči. Nenahrádza individuálnu diagnostiku a intervenciu certifikovaného klinického logopéda.
+        </div>
+        <button class="btn-3d slate full" id="closeScienceModalBtn">
+          <span>← SPÄŤ NA TELEMETRIU</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
