@@ -1,8 +1,9 @@
 /**
  * ============================================================================
- * SUPABASE AUTH & CLOUD PROGRESS SYNC v3.0
+ * SUPABASE AUTH & BALBUTOLOGY DIAGNOSTIC ONBOARDING v4.0
  * Projekt: Fluency Biofeedback (valdfrjvcvxosjtxhqqb)
- * Podpora: Google OAuth, Email/Heslo, Magic Link, Úvodná obrazovka, Auto-Sync
+ * Funkcie: Tiché auto-prihlásenie, Google 1-klik, Email registrácia,
+ *          Vedecký dotazník balbutizmu & personalizácia cesty do cloudu.
  * ============================================================================
  */
 
@@ -15,8 +16,14 @@
   let client = null;
   let currentUser = null;
   let currentProfile = null;
-  let currentAuthMode = 'login'; // 'login' | 'register' | 'magic'
   let syncDebounceTimer = null;
+
+  // Stav odpovedí dotazníka
+  const diagnosticAnswers = {
+    tension: null,
+    situation: null,
+    goal: null
+  };
 
   function initSupabase() {
     if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
@@ -37,7 +44,7 @@
     return true;
   }
 
-  // Zobrazenie spätnej väzby v modale / karte
+  // Zobrazenie spätnej väzby
   function setFeedback(msg, isSuccess = false, targetId = 'welcomeAuthFeedback') {
     const el = document.getElementById(targetId);
     if (!el) return;
@@ -54,7 +61,7 @@
     }
   }
 
-  // Ovládanie úvodnej obrazovky (Welcome Gateway)
+  // Ovládanie overlayu
   function showWelcomeOverlay() {
     const overlay = document.getElementById('welcomeAuthOverlay');
     if (overlay) {
@@ -71,43 +78,25 @@
     }
   }
 
-  // Prepínanie režimov: Prihlásenie / Nový účet / Magic Link
-  function setAuthMode(mode) {
-    currentAuthMode = mode;
-    clearFeedback('welcomeAuthFeedback');
+  // Prepínanie medzi prihlásením a dotazníkom
+  function showAuthScreen() {
+    const authBox = document.getElementById('welcomeAuthBox');
+    const diagBox = document.getElementById('welcomeDiagnosticBox');
+    if (authBox) authBox.style.display = 'block';
+    if (diagBox) diagBox.style.display = 'none';
+    showWelcomeOverlay();
+  }
 
-    const amtLoginBtn = document.getElementById('amtLoginBtn');
-    const amtRegisterBtn = document.getElementById('amtRegisterBtn');
-    const amtMagicBtn = document.getElementById('amtMagicBtn');
-    const nameGroup = document.getElementById('welcomeNameGroup');
-    const passwordGroup = document.getElementById('welcomePasswordGroup');
-    const submitText = document.getElementById('welcomeSubmitText');
-    const heading = document.getElementById('welcomeAuthHeading');
-    const sub = document.getElementById('welcomeAuthSub');
+  function showDiagnosticScreen(reset = false) {
+    const authBox = document.getElementById('welcomeAuthBox');
+    const diagBox = document.getElementById('welcomeDiagnosticBox');
+    if (authBox) authBox.style.display = 'none';
+    if (diagBox) diagBox.style.display = 'block';
 
-    if (amtLoginBtn) amtLoginBtn.classList.toggle('active', mode === 'login');
-    if (amtRegisterBtn) amtRegisterBtn.classList.toggle('active', mode === 'register');
-    if (amtMagicBtn) amtMagicBtn.classList.toggle('active', mode === 'magic');
-
-    if (mode === 'login') {
-      if (nameGroup) nameGroup.style.display = 'none';
-      if (passwordGroup) passwordGroup.style.display = 'flex';
-      if (submitText) submitText.textContent = '🔑 Prihlásiť sa';
-      if (heading) heading.textContent = 'Prihlásenie do profilu';
-      if (sub) sub.textContent = 'Zadaj svoj email a heslo pre načítanie tvojho postupu z cloudu.';
-    } else if (mode === 'register') {
-      if (nameGroup) nameGroup.style.display = 'flex';
-      if (passwordGroup) passwordGroup.style.display = 'flex';
-      if (submitText) submitText.textContent = '✨ Vytvoriť nový účet';
-      if (heading) heading.textContent = 'Vytvorenie nového profilu';
-      if (sub) sub.textContent = 'Zadaj svoje meno, email a heslo. Tvoj postup sa bude bezpečne zálohovať.';
-    } else if (mode === 'magic') {
-      if (nameGroup) nameGroup.style.display = 'none';
-      if (passwordGroup) passwordGroup.style.display = 'none';
-      if (submitText) submitText.textContent = '📨 Poslať prihlasovací link';
-      if (heading) heading.textContent = 'Prihlásenie bez hesla';
-      if (sub) sub.textContent = 'Pošleme ti na email priamy bezpečný link, na ktorý stačí kliknúť.';
+    if (reset) {
+      goToDiagStep(1);
     }
+    showWelcomeOverlay();
   }
 
   // 1. Prihlásenie cez Google OAuth
@@ -130,8 +119,8 @@
     }
   }
 
-  // 2. Prihlásenie s Emailom a Heslom
-  async function signInWithEmail(email, password) {
+  // 2. Inteligentné prihlásenie / registrácia cez email
+  async function handleEmailAuth(email, password, name) {
     if (!initSupabase()) return;
     if (!email || !email.includes('@')) {
       setFeedback('Zadaj prosím platnú emailovú adresu.');
@@ -145,100 +134,81 @@
     setFeedback('Overujem prihlasovacie údaje...', true);
 
     try {
-      const { data, error } = await client.auth.signInWithPassword({
+      // 1. Skúsime sa prihlásiť
+      const { data: signInData, error: signInErr } = await client.auth.signInWithPassword({
         email: email.trim(),
         password: password
       });
 
-      if (error) throw error;
-
-      if (data && data.user) {
-        currentUser = data.user;
+      if (!signInErr && signInData.user) {
+        currentUser = signInData.user;
         sessionStorage.removeItem('fl_guest_mode');
         setFeedback('Úspešne prihlásený!', true);
-        setTimeout(() => {
-          hideWelcomeOverlay();
-          fetchProfile(currentUser);
-        }, 500);
+        await onAuthSuccess(currentUser);
+        return;
       }
-    } catch (err) {
-      console.error('[Supabase Auth] Chyba prihlásenia:', err);
-      setFeedback('Nesprávny email alebo heslo (' + (err.message || err) + ')');
-    }
-  }
 
-  // 3. Registrácia nového účtu s Emailom a Heslom
-  async function signUpWithEmail(email, password, name) {
-    if (!initSupabase()) return;
-    if (!email || !email.includes('@')) {
-      setFeedback('Zadaj prosím platnú emailovú adresu.');
-      return;
-    }
-    if (!password || password.length < 6) {
-      setFeedback('Heslo musí mať aspoň 6 znakov.');
-      return;
-    }
+      // 2. Ak používateľ neexistuje, zaregistrujeme ho
+      if (signInErr && (signInErr.message.includes('Invalid login credentials') || signInErr.status === 400 || signInErr.message.includes('Email not confirmed'))) {
+        const cleanName = (name && name.trim()) || email.split('@')[0];
+        console.log('[Supabase Auth] Registrujem nový účet pre:', email);
+        setFeedback('Vytváram tvoj profil v cloude...', true);
 
-    const cleanName = (name && name.trim()) || email.split('@')[0];
-    setFeedback('Vytváram tvoj profil v cloude...', true);
-
-    try {
-      const { data, error } = await client.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          data: {
-            full_name: cleanName,
-            preferred_name: cleanName
+        const { data: signUpData, error: signUpErr } = await client.auth.signUp({
+          email: email.trim(),
+          password: password,
+          options: {
+            data: {
+              full_name: cleanName,
+              preferred_name: cleanName
+            }
           }
+        });
+
+        if (signUpErr) throw signUpErr;
+
+        if (signUpData.user) {
+          currentUser = signUpData.user;
+          sessionStorage.removeItem('fl_guest_mode');
+          setFeedback('Účet úspešne vytvorený!', true);
+          await onAuthSuccess(currentUser);
+        } else {
+          setFeedback('Registrácia odoslaná! Skontroluj si schránku a potvrď email.', true);
         }
-      });
-
-      if (error) throw error;
-
-      if (data && data.user) {
-        currentUser = data.user;
-        sessionStorage.removeItem('fl_guest_mode');
-        setFeedback('Účet úspešne vytvorený!', true);
-        setTimeout(() => {
-          hideWelcomeOverlay();
-          fetchProfile(currentUser);
-        }, 500);
-      } else {
-        setFeedback('Registrácia odoslaná! Skontroluj si schránku a potvrď email.', true);
+      } else if (signInErr) {
+        throw signInErr;
       }
     } catch (err) {
-      console.error('[Supabase Auth] Chyba registrácie:', err);
-      setFeedback('Chyba registrácie: ' + (err.message || err));
+      console.error('[Supabase Auth] Chyba autentifikácie:', err);
+      setFeedback('Chyba: ' + (err.message || err));
     }
   }
 
-  // 4. Bezheslové prihlásenie cez Magic Link (Email OTP)
-  async function sendMagicLink(email) {
-    if (!initSupabase()) return;
-    if (!email || !email.includes('@')) {
-      setFeedback('Zadaj prosím platnú emailovú adresu.');
-      return;
-    }
+  // Po úspešnom overení používateľa
+  async function onAuthSuccess(user) {
+    await fetchProfile(user);
 
-    setFeedback('Odosielam prihlasovací link do schránky...', true);
-
-    try {
-      const { error } = await client.auth.signInWithOtp({
-        email: email.trim(),
-        options: {
-          emailRedirectTo: window.location.origin + window.location.pathname
-        }
-      });
-      if (error) throw error;
-      setFeedback('✨ Skontroluj si email! Poslali sme ti priamy prihlasovací link.', true);
-    } catch (err) {
-      console.error('[Supabase Auth] Chyba pri odoslaní Magic Linku:', err);
-      setFeedback('Chyba pri odosielaní: ' + (err.message || err));
+    // Skontrolujeme, či používateľ už vyplnil diagnostický dotazník
+    const hasDiag = isDiagnosticCompleted();
+    if (!hasDiag) {
+      setTimeout(() => {
+        showDiagnosticScreen(true);
+      }, 350);
+    } else {
+      setTimeout(() => {
+        hideWelcomeOverlay();
+        updateUI();
+      }, 400);
     }
   }
 
-  // 5. Odhlásenie
+  function isDiagnosticCompleted() {
+    if (localStorage.getItem('fl_onboarding_completed') === '1') return true;
+    if (currentProfile && currentProfile.progress && currentProfile.progress.diagnostic) return true;
+    return false;
+  }
+
+  // 3. Odhlásenie
   async function signOut() {
     if (!initSupabase()) return;
     try {
@@ -247,7 +217,7 @@
       currentProfile = null;
       sessionStorage.removeItem('fl_guest_mode');
       updateUI();
-      showWelcomeOverlay();
+      showAuthScreen();
       setFeedback('Bol si úspešne odhlásený.', true);
       if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
         duoSfx.playTone(340, 'sine', 0.05, 0.1);
@@ -257,7 +227,7 @@
     }
   }
 
-  // 6. Načítanie profilu a aplikovanie progresu do gamifikačného enginu
+  // 4. Načítanie profilu a aplikovanie progresu
   async function fetchProfile(user) {
     if (!client || !user) return;
     try {
@@ -275,12 +245,19 @@
       currentProfile = data;
       console.log('[Supabase Auth] Profil úspešne načítaný z cloudu:', currentProfile);
 
-      // Aplikovanie stavu do gamifikačného enginu
+      // Aplikovanie progresu do gamifikačného enginu
       if (currentProfile && window.duoState) {
         if (currentProfile.progress && Object.keys(currentProfile.progress).length > 0) {
           window.duoState.applyCloudState(currentProfile);
+
+          // Ak profil v cloude obsahuje diagnostiku, načítame ju lokálne
+          if (currentProfile.progress.diagnostic) {
+            localStorage.setItem('fl_diagnostic', JSON.stringify(currentProfile.progress.diagnostic));
+            localStorage.setItem('fl_onboarding_completed', '1');
+            applyDiagnosticPersonalization(currentProfile.progress.diagnostic, false);
+          }
         } else {
-          // Cloud profil je čerstvý, uložíme tam aktuálny lokálny stav
+          // Čerstvý profil, synchronizujeme aktuálny lokálny stav
           syncCloudProgress(window.duoState.state);
         }
       }
@@ -291,13 +268,14 @@
     }
   }
 
-  // 7. Automatická synchronizácia progresu používateľa do Supabase cloudu
+  // 5. Automatická synchronizácia progresu do Supabase cloudu
   async function syncCloudProgress(state) {
     if (!client || !currentUser || !state) return;
 
     clearTimeout(syncDebounceTimer);
     syncDebounceTimer = setTimeout(async () => {
       try {
+        const savedDiag = getSavedDiagnostic();
         const payload = {
           xp: typeof state.xp === 'number' ? state.xp : 0,
           streak: typeof state.streak === 'number' ? state.streak : 1,
@@ -307,6 +285,7 @@
             userName: state.userName || "Používateľ",
             lastPlayedDate: state.lastPlayedDate || new Date().toISOString().slice(0, 10),
             lives: typeof state.lives === 'number' ? state.lives : 5,
+            diagnostic: savedDiag,
             syncedAt: new Date().toISOString()
           },
           updated_at: new Date().toISOString()
@@ -317,22 +296,163 @@
           .update(payload)
           .eq('id', currentUser.id);
 
-        if (error) {
-          console.warn('[Supabase Sync] Chyba ukladania progresu:', error);
-        } else {
-          console.log('[Supabase Sync] Progres úspešne synchronizovaný v cloude:', payload.progress);
+        if (!error) {
+          console.log('[Supabase Sync] Progres uložený v cloude:', payload.progress);
           const syncBadge = document.getElementById('profileSyncText');
           if (syncBadge) {
-            syncBadge.textContent = 'Cloud synchronizácia aktívna (uložené práve teraz)';
+            syncBadge.textContent = 'Cloud synchronizácia aktívna (uložené)';
           }
         }
       } catch (err) {
         console.warn('[Supabase Sync] Výnimka pri synchronizácii:', err);
       }
-    }, 400); // 400ms debounce na ochranu pred preťažením
+    }, 400);
   }
 
-  // 8. Aktualizácia DOM prvkov podľa stavu prihlásenia
+  function getSavedDiagnostic() {
+    try {
+      const raw = localStorage.getItem('fl_diagnostic');
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // 6. Obsluha a kroky vedeckého dotazníka balbutizmu
+  function goToDiagStep(step) {
+    const s1 = document.getElementById('diagStep1');
+    const s2 = document.getElementById('diagStep2');
+    const s3 = document.getElementById('diagStep3');
+    const sRes = document.getElementById('diagStepResult');
+    const bar = document.getElementById('diagProgressBar');
+    const counter = document.getElementById('diagStepCounter');
+
+    if (s1) s1.style.display = step === 1 ? 'block' : 'none';
+    if (s2) s2.style.display = step === 2 ? 'block' : 'none';
+    if (s3) s3.style.display = step === 3 ? 'block' : 'none';
+    if (sRes) sRes.style.display = step === 4 ? 'block' : 'none';
+
+    if (step === 1) {
+      if (bar) bar.style.width = '33%';
+      if (counter) counter.textContent = 'Krok 1 z 3: Anatómia zárazu';
+    } else if (step === 2) {
+      if (bar) bar.style.width = '66%';
+      if (counter) counter.textContent = 'Krok 2 z 3: Sociálny spúšťač';
+    } else if (step === 3) {
+      if (bar) bar.style.width = '100%';
+      if (counter) counter.textContent = 'Krok 3 z 3: Primárny cieľ';
+    } else if (step === 4) {
+      if (bar) bar.style.width = '100%';
+      if (counter) counter.textContent = 'Diagnostická analýza';
+    }
+  }
+
+  // Aplikovanie diagnostiky na prispôsobenie cesty
+  function applyDiagnosticPersonalization(diag, doSync = true) {
+    if (!diag) return;
+
+    // 1. Zobrazenie výsledkov v modale
+    const tensionMap = {
+      laryngeal: 'Glotálno-laryngeálny kŕč (Hlasivky)',
+      plosives: 'Plozívny artikulačný pretlak (Pery & Jazyk)',
+      clonic: 'Klonické zrýchlené opakovanie',
+      prolongation: 'Prolungácia & ťahanie tónu'
+    };
+
+    const worldMap = {
+      laryngeal: 'Svet 1: Samohlásky & Easy Onset',
+      plosives: 'Svet 3: Plozívy & Ľahký dotyk',
+      clonic: 'Svet 4: Rytmizácia, Tempo & Vety',
+      prolongation: 'Svet 2: Znelé spoluhlásky & Rezonancia'
+    };
+
+    const situationMap = {
+      phone: 'Telefonovanie & Nečakané hovory',
+      name: 'Predstavenie sa vlastným menom',
+      ordering: 'Objednávanie v kaviarni/obchode',
+      authorities: 'Pracovné porady & Prezentácie'
+    };
+
+    const dafMap = {
+      laryngeal: 'Delay 85 ms • Formant Harmonics ON',
+      plosives: 'Delay 90 ms • Pitch Shift +1.5 st',
+      clonic: 'Delay 115 ms • Spomalenie tempa ON',
+      prolongation: 'Delay 75 ms • Rezonančná slučka'
+    };
+
+    const tensionText = tensionMap[diag.tension] || 'Laryngeálno-glotálna tenzia';
+    const worldText = worldMap[diag.tension] || 'Svet 1: Samohlásky & Easy Onset';
+    const situationText = situationMap[diag.situation] || 'Telefonovanie & Hovory';
+    const dafText = dafMap[diag.tension] || 'Delay 90 ms • Choral Effect';
+
+    const elTension = document.getElementById('diagSummaryTension');
+    const elWorld = document.getElementById('diagSummaryWorld');
+    const elSituation = document.getElementById('diagSummarySituation');
+    const elDaf = document.getElementById('diagSummaryDaf');
+
+    if (elTension) elTension.textContent = tensionText;
+    if (elWorld) elWorld.textContent = worldText;
+    if (elSituation) elSituation.textContent = situationText;
+    if (elDaf) elDaf.textContent = dafText;
+
+    // Aktualizácia karty v Telemetrii
+    const tTension = document.getElementById('telemetryDiagTension');
+    const tWorld = document.getElementById('telemetryDiagWorld');
+    const tSituation = document.getElementById('telemetryDiagSituation');
+    const tGoal = document.getElementById('telemetryDiagGoal');
+
+    if (tTension) tTension.textContent = tensionText;
+    if (tWorld) tWorld.textContent = worldText;
+    if (tSituation) tSituation.textContent = situationText;
+    if (tGoal) tGoal.textContent = diag.goal === 'easy_onset' ? 'Jemný mäkký nábeh hlasiviek' : (diag.goal === 'daf_choral' ? 'DAF/FAF zborový efekt' : 'Desenzitizácia a odbúranie strachu');
+
+    // 2. Personalizácia Trezoru slov a viet podľa situácie
+    if (window.duoState) {
+      const words = window.duoState.loadVaultWords();
+      const userName = (currentProfile && currentProfile.full_name) || window.duoState.state.userName || 'Používateľ';
+
+      const customItems = [
+        { id: 'diag_1', word: `Moje meno je ${userName}`, category: 'Predstavenie', successes: 0, attempts: 0, isMastered: false, date: new Date().toISOString().slice(0, 10) }
+      ];
+
+      if (diag.situation === 'phone') {
+        customItems.push({ id: 'diag_phone', word: 'Dobrý deň, volám ohľadom balíka', category: 'Telefón', successes: 0, attempts: 0, isMastered: false, date: new Date().toISOString().slice(0, 10) });
+      } else if (diag.situation === 'ordering') {
+        customItems.push({ id: 'diag_order', word: 'Dobrý deň, jedno espresso a minerálku poprosím', category: 'Kaviareň', successes: 0, attempts: 0, isMastered: false, date: new Date().toISOString().slice(0, 10) });
+      } else {
+        customItems.push({ id: 'diag_auth', word: 'Rád by som sa vyjadril k tomuto bodu', category: 'Práca', successes: 0, attempts: 0, isMastered: false, date: new Date().toISOString().slice(0, 10) });
+      }
+
+      // Vložiť unikátne
+      customItems.forEach(item => {
+        if (!words.some(w => w.word === item.word)) {
+          words.unshift(item);
+        }
+      });
+      window.duoState.saveVaultWords(words);
+    }
+
+    // 3. Kalibrácia DAF Asistenta
+    if (diag.tension === 'clonic') {
+      const delaySlider = document.getElementById('dafDelaySlider');
+      if (delaySlider) {
+        delaySlider.value = 115;
+        delaySlider.dispatchEvent(new Event('input'));
+      }
+    } else if (diag.tension === 'laryngeal') {
+      const delaySlider = document.getElementById('dafDelaySlider');
+      if (delaySlider) {
+        delaySlider.value = 85;
+        delaySlider.dispatchEvent(new Event('input'));
+      }
+    }
+
+    if (doSync && window.duoState) {
+      syncCloudProgress(window.duoState.state);
+    }
+  }
+
+  // 7. Aktualizácia DOM prvkov podľa stavu prihlásenia
   function updateUI() {
     const authStatusBadge = document.getElementById('authStatusBadge');
     const authLoggedOutView = document.getElementById('authLoggedOutView');
@@ -395,32 +515,30 @@
         headerProfileName.textContent = 'Prihlásiť';
       }
     }
+
+    // Aktualizácia diagnostickej karty v telemetrii
+    const savedDiag = getSavedDiagnostic();
+    if (savedDiag) {
+      applyDiagnosticPersonalization(savedDiag, false);
+    }
   }
 
-  // 9. Nastavenie obslužných udalostí
+  // 8. Nastavenie obslužných udalostí
   function setupAuthEvents() {
-    // Tlačidlá na úvodnej obrazovke (Welcome Gateway)
     const welcomeBtnGoogle = document.getElementById('welcomeBtnGoogle');
     const welcomeSubmitBtn = document.getElementById('welcomeSubmitBtn');
     const welcomeGuestBtn = document.getElementById('welcomeGuestBtn');
-    const amtLoginBtn = document.getElementById('amtLoginBtn');
-    const amtRegisterBtn = document.getElementById('amtRegisterBtn');
-    const amtMagicBtn = document.getElementById('amtMagicBtn');
+    const headerProfileBtn = document.getElementById('headerProfileBtn');
+    const btnLogout = document.getElementById('btnLogout');
+    const reopenDiagnosticBtn = document.getElementById('reopenDiagnosticBtn');
+    const openAuthModalFromTelemetryBtn = document.getElementById('openAuthModalFromTelemetryBtn');
 
+    // Google Sign-In
     if (welcomeBtnGoogle) {
       welcomeBtnGoogle.addEventListener('click', () => signInWithGoogle());
     }
 
-    if (amtLoginBtn) {
-      amtLoginBtn.addEventListener('click', () => setAuthMode('login'));
-    }
-    if (amtRegisterBtn) {
-      amtRegisterBtn.addEventListener('click', () => setAuthMode('register'));
-    }
-    if (amtMagicBtn) {
-      amtMagicBtn.addEventListener('click', () => setAuthMode('magic'));
-    }
-
+    // Email Submit (Prihlásiť / Zaregistrovať)
     if (welcomeSubmitBtn) {
       welcomeSubmitBtn.addEventListener('click', () => {
         const emailEl = document.getElementById('welcomeEmailInput');
@@ -429,35 +547,32 @@
         const email = emailEl ? emailEl.value : '';
         const pass = passEl ? passEl.value : '';
         const name = nameEl ? nameEl.value : '';
-
-        if (currentAuthMode === 'login') {
-          signInWithEmail(email, pass);
-        } else if (currentAuthMode === 'register') {
-          signUpWithEmail(email, pass, name);
-        } else if (currentAuthMode === 'magic') {
-          sendMagicLink(email);
-        }
+        handleEmailAuth(email, pass, name);
       });
     }
 
-    // Vstúpiť ako hosť
+    // Hosťovský vstup
     if (welcomeGuestBtn) {
       welcomeGuestBtn.addEventListener('click', () => {
         sessionStorage.setItem('fl_guest_mode', '1');
-        hideWelcomeOverlay();
-        updateUI();
+        const hasDiag = isDiagnosticCompleted();
+        if (!hasDiag) {
+          showDiagnosticScreen(true);
+        } else {
+          hideWelcomeOverlay();
+          updateUI();
+        }
         if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
           duoSfx.playTone(440, 'triangle', 0.06, 0.1);
         }
       });
     }
 
-    // Tlačidlo v hlavičke aplikácie
-    const headerProfileBtn = document.getElementById('headerProfileBtn');
+    // Profil tlačidlo v hlavičke
     if (headerProfileBtn) {
       headerProfileBtn.addEventListener('click', () => {
         if (!currentUser) {
-          showWelcomeOverlay();
+          showAuthScreen();
         } else {
           const navTabTelemetria = document.getElementById('navTabTelemetria');
           if (navTabTelemetria) navTabTelemetria.click();
@@ -469,41 +584,20 @@
       });
     }
 
-    // Prvky v karte Profil v Telemetrii
-    const btnGoogleLogin = document.getElementById('btnGoogleLogin');
-    const btnEmailLogin = document.getElementById('btnEmailLogin');
-    const btnMagicLink = document.getElementById('btnMagicLink');
-    const btnLogout = document.getElementById('btnLogout');
-
-    if (btnGoogleLogin) {
-      btnGoogleLogin.addEventListener('click', () => signInWithGoogle());
-    }
-
-    if (btnEmailLogin) {
-      btnEmailLogin.addEventListener('click', () => {
-        const emailEl = document.getElementById('authEmailInput');
-        const passEl = document.getElementById('authPasswordInput');
-        const email = emailEl ? emailEl.value : '';
-        const pass = passEl ? passEl.value : '';
-        signInWithEmail(email, pass);
-      });
-    }
-
-    if (btnMagicLink) {
-      btnMagicLink.addEventListener('click', () => {
-        const emailEl = document.getElementById('authEmailInput');
-        const email = emailEl ? emailEl.value : '';
-        sendMagicLink(email);
-      });
-    }
-
     if (btnLogout) {
       btnLogout.addEventListener('click', () => signOut());
     }
 
-    const openAuthModalFromTelemetryBtn = document.getElementById('openAuthModalFromTelemetryBtn');
+    if (reopenDiagnosticBtn) {
+      reopenDiagnosticBtn.addEventListener('click', () => {
+        showDiagnosticScreen(true);
+      });
+    }
+
     if (openAuthModalFromTelemetryBtn) {
-      openAuthModalFromTelemetryBtn.addEventListener('click', () => showWelcomeOverlay());
+      openAuthModalFromTelemetryBtn.addEventListener('click', () => {
+        showAuthScreen();
+      });
     }
 
     // Enter kláves v prihlasovacích poliach
@@ -515,9 +609,98 @@
         }
       });
     }
+
+    // ===== OBSLUHA KROKOV DOTAZNÍKA =====
+    setupDiagnosticSteps();
   }
 
-  // 10. Inicializácia pri štarte aplikácie
+  function setupDiagnosticSteps() {
+    // Krok 1 karty
+    const step1Cards = document.querySelectorAll('#diagStep1 .diag-option-card');
+    const diagNext1 = document.getElementById('diagNext1');
+
+    step1Cards.forEach(card => {
+      card.addEventListener('click', () => {
+        step1Cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        diagnosticAnswers.tension = card.getAttribute('data-val');
+        if (diagNext1) diagNext1.disabled = false;
+        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+          duoSfx.playTone(520, 'sine', 0.04, 0.08);
+        }
+      });
+    });
+
+    if (diagNext1) {
+      diagNext1.addEventListener('click', () => goToDiagStep(2));
+    }
+
+    // Krok 2 karty
+    const step2Cards = document.querySelectorAll('#diagStep2 .diag-option-card');
+    const diagNext2 = document.getElementById('diagNext2');
+    const diagBack2 = document.getElementById('diagBack2');
+
+    step2Cards.forEach(card => {
+      card.addEventListener('click', () => {
+        step2Cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        diagnosticAnswers.situation = card.getAttribute('data-val');
+        if (diagNext2) diagNext2.disabled = false;
+        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+          duoSfx.playTone(580, 'sine', 0.04, 0.08);
+        }
+      });
+    });
+
+    if (diagBack2) diagBack2.addEventListener('click', () => goToDiagStep(1));
+    if (diagNext2) diagNext2.addEventListener('click', () => goToDiagStep(3));
+
+    // Krok 3 karty
+    const step3Cards = document.querySelectorAll('#diagStep3 .diag-option-card');
+    const diagFinishBtn = document.getElementById('diagFinishBtn');
+    const diagBack3 = document.getElementById('diagBack3');
+
+    step3Cards.forEach(card => {
+      card.addEventListener('click', () => {
+        step3Cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        diagnosticAnswers.goal = card.getAttribute('data-val');
+        if (diagFinishBtn) diagFinishBtn.disabled = false;
+        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+          duoSfx.playTone(660, 'sine', 0.05, 0.08);
+        }
+      });
+    });
+
+    if (diagBack3) diagBack3.addEventListener('click', () => goToDiagStep(2));
+
+    if (diagFinishBtn) {
+      diagFinishBtn.addEventListener('click', () => {
+        applyDiagnosticPersonalization(diagnosticAnswers, true);
+        goToDiagStep(4);
+        if (typeof duoSfx !== 'undefined' && duoSfx.playLevelComplete) {
+          duoSfx.playLevelComplete();
+        }
+      });
+    }
+
+    // Krok 4: Vstup do aplikácie
+    const diagEnterAppBtn = document.getElementById('diagEnterAppBtn');
+    if (diagEnterAppBtn) {
+      diagEnterAppBtn.addEventListener('click', () => {
+        localStorage.setItem('fl_diagnostic', JSON.stringify(diagnosticAnswers));
+        localStorage.setItem('fl_onboarding_completed', '1');
+        hideWelcomeOverlay();
+        updateUI();
+
+        // Prepnutie na záložku Cesta
+        const navTabCesta = document.getElementById('navTabCesta');
+        if (navTabCesta) navTabCesta.click();
+      });
+    }
+  }
+
+  // 9. Inicializácia pri štarte aplikácie (Tiché auto-prihlásenie)
   async function init() {
     if (!initSupabase()) {
       setTimeout(init, 300);
@@ -528,24 +711,37 @@
 
     const isGuest = sessionStorage.getItem('fl_guest_mode') === '1';
 
-    // Overenie existujúceho uloženého session
+    // Overenie existujúceho session (tiché auto-prihlásenie)
     try {
       const { data: { session } } = await client.auth.getSession();
       if (session && session.user) {
         currentUser = session.user;
         sessionStorage.removeItem('fl_guest_mode');
-        hideWelcomeOverlay();
         await fetchProfile(currentUser);
-      } else if (!isGuest) {
-        showWelcomeOverlay();
-        updateUI();
+
+        const hasDiag = isDiagnosticCompleted();
+        if (hasDiag) {
+          hideWelcomeOverlay();
+          updateUI();
+        } else {
+          showDiagnosticScreen(true);
+        }
+      } else if (isGuest) {
+        const hasDiag = isDiagnosticCompleted();
+        if (hasDiag) {
+          hideWelcomeOverlay();
+          updateUI();
+        } else {
+          showDiagnosticScreen(true);
+        }
       } else {
-        hideWelcomeOverlay();
+        // Používateľ nie je prihlásený, zobrazíme prihlasovaciu obrazovku
+        showAuthScreen();
         updateUI();
       }
     } catch (err) {
       console.warn('[Supabase Auth] Chyba pri overení session:', err);
-      if (!isGuest) showWelcomeOverlay();
+      showAuthScreen();
       updateUI();
     }
 
@@ -555,25 +751,31 @@
       if (session && session.user) {
         currentUser = session.user;
         sessionStorage.removeItem('fl_guest_mode');
-        hideWelcomeOverlay();
         await fetchProfile(currentUser);
+
+        const hasDiag = isDiagnosticCompleted();
+        if (hasDiag) {
+          hideWelcomeOverlay();
+          updateUI();
+        } else {
+          showDiagnosticScreen(true);
+        }
       } else if (event === 'SIGNED_OUT') {
         currentUser = null;
         currentProfile = null;
         updateUI();
-        showWelcomeOverlay();
+        showAuthScreen();
       }
     });
   }
 
   window.fluencyAuth = {
     signInWithGoogle,
-    signInWithEmail,
-    signUpWithEmail,
-    sendMagicLink,
+    handleEmailAuth,
     signOut,
     showWelcomeOverlay,
     hideWelcomeOverlay,
+    showDiagnosticScreen,
     syncCloudProgress,
     getCurrentUser: () => currentUser,
     getCurrentProfile: () => currentProfile

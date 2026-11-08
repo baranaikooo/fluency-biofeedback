@@ -717,11 +717,24 @@ class DuoPathRenderer {
       worldEl.style.setProperty('--world-theme-lip', world.lipColor);
 
       // Hlavička sveta (Duolingo Unit Banner)
+      let diagBadge = '';
+      try {
+        const rawDiag = localStorage.getItem('fl_diagnostic');
+        if (rawDiag) {
+          const d = JSON.parse(rawDiag);
+          const recWorldId = d.tension === 'laryngeal' ? 1 : (d.tension === 'plosives' ? 3 : (d.tension === 'clonic' ? 4 : 2));
+          if (world.id === recWorldId) {
+            diagBadge = '<div class="world-recommended-badge">🎯 Odporúčaný štart podľa tvojej diagnostiky</div>';
+          }
+        }
+      } catch (_) {}
+
       const headerEl = document.createElement('div');
       headerEl.className = 'world-header-banner';
       headerEl.innerHTML = `
         <div class="world-banner-content">
           <div class="world-banner-tag">KAPITOLA ${world.id}</div>
+          ${diagBadge}
           <h2 class="world-banner-title">${world.title}</h2>
           <p class="world-banner-sub">${world.subtitle}</p>
         </div>

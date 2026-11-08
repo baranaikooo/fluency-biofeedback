@@ -24,99 +24,274 @@
 <!-- ==================================================================== -->
 <div class="welcome-auth-overlay" id="welcomeAuthOverlay" style="display:none;">
   <div class="welcome-auth-modal">
-    <!-- Branding & Title -->
-    <div class="welcome-hero">
-      <div class="welcome-logo-badge">
-        <span class="welcome-logo-icon">🦉</span>
-      </div>
-      <h1 class="welcome-title">Fluency Biofeedback</h1>
-      <p class="welcome-tagline">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
 
-      <div class="welcome-features-grid">
-        <div class="wf-item">
-          <span class="wf-icon">🎧</span>
-          <div class="wf-text">
-            <strong>DAF & FAF</strong>
-            <span>Sluchová spätná väzba</span>
+    <!-- KROK 1: PRIHLÁSENIE / REGISTRÁCIA -->
+    <div id="welcomeAuthBox">
+      <!-- Branding & Title -->
+      <div class="welcome-hero">
+        <div class="welcome-logo-badge">
+          <span class="welcome-logo-icon">🦉</span>
+        </div>
+        <h1 class="welcome-title">Fluency Biofeedback</h1>
+        <p class="welcome-tagline">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
+
+        <div class="welcome-features-grid">
+          <div class="wf-item">
+            <span class="wf-icon">🎧</span>
+            <div class="wf-text">
+              <strong>DAF & FAF</strong>
+              <span>Sluchová spätná väzba</span>
+            </div>
+          </div>
+          <div class="wf-item">
+            <span class="wf-icon">🎯</span>
+            <div class="wf-text">
+              <strong>5 Svetov / 25 Úrovní</strong>
+              <span>Neuro-tréning nábehu</span>
+            </div>
+          </div>
+          <div class="wf-item">
+            <span class="wf-icon">☁️</span>
+            <div class="wf-text">
+              <strong>Cloud Záloha</strong>
+              <span>Ukladanie sérií & XP</span>
+            </div>
           </div>
         </div>
-        <div class="wf-item">
-          <span class="wf-icon">🎯</span>
-          <div class="wf-text">
-            <strong>5 Svetov / 25 Úrovní</strong>
-            <span>Neuro-tréning nábehu</span>
-          </div>
+      </div>
+
+      <!-- Auth Card -->
+      <div class="welcome-auth-card">
+        <div class="welcome-auth-header">
+          <h2 class="welcome-auth-heading">Vstup do aplikácie</h2>
+          <p class="welcome-auth-sub">Prihlás sa jedným klikom cez Google alebo rýchlou registráciou cez email.</p>
         </div>
-        <div class="wf-item">
-          <span class="wf-icon">☁️</span>
-          <div class="wf-text">
-            <strong>Cloud Záloha</strong>
-            <span>Ukladanie sérií & XP</span>
+
+        <!-- Google Sign-in 1-Click -->
+        <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
+          <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Pokračovať cez Google účet</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>ALEBO REGISTRÁCIA CEZ EMAIL</span>
+        </div>
+
+        <!-- Form -->
+        <div class="welcome-auth-form">
+          <div class="auth-field-group">
+            <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
+            <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Peter Novák" autocomplete="name" />
           </div>
+
+          <div class="auth-field-group">
+            <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
+            <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
+          </div>
+
+          <div class="auth-field-group">
+            <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
+            <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
+          </div>
+
+          <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
+
+          <button class="btn-3d green full" id="welcomeSubmitBtn" type="button">
+            <span id="welcomeSubmitText">🚀 Pokračovať (Prihlásiť / Zaregistrovať)</span>
+          </button>
+        </div>
+
+        <!-- Guest bypass -->
+        <div class="welcome-guest-row">
+          <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
+            <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Auth Card -->
-    <div class="welcome-auth-card">
-      <div class="welcome-auth-header">
-        <h2 class="welcome-auth-heading" id="welcomeAuthHeading">Prihlásenie do profilu</h2>
-        <p class="welcome-auth-sub" id="welcomeAuthSub">Prihlás sa a tvoj tréningový postup, série dní a XP sa automaticky zálohujú v cloude.</p>
-      </div>
-
-      <!-- Google Sign-in 1-Click -->
-      <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
-        <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-        </svg>
-        <span>Pokračovať cez Google účet</span>
-      </button>
-
-      <div class="auth-divider">
-        <span>ALEBO CEZ EMAIL</span>
-      </div>
-
-      <!-- Mode Toggle -->
-      <div class="auth-mode-toggle">
-        <button class="amt-btn active" id="amtLoginBtn" type="button">Prihlásenie</button>
-        <button class="amt-btn" id="amtRegisterBtn" type="button">Nový účet</button>
-        <button class="amt-btn" id="amtMagicBtn" type="button">Link bez hesla</button>
-      </div>
-
-      <!-- Form -->
-      <div class="welcome-auth-form">
-        <div class="auth-field-group" id="welcomeNameGroup" style="display:none;">
-          <label class="auth-field-label" for="welcomeNameInput">Tvoje Meno / Prezývka</label>
-          <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Peter Novák" autocomplete="name" />
+    <!-- KROK 2: VEDECKÝ DOTAZNÍK BALBUTIZMU -->
+    <div id="welcomeDiagnosticBox" style="display:none;">
+      <div class="diagnostic-card">
+        <!-- Progress Bar -->
+        <div class="diag-progress-header">
+          <div class="diag-badge-pill">🔬 VEDECKÁ DIAGNOSTIKA BALBUTIZMU</div>
+          <span class="diag-step-counter" id="diagStepCounter">Krok 1 z 3</span>
+        </div>
+        <div class="diag-progress-track">
+          <div class="diag-progress-bar" id="diagProgressBar" style="width: 33%;"></div>
         </div>
 
-        <div class="auth-field-group">
-          <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
-          <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
+        <!-- Krok 1: Kde vzniká blok / tenzia -->
+        <div class="diag-step-view active" id="diagStep1">
+          <h2 class="diag-step-title">Kde vnímaš najväčší kŕč alebo záraz pri reči?</h2>
+          <p class="diag-step-desc">Podľa neurofyziológie balbutizmu sa kŕčové bloky tvoria na odlišných anatomických úrovniach.</p>
+
+          <div class="diag-options-grid">
+            <div class="diag-option-card" data-val="laryngeal">
+              <span class="doc-icon">🫁</span>
+              <div class="doc-body">
+                <div class="doc-title">Hlasivky & Hrdlo (Glotálny kŕč)</div>
+                <div class="doc-desc">Zaseknutie na samohláskach (A, O, U, E, I), pocit stiahnutého hrdla, Valsalva pretlak.</div>
+              </div>
+              <span class="doc-badge">Odporúča Svet 1</span>
+            </div>
+
+            <div class="diag-option-card" data-val="plosives">
+              <span class="doc-icon">👄</span>
+              <div class="doc-body">
+                <div class="doc-title">Pery & Jazyk (Plozívne zárazy)</div>
+                <div class="doc-desc">Silné tlačenie na plozívach (P, B, T, D, K, G), kým slovo s námahou nevystrelí.</div>
+              </div>
+              <span class="doc-badge">Odporúča Svet 3</span>
+            </div>
+
+            <div class="diag-option-card" data-val="clonic">
+              <span class="doc-icon">⚡</span>
+              <div class="doc-body">
+                <div class="doc-title">Rýchle tempo & Opakovania</div>
+                <div class="doc-desc">Klonické opakovanie slabík, strata dychovej opory, reč uteká dopredu bez kontroly.</div>
+              </div>
+              <span class="doc-badge">Odporúča Svet 4</span>
+            </div>
+
+            <div class="diag-option-card" data-val="prolongation">
+              <span class="doc-icon">⏳</span>
+              <div class="doc-body">
+                <div class="doc-title">Predlžovanie hlások (Prolungácie)</div>
+                <div class="doc-desc">Dlhé ťahanie zvukov (Ssss, Mmmm, Zzzz) s ťažkosťou prejsť do nasledujúcej samohlásky.</div>
+              </div>
+              <span class="doc-badge">Odporúča Svet 2</span>
+            </div>
+          </div>
+
+          <button class="btn-3d green full sm" id="diagNext1" type="button" disabled style="margin-top: 16px;">
+            <span>Pokračovať na situácie ➔</span>
+          </button>
         </div>
 
-        <div class="auth-field-group" id="welcomePasswordGroup">
-          <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
-          <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
+        <!-- Krok 2: Najstresujúcejšia sociálna situácia -->
+        <div class="diag-step-view" id="diagStep2" style="display:none;">
+          <h2 class="diag-step-title">Ktorá situácia ti spôsobuje najväčší rečový stres?</h2>
+          <p class="diag-step-desc">Zaradíme ti ju ako prioritu do SOS Drilu a Trezoru slov pre desenzitizáciu strachu.</p>
+
+          <div class="diag-options-grid">
+            <div class="diag-option-card" data-val="phone">
+              <span class="doc-icon">📱</span>
+              <div class="doc-body">
+                <div class="doc-title">Telefonovanie & Nečakané hovory</div>
+                <div class="doc-desc">Kuriér, objednanie sa k lekárovi, úrady – absencia vizuálneho kontaktu stupňuje tlak.</div>
+              </div>
+            </div>
+
+            <div class="diag-option-card" data-val="name">
+              <span class="doc-icon">🙋‍♂️</span>
+              <div class="doc-body">
+                <div class="doc-title">Vyslovenie svojho mena</div>
+                <div class="doc-desc">Predstavenie sa – najčastejší psychologický blok, kde nie je možné slovo nahradiť synonymom.</div>
+              </div>
+            </div>
+
+            <div class="diag-option-card" data-val="ordering">
+              <span class="doc-icon">☕</span>
+              <div class="doc-body">
+                <div class="doc-title">Objednávanie v kaviarni a obchode</div>
+                <div class="doc-desc">Časový stres z čakajúceho radu ľudí za tebou pri pokladni alebo v reštaurácii.</div>
+              </div>
+            </div>
+
+            <div class="diag-option-card" data-val="authorities">
+              <span class="doc-icon">👥</span>
+              <div class="doc-body">
+                <div class="doc-title">Pracovné porady & Pohovory</div>
+                <div class="doc-desc">Sociálna úzkosť z hodnotenia pred kolegami, šéfom alebo v škole pred triedou.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="diag-nav-row" style="margin-top: 16px;">
+            <button class="btn-3d slate sm" id="diagBack2" type="button"><span>⬅ Späť</span></button>
+            <button class="btn-3d green sm" id="diagNext2" type="button" disabled style="flex: 1;"><span>Pokračovať na cieľ ➔</span></button>
+          </div>
         </div>
 
-        <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
+        <!-- Krok 3: Primárny cieľ -->
+        <div class="diag-step-view" id="diagStep3" style="display:none;">
+          <h2 class="diag-step-title">Aký je tvoj hlavný cieľ tréningu?</h2>
+          <p class="diag-step-desc">Podľa toho prispôsobíme akustický DAF asistent a štartovaciu cestu.</p>
 
-        <button class="btn-3d green full" id="welcomeSubmitBtn" type="button">
-          <span id="welcomeSubmitText">🔑 Prihlásiť sa</span>
-        </button>
-      </div>
+          <div class="diag-options-grid">
+            <div class="diag-option-card" data-val="easy_onset">
+              <span class="doc-icon">🎯</span>
+              <div class="doc-body">
+                <div class="doc-title">Naučiť sa jemný mäkký nábeh (Easy Onset)</div>
+                <div class="doc-desc">Uvoľniť zovreté hrdlo a naučiť mozog plynulý nábeh hlasiviek bez kŕča.</div>
+              </div>
+            </div>
 
-      <!-- Guest bypass -->
-      <div class="welcome-guest-row">
-        <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
-          <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
-        </button>
+            <div class="diag-option-card" data-val="daf_choral">
+              <span class="doc-icon">🎧</span>
+              <div class="doc-body">
+                <div class="doc-title">Okamžitá kontrola cez DAF/FAF slúchadlá</div>
+                <div class="doc-desc">Využiť efekt zborového rečového vnemu (Choral Effect) na okamžité upokojenie tempa.</div>
+              </div>
+            </div>
+
+            <div class="diag-option-card" data-val="desensitization">
+              <span class="doc-icon">🛡️</span>
+              <div class="doc-body">
+                <div class="doc-title">Odbúrať strach z telefonátov a verejnosti</div>
+                <div class="doc-desc">Systematický tréning simulácií a dekompresia pred reálnymi sociálnymi výzvami.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="diag-nav-row" style="margin-top: 16px;">
+            <button class="btn-3d slate sm" id="diagBack3" type="button"><span>⬅ Späť</span></button>
+            <button class="btn-3d green sm" id="diagFinishBtn" type="button" disabled style="flex: 1;"><span>Vyhodnotiť a zostaviť cestu 🚀</span></button>
+          </div>
+        </div>
+
+        <!-- Krok 4: Výsledok analýzy (Personalizovaný Neuro-profil) -->
+        <div class="diag-step-view" id="diagStepResult" style="display:none;">
+          <div class="diag-result-hero">
+            <div class="diag-result-check">✨</div>
+            <h2 class="diag-result-title">Tvoj Neuro-profil reči je pripravený!</h2>
+            <p class="diag-result-sub" id="diagResultSub">Cesta bola úspešne prispôsobená tvojim rečovým potrebám.</p>
+          </div>
+
+          <div class="diag-summary-cards">
+            <div class="dsc-item">
+              <span class="dsc-label">PRIMÁRNY TYP TENZIE</span>
+              <div class="dsc-val" id="diagSummaryTension">Glotálno-laryngeálny kŕč</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">ODPORÚČANÝ ŠTARTOVACÍ SVET</span>
+              <div class="dsc-val highlight" id="diagSummaryWorld">Svet 1: Samohlásky & Easy Onset</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">PRIORITNÁ SOCIÁLNA SITUÁCIA</span>
+              <div class="dsc-val" id="diagSummarySituation">Telefonovanie & Hovory</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">DAF ASISTENT NASTAVENIE</span>
+              <div class="dsc-val" id="diagSummaryDaf">Delay 85 ms • Formant Harmonics ON</div>
+            </div>
+          </div>
+
+          <button class="btn-3d green full" id="diagEnterAppBtn" type="button" style="margin-top: 18px;">
+            <span>🚀 Vstúpiť do môjho tréningu na mieru</span>
+          </button>
+        </div>
+
       </div>
     </div>
+
   </div>
 </div>
 
@@ -627,6 +802,38 @@
             </div>
             <button class="btn-3d red full sm" id="btnLogout" type="button">Odhlásiť sa</button>
           </div>
+        </div>
+
+        <!-- Osobný Rečový Neuro-profil (Balbutologická diagnostika) -->
+        <div class="telemetry-card" id="telemetryDiagnosticCard">
+          <div class="card-subtitle-row">
+            <span class="card-subtitle cyan">VEDECKÝ NEURO-PROFIL REČI</span>
+            <span class="science-tag-pill" id="diagProfileStatusPill">Personalizované</span>
+          </div>
+          <h3 class="card-title">Tvoja Rečová Diagnostika</h3>
+          
+          <div class="diag-summary-cards" style="margin-bottom: 14px;">
+            <div class="dsc-item">
+              <span class="dsc-label">PRIMÁRNY BLOK & TENZIA</span>
+              <div class="dsc-val" id="telemetryDiagTension">Glotálno-laryngeálny kŕč (Hlasivky)</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">ODPORÚČANÝ ŠTARTOVACÍ SVET</span>
+              <div class="dsc-val highlight" id="telemetryDiagWorld">Svet 1: Samohlásky & Easy Onset</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">STRESOVÁ SOCIÁLNA SITUÁCIA</span>
+              <div class="dsc-val" id="telemetryDiagSituation">Telefonovanie & Nečakané hovory</div>
+            </div>
+            <div class="dsc-item">
+              <span class="dsc-label">ODPORÚČANÁ STRATÉGIA</span>
+              <div class="dsc-val" id="telemetryDiagGoal">Jemný mäkký nábeh + DAF spomalenie</div>
+            </div>
+          </div>
+
+          <button class="btn-3d slate full sm" id="reopenDiagnosticBtn" type="button">
+            <span>📝 Prehodnotiť dotazník balbutizmu</span>
+          </button>
         </div>
 
         <!-- História posledných pokusov -->
