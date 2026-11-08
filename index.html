@@ -88,6 +88,61 @@
           <p class="sandbox-sub">Čaká ťa pokladňa, telefonát alebo objednávka? Zadaj cieľové slovo a uvoľni sánku v 3 rýchlych pokusoch.</p>
         </div>
 
+        <!-- Interaktívny situačný dialóg, otázky a rôzne hlasy -->
+        <div class="sandbox-dialogue-card">
+          <div class="card-header-row">
+            <div>
+              <div class="card-subtitle">🎭 REÁLNE SITUÁCIE & HLASY</div>
+              <h3 class="card-title">Situačný Dialóg s Oponentom</h3>
+            </div>
+            <button class="btn-3d blue sm" id="rotateQuestionBtn" title="Vybrať novú náhodnú otázku a iný hlas">
+              <span>🎲 Iná otázka & Hlas</span>
+            </button>
+          </div>
+
+          <!-- Kategórie otázok -->
+          <div class="question-categories-pills" id="questionCategoryPills">
+            <button class="cat-pill active" data-cat="all">Všetky</button>
+            <button class="cat-pill" data-cat="pokladna">🛒 Pokladňa</button>
+            <button class="cat-pill" data-cat="kurier">📦 Kuriér</button>
+            <button class="cat-pill" data-cat="lekar">🩺 Lekár</button>
+            <button class="cat-pill" data-cat="kaviaren">☕ Kaviareň</button>
+            <button class="cat-pill" data-cat="urad">🏛️ Úrad</button>
+            <button class="cat-pill" data-cat="servis">🔧 Servis</button>
+          </div>
+
+          <!-- Karta persony a otázky -->
+          <div class="dialogue-box" id="dialogueBox">
+            <div class="dialogue-speaker-row">
+              <div class="dialogue-avatar" id="dialogueSpeakerAvatar">👩‍💼</div>
+              <div class="dialogue-speaker-info">
+                <div class="dialogue-name" id="dialogueSpeakerName">Pokladníčka Zuzana</div>
+                <div class="dialogue-voice-tag" id="dialogueVoiceTag">Svižný ženský hlas • Pokladňa</div>
+              </div>
+              <button class="btn-3d amber sm" id="previewVoiceBtn" title="Vypočuť otázku nahlas">
+                <span>🔊 Vypočuť</span>
+              </button>
+            </div>
+
+            <div class="dialogue-question-bubble">
+              <span class="quote-mark">“</span>
+              <p class="dialogue-question-text" id="dialogueQuestionText">Dobrý deň, budete platiť v hotovosti alebo kartou?</p>
+            </div>
+
+            <div class="dialogue-context-note" id="dialogueContextNote">
+              💡 Reakcia bez kŕča na pokladni pod tlakom radu za tebou
+            </div>
+
+            <div class="dialogue-action-row">
+              <div class="suggested-reply-label">Odporúčaná odpoveď na tréning:</div>
+              <button class="apply-reply-btn" id="applyReplyBtn" title="Vložiť túto odpoveď do poľa nižšie">
+                <span class="reply-text" id="dialogueSuggestedReply">Kartou, prosím</span>
+                <span class="reply-action-icon">↙ Použiť do drilu</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Vstup na vlastné slovo / meno -->
         <div class="sandbox-input-card">
           <label class="sandbox-label" for="wordInput">Cieľové slovo alebo veta:</label>
@@ -319,6 +374,19 @@
       <video id="cameraFeed" autoplay playsinline muted></video>
       <div class="eye-contact-prompt" id="interlocutorPrompt">👀 Udrž očný kontakt s kamerou!</div>
 
+      <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->
+      <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none;">
+        <div class="ld-speaker-badge">
+          <span class="ld-avatar" id="ldAvatar">👩‍💼</span>
+          <span class="ld-name" id="ldSpeaker">Pokladníčka Zuzana</span>
+          <span class="ld-speaking-icon" id="ldSpeakingIcon">🔊</span>
+        </div>
+        <div class="ld-bubble">
+          <span class="ld-quote">“</span>
+          <span class="ld-text" id="ldText">Dobrý deň, budete platiť v hotovosti alebo kartou?</span>
+        </div>
+      </div>
+
       <!-- Kontext lekcie -->
       <div class="lesson-context-badge" id="lessonContextBadge">Svet 1 • Cvičenie 1 z 4</div>
 
@@ -482,6 +550,7 @@
 </div>
 
 <!-- Skripty -->
+<script src="./questions-and-voices.js"></script>
 <script src="./dsp-core.js"></script>
 <script src="./gamification-engine.js"></script>
 </body>

@@ -686,6 +686,183 @@ body.in-lesson #lessonScreen.active {
   line-height: 1.45;
 }
 
+/* Karta situačného dialógu, otázok a rôznych hlasov */
+.sandbox-dialogue-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.question-categories-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.question-categories-pills::-webkit-scrollbar {
+  height: 4px;
+}
+.question-categories-pills::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 4px;
+}
+
+.cat-pill {
+  white-space: nowrap;
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  color: #cbd5e1;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.cat-pill:hover {
+  border-color: var(--duo-blue);
+  color: #fff;
+}
+.cat-pill.active {
+  background: var(--duo-blue);
+  border-color: var(--duo-blue-lip);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(28, 176, 246, 0.4);
+}
+
+.dialogue-box {
+  background: #0b132b;
+  border: 2px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dialogue-speaker-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dialogue-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #162646;
+  border: 2px solid var(--duo-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.dialogue-speaker-info {
+  flex: 1;
+}
+
+.dialogue-name {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.dialogue-voice-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.dialogue-question-bubble {
+  background: #111d40;
+  border: 1px solid var(--surface-border);
+  border-left: 4px solid var(--duo-blue);
+  border-radius: 12px;
+  padding: 12px 14px;
+  position: relative;
+}
+
+.dialogue-question-bubble .quote-mark {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--duo-blue);
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  opacity: 0.4;
+}
+
+.dialogue-question-text {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.4;
+  margin-left: 14px;
+}
+
+.dialogue-context-note {
+  font-size: 0.74rem;
+  color: var(--duo-gold);
+  font-weight: 700;
+}
+
+.dialogue-action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--surface-border);
+  padding-top: 10px;
+}
+
+.suggested-reply-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.apply-reply-btn {
+  background: rgba(88, 204, 2, 0.1);
+  border: 1px solid rgba(88, 204, 2, 0.35);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.15s ease;
+  outline: none;
+}
+.apply-reply-btn:hover {
+  background: rgba(88, 204, 2, 0.2);
+  border-color: var(--duo-green);
+  transform: translateY(-1px);
+}
+.apply-reply-btn:active {
+  transform: scale(0.98);
+}
+.apply-reply-btn .reply-text {
+  font-size: 0.92rem;
+  font-weight: 900;
+  color: var(--duo-green);
+}
+.apply-reply-btn .reply-action-icon {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
 .sandbox-input-card {
   background: var(--surface);
   border: 2px solid var(--surface-border);
@@ -1438,6 +1615,85 @@ body.in-lesson #lessonScreen.active {
   margin-bottom: 12px;
 }
 .eye-contact-prompt.visible { display: inline-block; }
+
+/* Interaktívna bublina dialógu v lekcii */
+.lesson-dialogue-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(17, 29, 64, 0.95);
+  border: 2px solid var(--duo-blue);
+  border-radius: 18px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  animation: dialogueFloatIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dialogueFloatIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.lesson-dialogue-card.speaking {
+  box-shadow: 0 0 20px rgba(28, 176, 246, 0.35);
+  border-color: var(--duo-blue);
+}
+
+.ld-speaker-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ld-avatar {
+  font-size: 1.3rem;
+}
+
+.ld-name {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--duo-blue);
+  letter-spacing: 0.4px;
+}
+
+.ld-speaking-icon {
+  font-size: 0.82rem;
+  animation: speakPulse 1s infinite alternate;
+}
+@keyframes speakPulse {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.15); }
+}
+
+.ld-bubble {
+  position: relative;
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.ld-quote {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--duo-blue);
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  opacity: 0.4;
+}
+
+.ld-text {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+  margin-left: 14px;
+  display: block;
+}
 
 /* Prepadový hovor Overlay */
 .call-overlay {

@@ -192,6 +192,7 @@ const WORLDS_DATA = [
         desc: "Odpovedz okamžite po skončení vety predavačky bez bloku.",
         mode: "guillotine",
         scenarioIndex: 1, // Cashier
+        ambushCategory: "pokladna",
         words: ["Kartou, prosím"],
         xp: 45,
         icon: "💳"
@@ -202,6 +203,7 @@ const WORLDS_DATA = [
         desc: "Rýchla odpoveď na nečakanú otázku v rade pri pokladni.",
         mode: "guillotine",
         scenarioIndex: 1,
+        ambushCategory: "pokladna",
         words: ["Nemám, ďakujem"],
         xp: 45,
         icon: "💬"
@@ -212,6 +214,7 @@ const WORLDS_DATA = [
         desc: "Prirodzená odpoveď so zachovaním mäkkého nábehu samohlásky Á.",
         mode: "guillotine",
         scenarioIndex: 1,
+        ambushCategory: "pokladna",
         words: ["Áno, poprosím"],
         xp: 50,
         icon: "🧾"
@@ -222,6 +225,7 @@ const WORLDS_DATA = [
         desc: "Jasné 'Nie' bez zaseknutia jazyka na podnebí.",
         mode: "guillotine",
         scenarioIndex: 1,
+        ambushCategory: "pokladna",
         words: ["Nie, mám vlastnú"],
         xp: 50,
         icon: "🛍️"
@@ -232,6 +236,7 @@ const WORLDS_DATA = [
         desc: "Kompletný dialóg v obchode pod časovým stresom radu ľudí za tebou.",
         mode: "guillotine",
         scenarioIndex: 1,
+        ambushCategory: "pokladna",
         words: ["Kartou", "Nemám kartu", "Bloček netreba", "Dovidenia"],
         xp: 85,
         isBoss: true,
@@ -253,6 +258,7 @@ const WORLDS_DATA = [
         desc: "Telefón zazvoní. Zdvihni a predstav sa kuriérovi s mäkkým nábehom.",
         mode: "ambush",
         scenarioIndex: 0, // Courier
+        ambushCategory: "kurier",
         words: ["Dobrý deň, pri telefóne"],
         xp: 65,
         icon: "📦"
@@ -263,6 +269,7 @@ const WORLDS_DATA = [
         desc: "Hovor do ambulancie: povedz svoje meno a požiadavku bez kŕča.",
         mode: "ambush",
         scenarioIndex: 2, // Doctor
+        ambushCategory: "lekar",
         words: ["Peter Novák, volám kvôli termínu"],
         xp: 75,
         icon: "🩺"
@@ -273,6 +280,7 @@ const WORLDS_DATA = [
         desc: "Hlučný hovor z dielne: vysvetli problém s autom uvoľnene.",
         mode: "ambush",
         scenarioIndex: 3, // Automechanik
+        ambushCategory: "servis",
         words: ["Dobrý deň, volám ohľadom auta"],
         xp: 85,
         icon: "🔧"
@@ -283,6 +291,7 @@ const WORLDS_DATA = [
         desc: "Zapnuté zrkadlo kamery! Hovor s kuriérom pri pohľade do objektívu.",
         mode: "ambush",
         scenarioIndex: 0,
+        ambushCategory: "kurier",
         words: ["Áno, čakám balík, ďakujem"],
         xp: 100,
         forceCam: true,
@@ -294,6 +303,7 @@ const WORLDS_DATA = [
         desc: "Záverečná certifikácia plynulosti reči pod maximálnym sociálnym tlakom.",
         mode: "ambush",
         scenarioIndex: 2,
+        ambushCategory: "all",
         words: ["Ďakujem pekne za pomoc, prajem pekný deň"],
         xp: 150,
         isBoss: true,
@@ -864,6 +874,128 @@ class DuoLessonController {
         }
       });
     }
+
+    // Inicializácia interaktívneho situačného dialógu a rôznych hlasov v SOS Sandboxe
+    this.initDialogueSandbox();
+  }
+
+  // ========================================================================
+  // INTERAKTÍVNE SITUAČNÉ OTÁZKY, HLASY A ROTÁCIA V SOS SANDBOXE
+  // ========================================================================
+  initDialogueSandbox() {
+    const catPills = document.querySelectorAll('#questionCategoryPills .cat-pill');
+    const rotateBtn = document.getElementById('rotateQuestionBtn');
+    const previewVoiceBtn = document.getElementById('previewVoiceBtn');
+    const applyReplyBtn = document.getElementById('applyReplyBtn');
+
+    let currentCategory = 'all';
+
+    const renderCard = (q) => {
+      if (!q) return;
+      const avatarEl = document.getElementById('dialogueSpeakerAvatar');
+      const nameEl = document.getElementById('dialogueSpeakerName');
+      const tagEl = document.getElementById('dialogueVoiceTag');
+      const textEl = document.getElementById('dialogueQuestionText');
+      const noteEl = document.getElementById('dialogueContextNote');
+      const replyEl = document.getElementById('dialogueSuggestedReply');
+
+      if (avatarEl) avatarEl.textContent = q.avatar || '🗣️';
+      if (nameEl) nameEl.textContent = q.caller || 'Oponent';
+      if (tagEl) {
+        const genderText = q.voiceGender === 'female' ? 'Ženský hlas' : 'Mužský hlas';
+        const catName = q.categoryLabel ? q.categoryLabel.replace(/^[^a-zA-Zá-žÁ-Ž]+/, '') : '';
+        tagEl.textContent = `${genderText} • ${catName}`;
+      }
+      if (textEl) textEl.textContent = q.promptText || '';
+      if (noteEl) noteEl.textContent = q.contextNote ? `💡 ${q.contextNote}` : '';
+      if (replyEl) replyEl.textContent = q.suggestedResponse || '';
+    };
+
+    // Kategórie otázok
+    catPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        catPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentCategory = pill.dataset.cat || 'all';
+        if (typeof fluencyVoice !== 'undefined') {
+          const newQ = fluencyVoice.rotate(currentCategory);
+          renderCard(newQ);
+          duoSfx.playTone(600, 'sine', 0.05, 0.08);
+        }
+      });
+    });
+
+    // Rotovanie otázky a persony s hlasom
+    if (rotateBtn) {
+      rotateBtn.addEventListener('click', () => {
+        if (typeof fluencyVoice !== 'undefined') {
+          const newQ = fluencyVoice.rotate(currentCategory);
+          renderCard(newQ);
+          duoSfx.playTone(660, 'sine', 0.07, 0.1);
+        }
+      });
+    }
+
+    // Vypočutie otázky
+    if (previewVoiceBtn) {
+      previewVoiceBtn.addEventListener('click', () => {
+        if (typeof fluencyVoice !== 'undefined' && fluencyVoice.currentQuestion) {
+          previewVoiceBtn.disabled = true;
+          previewVoiceBtn.style.opacity = '0.6';
+          fluencyVoice.speak(fluencyVoice.currentQuestion, () => {
+            previewVoiceBtn.disabled = false;
+            previewVoiceBtn.style.opacity = '1';
+          });
+        }
+      });
+    }
+
+    // Použitie odporúčanej odpovede do textového poľa
+    if (applyReplyBtn) {
+      applyReplyBtn.addEventListener('click', () => {
+        const wordInputEl = document.getElementById('wordInput');
+        if (wordInputEl && typeof fluencyVoice !== 'undefined' && fluencyVoice.currentQuestion) {
+          wordInputEl.value = fluencyVoice.currentQuestion.suggestedResponse;
+          wordInputEl.focus();
+          if (typeof refreshMeta === 'function') refreshMeta();
+          duoSfx.playTone(784, 'triangle', 0.1, 0.12);
+        }
+      });
+    }
+
+    // Počiatočný render
+    if (typeof fluencyVoice !== 'undefined' && fluencyVoice.currentQuestion) {
+      renderCard(fluencyVoice.currentQuestion);
+    }
+  }
+
+  // ========================================================================
+  // ZOBRAZENIE DIALÓGOVEJ BUBLINY V LEKCII
+  // ========================================================================
+  showDialogueBubble(scenario) {
+    const bubble = document.getElementById('lessonDialogueCard');
+    if (!bubble) return;
+    const avatarEl = document.getElementById('ldAvatar');
+    const speakerEl = document.getElementById('ldSpeaker');
+    const textEl = document.getElementById('ldText');
+
+    if (avatarEl) avatarEl.textContent = scenario.avatar || '🗣️';
+    if (speakerEl) speakerEl.textContent = scenario.caller || 'Oponent';
+    if (textEl) textEl.textContent = scenario.promptText || scenario.fallbackPrompt || 'Počúvaj otázku...';
+
+    bubble.style.display = 'flex';
+    bubble.classList.add('active');
+  }
+
+  hideDialogueBubble() {
+    const bubble = document.getElementById('lessonDialogueCard');
+    if (!bubble) return;
+    bubble.classList.remove('active');
+    setTimeout(() => {
+      if (bubble && !bubble.classList.contains('active')) {
+        bubble.style.display = 'none';
+      }
+    }, 400);
   }
 
   // ========================================================================

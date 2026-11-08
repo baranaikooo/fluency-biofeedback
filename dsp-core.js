@@ -388,6 +388,12 @@ function playScenarioAudio(scenario, onDone) {
     onDone();
     return;
   }
+  // Ak je načítaný Fluency Voice & Rotation Engine, deleguj naň
+  if (typeof fluencyVoice !== 'undefined' && fluencyVoice && fluencyVoice.speak) {
+    fluencyVoice.speak(scenario, onDone);
+    return;
+  }
+
   if (activeAudioPlayer) {
     activeAudioPlayer.pause();
     activeAudioPlayer = null;
@@ -406,9 +412,10 @@ function playScenarioAudio(scenario, onDone) {
   audio.onerror = () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(scenario.fallbackPrompt);
+      const utter = new SpeechSynthesisUtterance(scenario.promptText || scenario.fallbackPrompt);
       utter.lang = 'sk-SK';
-      utter.rate = 1.05;
+      utter.rate = scenario.voiceRate || 1.05;
+      utter.pitch = scenario.voicePitch || 1.0;
       utter.onend = finishOnce;
       utter.onerror = finishOnce;
       window.speechSynthesis.speak(utter);
@@ -506,13 +513,26 @@ function runGuillotineMode(meta) {
   pacerCircle.textContent = 'Pokladňa...';
   pacerCircle.style.borderColor = '#ffc800';
 
-  const scenarioIdx = (typeof duoLesson !== 'undefined' && duoLesson.isLessonActive && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined)
-    ? duoLesson.currentLevel.scenarioIndex
-    : 1;
-  const cashierScenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[1];
-  statusAlert.textContent = `🛒 ${cashierScenario.caller} hovorí... Odpovedz po skončení!`;
+  let cashierScenario;
+  if (typeof fluencyVoice !== 'undefined' && fluencyVoice && fluencyVoice.rotate) {
+    cashierScenario = fluencyVoice.rotate('pokladna');
+  } else {
+    const scenarioIdx = (typeof duoLesson !== 'undefined' && duoLesson.isLessonActive && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined)
+      ? duoLesson.currentLevel.scenarioIndex
+      : 1;
+    cashierScenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[1];
+  }
+
+  statusAlert.textContent = `${cashierScenario.avatar || '🛒'} ${cashierScenario.caller} hovorí... Odpovedz po skončení!`;
+
+  if (typeof duoLesson !== 'undefined' && duoLesson.showDialogueBubble) {
+    duoLesson.showDialogueBubble(cashierScenario);
+  }
 
   playScenarioAudio(cashierScenario, () => {
+    if (typeof duoLesson !== 'undefined' && duoLesson.hideDialogueBubble) {
+      duoLesson.hideDialogueBubble();
+    }
     triggerGoSignal(meta, 600);
   });
 }
@@ -531,12 +551,25 @@ function armAmbushCall(meta) {
     : '📱 Odlož zrak z obrazovky. Telefón čoskoro nečakane zazvoní...';
 
   ambushTimeout = setTimeout(() => {
-    const scenarioIdx = (isDuoLesson && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined)
-      ? duoLesson.currentLevel.scenarioIndex
-      : Math.floor(Math.random() * REAL_AUDIO_SCENARIOS.length);
-    const scenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[0];
+    let scenario;
+    if (typeof fluencyVoice !== 'undefined' && fluencyVoice && fluencyVoice.rotate) {
+      const cat = (isDuoLesson && duoLesson.currentLevel && duoLesson.currentLevel.ambushCategory)
+        ? duoLesson.currentLevel.ambushCategory
+        : 'all';
+      scenario = fluencyVoice.rotate(cat);
+    } else {
+      const scenarioIdx = (isDuoLesson && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined)
+        ? duoLesson.currentLevel.scenarioIndex
+        : Math.floor(Math.random() * REAL_AUDIO_SCENARIOS.length);
+      scenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[0];
+    }
 
-    callerNameEl.textContent = scenario.caller;
+    callerNameEl.textContent = `${scenario.avatar || '📞'} ${scenario.caller}`;
+    const callerSub = document.getElementById('callerSub');
+    if (callerSub && scenario.promptText) {
+      callerSub.textContent = `Prichádzajúci hovor: „${scenario.promptText}“`;
+    }
+
     callOverlay.classList.add('active');
     startRinging();
 
@@ -547,7 +580,14 @@ function armAmbushCall(meta) {
       pacerCircle.textContent = 'Volajúci hovorí';
       statusAlert.textContent = `📞 ${scenario.caller}... Počúvaj a hneď odpovedz!`;
 
+      if (typeof duoLesson !== 'undefined' && duoLesson.showDialogueBubble) {
+        duoLesson.showDialogueBubble(scenario);
+      }
+
       playScenarioAudio(scenario, () => {
+        if (typeof duoLesson !== 'undefined' && duoLesson.hideDialogueBubble) {
+          duoLesson.hideDialogueBubble();
+        }
         triggerGoSignal(meta, 750);
       });
     };
@@ -555,6 +595,9 @@ function armAmbushCall(meta) {
     declineCallBtn.onclick = () => {
       stopRinging();
       callOverlay.classList.remove('active');
+      if (typeof duoLesson !== 'undefined' && duoLesson.hideDialogueBubble) {
+        duoLesson.hideDialogueBubble();
+      }
       startBtn.disabled = false;
       calibrateBtn.disabled = false;
       pacerCircle.textContent = 'Zrušené';
