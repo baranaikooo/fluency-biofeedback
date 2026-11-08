@@ -1042,8 +1042,16 @@ body.in-lesson #lessonScreen.active {
   border-radius: 8px;
 }
 
+.slider-track-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .slider-wrap {
   width: 100%;
+  position: relative;
   display: flex;
   align-items: center;
 }
@@ -1057,6 +1065,7 @@ body.in-lesson #lessonScreen.active {
   background: #0b132b;
   outline: none;
   border: 1px solid var(--surface-border);
+  cursor: pointer;
 }
 
 .assistant-slider::-webkit-slider-thumb {
@@ -1088,18 +1097,89 @@ body.in-lesson #lessonScreen.active {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-.slider-ticks-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-dim);
-  padding: 0 4px;
+/* Presná matematická stupnica zarovnaná s 24px thumbom */
+.slider-ruler {
+  position: relative;
+  width: calc(100% - 24px);
+  margin: 6px 12px 0 12px;
+  height: 28px;
 }
 
-.tick-sweet {
+.ruler-mark {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.ruler-mark[style*="left: 0%"] {
+  align-items: flex-start;
+  transform: translateX(0);
+}
+
+.ruler-mark[style*="left: 100%"] {
+  align-items: flex-end;
+  transform: translateX(-100%);
+}
+
+.ruler-tick {
+  width: 2px;
+  height: 7px;
+  background: var(--surface-border);
+  border-radius: 1px;
+  margin-bottom: 4px;
+  transition: all 0.15s ease;
+}
+
+.ruler-tick.sweet {
+  background: var(--duo-green);
+  width: 3px;
+  height: 9px;
+  box-shadow: 0 0 8px rgba(88, 204, 2, 0.6);
+}
+
+.ruler-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.ruler-label.sweet {
   color: var(--duo-green);
-  font-weight: 800;
+  font-weight: 900;
+  text-shadow: 0 0 8px rgba(88, 204, 2, 0.4);
+}
+
+.ruler-mark:hover .ruler-label {
+  color: #fff;
+}
+.ruler-mark:hover .ruler-tick {
+  background: var(--duo-blue);
+  height: 10px;
+}
+
+.ruler-mark.active .ruler-label {
+  color: #fff;
+  font-weight: 900;
+}
+.ruler-mark.active .ruler-tick {
+  background: var(--duo-blue);
+  box-shadow: 0 0 8px var(--duo-blue);
+}
+.ruler-mark.sweet.active .ruler-label {
+  color: var(--duo-green);
+  font-weight: 900;
+}
+.ruler-mark.sweet.active .ruler-tick {
+  background: var(--duo-green);
+  box-shadow: 0 0 10px var(--duo-green);
 }
 
 /* ==========================================================================

@@ -196,14 +196,30 @@
               <span class="control-val-badge" id="assistantDelayVal">70 ms</span>
             </div>
 
-            <div class="slider-wrap">
-              <input type="range" class="assistant-slider" id="assistantDelaySlider" min="40" max="140" step="5" value="70">
-            </div>
+            <div class="slider-track-container">
+              <div class="slider-wrap">
+                <input type="range" class="assistant-slider" id="assistantDelaySlider" min="40" max="140" step="5" value="70">
+              </div>
 
-            <div class="slider-ticks-row">
-              <span>Jemný posun (40 ms)</span>
-              <span class="tick-sweet">Optimálny (70 ms)</span>
-              <span>Výrazný posun (140 ms)</span>
+              <!-- Presná matematicky zarovnaná stupnica (40..140 ms, 70 ms leží na presne 30%) -->
+              <div class="slider-ruler" id="delayRuler">
+                <div class="ruler-mark" style="left: 0%;" data-val="40">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">40 ms</span>
+                </div>
+                <div class="ruler-mark sweet active" style="left: 30%;" data-val="70">
+                  <div class="ruler-tick sweet"></div>
+                  <span class="ruler-label sweet">⭐ Optimálny (70 ms)</span>
+                </div>
+                <div class="ruler-mark" style="left: 60%;" data-val="100">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">100 ms</span>
+                </div>
+                <div class="ruler-mark" style="left: 100%;" data-val="140">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">140 ms</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -217,14 +233,30 @@
               <span class="control-val-badge" id="assistantVolVal">85 %</span>
             </div>
 
-            <div class="slider-wrap">
-              <input type="range" class="assistant-slider" id="assistantVolSlider" min="0" max="100" step="1" value="85">
-            </div>
+            <div class="slider-track-container">
+              <div class="slider-wrap">
+                <input type="range" class="assistant-slider" id="assistantVolSlider" min="0" max="100" step="1" value="85">
+              </div>
 
-            <div class="slider-ticks-row">
-              <span>0 % (Ticho)</span>
-              <span>85 % (Odporúčané)</span>
-              <span>100 % (Maximum)</span>
+              <!-- Presná matematicky zarovnaná stupnica (0..100%, 85% leží na presne 85%) -->
+              <div class="slider-ruler" id="volRuler">
+                <div class="ruler-mark" style="left: 0%;" data-val="0">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">0 % (Ticho)</span>
+                </div>
+                <div class="ruler-mark" style="left: 50%;" data-val="50">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">50 %</span>
+                </div>
+                <div class="ruler-mark sweet active" style="left: 85%;" data-val="85">
+                  <div class="ruler-tick sweet"></div>
+                  <span class="ruler-label sweet">⭐ Odporúčaná (85 %)</span>
+                </div>
+                <div class="ruler-mark" style="left: 100%;" data-val="100">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">100 %</span>
+                </div>
+              </div>
             </div>
           </div>
 

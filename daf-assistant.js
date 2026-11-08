@@ -42,6 +42,22 @@
       const volSlider = document.getElementById('assistantVolSlider');
       const volValEl = document.getElementById('assistantVolVal');
 
+      const updateRulerActive = (rulerId, currentVal, tolerance = 3) => {
+        const ruler = document.getElementById(rulerId);
+        if (!ruler) return;
+        const marks = ruler.querySelectorAll ? ruler.querySelectorAll('.ruler-mark') : (document.querySelectorAll ? document.querySelectorAll(`#${rulerId} .ruler-mark`) : []);
+        if (!marks || !marks.forEach) return;
+        marks.forEach(mark => {
+          const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+          const mVal = parseInt(rawVal, 10);
+          if (!isNaN(mVal) && Math.abs(mVal - currentVal) <= tolerance) {
+            mark.classList.add('active');
+          } else {
+            mark.classList.remove('active');
+          }
+        });
+      };
+
       // 1. Master Switch (Aktivácia / Deaktivácia)
       if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -51,20 +67,74 @@
 
       // 2. Rýchlosť odozvy (Delay slider 40-140 ms)
       if (delaySlider) {
-        delaySlider.addEventListener('input', (e) => {
-          const val = parseInt(e.target.value, 10);
+        const handleDelayInput = () => {
+          const val = parseInt(delaySlider.value, 10);
           this.setDelay(val);
           if (delayValEl) delayValEl.textContent = `${val} ms`;
-        });
+          updateRulerActive('delayRuler', val, 3);
+
+          const pct = ((val - 40) / (140 - 40)) * 100;
+          delaySlider.style.background = `linear-gradient(to right, var(--duo-blue) 0%, var(--duo-blue) ${pct}%, #0b132b ${pct}%, #0b132b 100%)`;
+        };
+
+        delaySlider.addEventListener('input', handleDelayInput);
+        handleDelayInput(); // Počiatočné nastavenie
       }
 
       // 3. Hlasitosť v uchu (Volume slider 0-100 %)
       if (volSlider) {
-        volSlider.addEventListener('input', (e) => {
-          const val = parseInt(e.target.value, 10);
+        const handleVolInput = () => {
+          const val = parseInt(volSlider.value, 10);
           this.setVolume(val);
           if (volValEl) volValEl.textContent = `${val} %`;
-        });
+          updateRulerActive('volRuler', val, 2);
+
+          volSlider.style.background = `linear-gradient(to right, var(--duo-blue) 0%, var(--duo-blue) ${val}%, #0b132b ${val}%, #0b132b 100%)`;
+        };
+
+        volSlider.addEventListener('input', handleVolInput);
+        handleVolInput(); // Počiatočné nastavenie
+      }
+
+      // 4. Klikateľné značky stupnice (Ruler click-to-snap)
+      const delayRuler = document.getElementById('delayRuler');
+      if (delayRuler && delaySlider && delayRuler.querySelectorAll) {
+        const dMarks = delayRuler.querySelectorAll('.ruler-mark');
+        if (dMarks && dMarks.forEach) {
+          dMarks.forEach(mark => {
+            mark.addEventListener('click', () => {
+              const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+              const snapVal = parseInt(rawVal, 10);
+              if (!isNaN(snapVal)) {
+                delaySlider.value = snapVal;
+                delaySlider.dispatchEvent(new Event('input'));
+                if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+                  duoSfx.playTone(660, 'sine', 0.04, 0.08);
+                }
+              }
+            });
+          });
+        }
+      }
+
+      const volRuler = document.getElementById('volRuler');
+      if (volRuler && volSlider && volRuler.querySelectorAll) {
+        const vMarks = volRuler.querySelectorAll('.ruler-mark');
+        if (vMarks && vMarks.forEach) {
+          vMarks.forEach(mark => {
+            mark.addEventListener('click', () => {
+              const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+              const snapVal = parseInt(rawVal, 10);
+              if (!isNaN(snapVal)) {
+                volSlider.value = snapVal;
+                volSlider.dispatchEvent(new Event('input'));
+                if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+                  duoSfx.playTone(740, 'sine', 0.04, 0.08);
+                }
+              }
+            });
+          });
+        }
       }
     }
 
