@@ -1,115 +1,1115 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
 
 :root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface-border: #334155;
-  --surface-lip: #090d16;
+  --bg: #0b132b;
+  --bg-subtle: #111d40;
+  --surface: #1c2a4f;
+  --surface-border: #2a3c6d;
+  --surface-lip: #121c35;
   --text: #f8fafc;
   --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* Duolingo Iconic Color Palette */
   --duo-green: #58cc02;
   --duo-green-lip: #46a302;
+  --duo-green-subtle: rgba(88, 204, 2, 0.16);
+
   --duo-blue: #1cb0f6;
   --duo-blue-lip: #1899d6;
-  --duo-amber: #ffc800;
-  --duo-amber-lip: #d9a700;
+  --duo-blue-subtle: rgba(28, 176, 246, 0.16);
+
+  --duo-amber: #ff9600;
+  --duo-amber-lip: #d97e00;
+  --duo-amber-subtle: rgba(255, 150, 0, 0.16);
+
+  --duo-gold: #ffc800;
+  --duo-gold-lip: #d9a700;
+
   --duo-red: #ff4b4b;
   --duo-red-lip: #ea2b2b;
+  --duo-red-subtle: rgba(255, 75, 75, 0.16);
+
   --duo-purple: #ce82ff;
   --duo-purple-lip: #a559d9;
+  --duo-purple-subtle: rgba(206, 130, 255, 0.16);
+
+  --duo-gray: #37464f;
+  --duo-gray-lip: #242f35;
+  --duo-gray-light: #e5e5e5;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif; }
-body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 18px 14px; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
 
-.app-shell { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 14px; }
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  user-select: none;
+}
 
-/* Gamified Top HUD */
-.hud-bar { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 2px solid var(--surface-border); border-bottom-width: 5px; border-radius: 18px; padding: 12px 18px; gap: 12px; flex-wrap: wrap; }
-.hud-stats { display: flex; gap: 10px; align-items: center; }
-.stat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; background: #0f172a; border: 2px solid var(--surface-border); }
-.stat-pill.fire { color: #ff9600; border-color: rgba(255, 150, 0, 0.35); }
-.stat-pill.xp { color: var(--duo-amber); border-color: rgba(255, 200, 0, 0.35); }
-.stat-pill.combo { color: var(--duo-purple); border-color: rgba(206, 130, 255, 0.35); }
+/* ==========================================================================
+   HLAVNÉ ROZLOŽENIE
+   ========================================================================== */
+.app-layout {
+  width: 100%;
+  max-width: 540px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
 
-.xp-progress-wrap { flex: 1; min-width: 140px; }
-.xp-label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-.xp-track { width: 100%; height: 12px; background: #0f172a; border-radius: 999px; overflow: hidden; border: 1px solid var(--surface-border); }
-.xp-fill { height: 100%; background: linear-gradient(90deg, var(--duo-green), #89e219); width: 25%; transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+/* ==========================================================================
+   1. HORNÝ GAMIFIKOVANÝ DUOLINGO HUD
+   ========================================================================== */
+.duo-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(11, 19, 43, 0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--surface-border);
+  padding: 10px 16px;
+  width: 100%;
+}
 
-/* Main Card */
-.card { background: var(--surface); border: 2px solid var(--surface-border); border-bottom-width: 5px; border-radius: 20px; padding: 20px; position: relative; overflow: hidden; }
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-/* Mode Selector */
-.mode-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-.btn-3d { border: none; border-radius: 14px; padding: 11px 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: transform 0.08s, filter 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #fff; background: var(--duo-blue); border-bottom: 4px solid var(--duo-blue-lip); }
-.btn-3d:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 1px; }
-.btn-3d:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-3d.green { background: var(--duo-green); border-bottom-color: var(--duo-green-lip); }
-.btn-3d.amber { background: var(--duo-amber); border-bottom-color: var(--duo-amber-lip); color: #0f172a; }
-.btn-3d.purple { background: var(--duo-purple); border-bottom-color: var(--duo-purple-lip); }
-.btn-3d.red { background: var(--duo-red); border-bottom-color: var(--duo-red-lip); }
-.btn-3d.neutral { background: #334155; border-bottom-color: #1e293b; color: #cbd5e1; }
-.btn-3d.neutral.active { background: var(--duo-blue); border-bottom-color: var(--duo-blue-lip); color: #fff; }
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.brand-badge:active { transform: scale(0.95); }
 
-.control-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-input[type="text"] { flex: 1; min-width: 190px; background: #0f172a; border: 2px solid var(--surface-border); border-radius: 14px; padding: 11px 14px; color: var(--text); font-size: 1rem; font-weight: 700; outline: none; }
-input[type="text"]:focus { border-color: var(--duo-blue); }
+.brand-icon { font-size: 1.55rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.brand-name {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--duo-green), #89e219);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-.preset-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-.chip { background: #0f172a; border: 2px solid var(--surface-border); color: var(--text-muted); font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: all 0.15s; }
-.chip:hover { color: #fff; border-color: var(--duo-blue); }
+.hud-metrics {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-/* Stress Inoculation Bar */
-.stressor-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #0f172a; border: 2px solid var(--surface-border); border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.84rem; font-weight: 700; flex-wrap: wrap; }
-.toggle-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #cbd5e1; user-select: none; }
-.toggle-wrap input { accent-color: var(--duo-green); width: 17px; height: 17px; cursor: pointer; }
+.hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  cursor: default;
+  transition: transform 0.15s;
+}
 
-.status-alert { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); text-align: center; min-height: 22px; margin-bottom: 12px; }
+.hud-pill.fire {
+  color: #ff9600;
+  border-color: rgba(255, 150, 0, 0.35);
+  animation: flameGlow 2s infinite alternate;
+}
+@keyframes flameGlow {
+  0% { box-shadow: 0 0 4px rgba(255, 150, 0, 0.2); }
+  100% { box-shadow: 0 0 12px rgba(255, 150, 0, 0.5); }
+}
 
-/* Stage Box */
-.stage-box { position: relative; border-radius: 18px; background: #090d16; border: 2px solid var(--surface-border); padding: 20px; margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; overflow: hidden; }
-#cameraFeed { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; transform: scaleX(-1); pointer-events: none; display: none; }
+.hud-pill.xp {
+  color: var(--duo-gold);
+  border-color: rgba(255, 200, 0, 0.35);
+}
+
+.hud-pill.hearts {
+  color: var(--duo-red);
+  border-color: rgba(255, 75, 75, 0.35);
+}
+
+.rank-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2b3964, #1c2a4f);
+  border: 2px solid var(--duo-purple);
+  color: var(--duo-purple);
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.1s;
+}
+.rank-btn:active { transform: translateY(2px); }
+
+/* ==========================================================================
+   2. DUOLINGO 3D TACTILE BUTTONS
+   ========================================================================== */
+.btn-3d {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.1s ease, border-bottom-width 0.1s ease, box-shadow 0.1s ease;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-3d:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-3d.sm { padding: 8px 14px; font-size: 0.8rem; border-radius: 12px; border-bottom-width: 4px; }
+.btn-3d.sm:active { transform: translateY(2px); border-bottom-width: 2px; }
+
+.btn-3d.md { padding: 12px 18px; font-size: 0.92rem; }
+.btn-3d.lg { padding: 16px 24px; font-size: 1.05rem; }
+.btn-3d.full { width: 100%; }
+
+/* Farby tlačidiel */
+.btn-3d.green {
+  background: var(--duo-green);
+  border-bottom-color: var(--duo-green-lip);
+}
+.btn-3d.blue {
+  background: var(--duo-blue);
+  border-bottom-color: var(--duo-blue-lip);
+}
+.btn-3d.amber {
+  background: var(--duo-amber);
+  border-bottom-color: var(--duo-amber-lip);
+}
+.btn-3d.purple {
+  background: var(--duo-purple);
+  border-bottom-color: var(--duo-purple-lip);
+}
+.btn-3d.red {
+  background: var(--duo-red);
+  border-bottom-color: var(--duo-red-lip);
+}
+.btn-3d.neutral {
+  background: #334155;
+  border-bottom-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.btn-3d:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  border-bottom-width: 5px !important;
+}
+
+/* ==========================================================================
+   3. DENNÁ VÝZVA (DAILY QUEST BANNER)
+   ========================================================================== */
+.daily-quest-card {
+  margin: 16px 16px 8px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 2px solid var(--surface-border);
+  border-radius: 18px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.quest-tag {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: var(--duo-amber);
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+.quest-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+/* ==========================================================================
+   4. HLAVNÝ STROM SVETOV (WINDING LEARNING PATH)
+   ========================================================================== */
+.world-path-container {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.worlds-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 12px 0 32px;
+}
+
+.world-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Duolingo Unit Banner */
+.world-header-banner {
+  width: calc(100% - 32px);
+  margin: 0 16px 20px;
+  background: var(--world-theme, var(--duo-green));
+  border-bottom: 5px solid var(--world-theme-lip, var(--duo-green-lip));
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.world-banner-tag {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 2px;
+}
+.world-banner-title {
+  font-size: 1.18rem;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+}
+.world-banner-sub {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.92;
+  margin-top: 4px;
+}
+.world-banner-icon {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+/* Trasa uzlov (Winding Nodes Track) */
+.world-nodes-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+  width: 100%;
+  position: relative;
+  padding: 10px 0;
+}
+
+/* Spojovacia línia v pozadí */
+.world-nodes-track::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--surface-border) 0px,
+    var(--surface-border) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  z-index: 1;
+}
+
+/* Obal uzla */
+.path-node-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+/* 3D Okrúhly Uzol */
+.path-node-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  background: var(--world-theme, var(--duo-green));
+  box-shadow: 0 7px 0 var(--world-theme-lip, var(--duo-green-lip)), 0 10px 14px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.path-node-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 var(--world-theme-lip, var(--duo-green-lip)), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.node-icon-inner {
+  font-size: 1.8rem;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}
+
+/* Uzamknutý uzol */
+.path-node-btn.locked {
+  background: var(--duo-gray);
+  box-shadow: 0 6px 0 var(--duo-gray-lip), 0 8px 12px rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+.path-node-btn.locked:active {
+  transform: none;
+}
+.path-node-btn.locked .node-icon-inner {
+  font-size: 1.4rem;
+  opacity: 0.6;
+}
+
+/* Dokončený uzol */
+.path-node-btn.completed {
+  filter: brightness(1.05);
+}
+.node-stars-badge {
+  position: absolute;
+  top: -10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--duo-gold);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
+
+/* Aktuálny uzol (Maják "TU SI TY") */
+.path-node-btn.current {
+  animation: currentPulse 2s infinite ease-in-out;
+}
+@keyframes currentPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.node-current-beacon {
+  position: absolute;
+  top: -24px;
+  background: #fff;
+  color: var(--bg);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  animation: bounceBeacon 1s infinite alternate;
+}
+@keyframes bounceBeacon {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* Boss uzol */
+.path-node-btn.boss-node {
+  width: 84px;
+  height: 84px;
+  border: 3px solid var(--duo-gold);
+}
+.path-node-btn.boss-node .node-icon-inner {
+  font-size: 2.2rem;
+}
+
+/* Názov levelu pod uzlom */
+.node-label-sub {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 130px;
+  line-height: 1.2;
+}
+
+.path-footer-padding {
+  height: 60px;
+}
+
+/* ==========================================================================
+   5. POPOVER KARTA LEVELU (NODE POPOVER)
+   ========================================================================== */
+.node-popover-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.node-popover-backdrop.active { display: flex; }
+
+.node-popover-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.popover-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.popover-world-tag {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--popover-color, var(--duo-green));
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.popover-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+.popover-desc {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.popover-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  border: 1px solid var(--surface-border);
+  padding: 8px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.popover-xp { color: var(--duo-gold); }
+.popover-count { color: #cbd5e1; }
+
+/* ==========================================================================
+   6. OBRAZOVKA AKTÍVNEHO TRÉNINGU (LESSON SCREEN)
+   ========================================================================== */
+.lesson-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 90;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.lesson-screen.active { display: flex; }
+
+/* Horná lišta lekcie */
+.lesson-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.lesson-exit-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.lesson-progress-track {
+  flex: 1;
+  height: 14px;
+  background: #1e293b;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--surface-border);
+}
+.lesson-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--duo-green), #89e219);
+  width: 0%;
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lesson-hearts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--duo-red);
+}
+
+/* Javisko lekcie */
+.lesson-stage {
+  flex: 1;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 100px;
+  position: relative;
+}
+
+.lesson-context-badge {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* Terč slova */
+.target-word-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.target-word {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #f8fafc;
+  line-height: 1.15;
+  transition: color 0.15s, transform 0.15s;
+}
+.target-word.go {
+  color: var(--duo-green);
+  transform: scale(1.06);
+  text-shadow: 0 0 25px rgba(88, 204, 2, 0.4);
+}
+.target-meta {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Zen Pacer Dýchací Kruh */
+.pacer-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0 24px;
+}
+
+.pacer-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #16223f 0%, #090e1f 100%);
+  border: 5px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s linear, border-color 0.2s;
+}
+.pacer-circle:active {
+  transform: scale(0.95);
+}
+
+.pacer-text {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.status-alert {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+  min-height: 24px;
+  margin-bottom: 16px;
+  padding: 0 10px;
+}
+
+/* Ovládacie tlačidlá lekcie */
+.lesson-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Prepínače stresorov */
+.lesson-toggles {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+.toggle-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.toggle-pill input { accent-color: var(--duo-green); }
+
+/* Video kamera */
+#cameraFeed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.25;
+  transform: scaleX(-1);
+  pointer-events: none;
+  display: none;
+}
 #cameraFeed.active { display: block; }
 
-.eye-contact-prompt { position: relative; z-index: 2; font-size: 0.82rem; font-weight: 800; color: var(--duo-amber); background: rgba(255, 200, 0, 0.14); border: 2px solid rgba(255, 200, 0, 0.4); padding: 4px 12px; border-radius: 999px; margin-bottom: 10px; display: none; }
+.eye-contact-prompt {
+  display: none;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--duo-gold);
+  background: rgba(255, 200, 0, 0.15);
+  border: 1px solid rgba(255, 200, 0, 0.4);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
 .eye-contact-prompt.visible { display: inline-block; }
 
-.target-word { position: relative; z-index: 2; font-size: 2.35rem; font-weight: 900; letter-spacing: 1px; color: #475569; transition: color 0.12s, transform 0.12s; text-align: center; }
-.target-word.expose { color: #e2e8f0; }
-.target-word.go { color: var(--duo-green); transform: scale(1.06); text-shadow: 0 0 24px rgba(88, 204, 2, 0.35); }
-.target-meta { position: relative; z-index: 2; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; margin-bottom: 14px; }
-
-.pacer-circle { position: relative; z-index: 2; width: 98px; height: 98px; border-radius: 50%; border: 4px solid #334155; background: rgba(15, 23, 42, 0.9); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.84rem; font-weight: 800; padding: 8px; transition: transform 0.1s linear, border-color 0.2s; }
-
-/* Incoming Call Overlay */
-.call-overlay { position: absolute; inset: 0; background: rgba(9, 13, 22, 0.96); z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: space-between; padding: 36px 24px; text-align: center; }
+/* Prepadový hovor Overlay */
+.call-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 19, 43, 0.98);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
 .call-overlay.active { display: flex; }
-.caller-avatar { width: 82px; height: 82px; border-radius: 50%; background: #1e293b; border: 3px solid var(--duo-blue); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 14px; animation: pulseRing 1.2s infinite; }
-@keyframes pulseRing {
+
+.call-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 340px;
+}
+.caller-avatar-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 4px solid var(--duo-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  animation: duoPulse 1.4s infinite;
+}
+@keyframes duoPulse {
   0% { box-shadow: 0 0 0 0 rgba(28, 176, 246, 0.6); }
-  70% { box-shadow: 0 0 0 22px rgba(28, 176, 246, 0); }
+  70% { box-shadow: 0 0 0 24px rgba(28, 176, 246, 0); }
   100% { box-shadow: 0 0 0 0 rgba(28, 176, 246, 0); }
 }
-.caller-name { font-size: 1.55rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
-.caller-sub { font-size: 0.92rem; font-weight: 700; color: var(--text-muted); }
-.call-actions { display: flex; gap: 20px; margin-top: 20px; }
+.caller-name { font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+.caller-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 24px; }
+.call-actions { display: flex; gap: 14px; width: 100%; }
 
-/* Post-Hoc Results Matrix */
-.matrix-panel { border-top: 2px solid var(--surface-border); padding-top: 16px; display: none; }
-.matrix-panel.active { display: block; }
-.badge-banner { padding: 12px; border-radius: 14px; font-weight: 800; text-align: center; margin-bottom: 12px; font-size: 0.95rem; border: 2px solid transparent; }
-.badge-banner.success { background: rgba(88, 204, 2, 0.15); color: var(--duo-green); border-color: var(--duo-green); }
-.badge-banner.fail { background: rgba(255, 75, 75, 0.15); color: var(--duo-red); border-color: var(--duo-red); }
-.badge-banner.warn { background: rgba(255, 200, 0, 0.15); color: var(--duo-amber); border-color: var(--duo-amber); }
+/* ==========================================================================
+   7. DUOLINGO SPODNÝ DRAWER (FEEDBACK DRAWER)
+   ========================================================================== */
+.feedback-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 105%);
+  width: 100%;
+  max-width: 540px;
+  background: #162646;
+  border-top: 3px solid var(--surface-border);
+  border-radius: 24px 24px 0 0;
+  padding: 20px;
+  z-index: 100;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.feedback-drawer.active {
+  transform: translate(-50%, 0);
+}
 
-.canvas-wrap { background: #090d16; border: 2px solid var(--surface-border); border-radius: 14px; padding: 10px; margin-bottom: 12px; }
-.canvas-label { font-size: 0.76rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
-canvas#envelopeCanvas { width: 100%; height: 95px; display: block; }
+.feedback-drawer.success {
+  background: #112818;
+  border-top-color: var(--duo-green);
+}
+.feedback-drawer.fail {
+  background: #2b1419;
+  border-top-color: var(--duo-red);
+}
 
-.metric-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #263349; font-size: 0.86rem; font-weight: 700; }
+.drawer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.drawer-status-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+.feedback-drawer.success .drawer-status-icon {
+  background: var(--duo-green);
+  color: #fff;
+}
+.feedback-drawer.fail .drawer-status-icon {
+  background: var(--duo-red);
+  color: #fff;
+}
+
+.drawer-text-wrap { flex: 1; }
+.drawer-headline { font-size: 1.15rem; font-weight: 900; color: #fff; margin-bottom: 2px; }
+.drawer-subtext { font-size: 0.82rem; font-weight: 700; color: #cbd5e1; line-height: 1.35; }
+
+.drawer-xp-badge {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--duo-gold);
+}
+
+.toggle-matrix-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+/* Post-Hoc Matica v Draweri */
+.matrix-panel {
+  display: none;
+  background: #090e1f;
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.badge-banner {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.badge-banner.success { background: rgba(88, 204, 2, 0.2); color: var(--duo-green); }
+.badge-banner.fail { background: rgba(255, 75, 75, 0.2); color: var(--duo-red); }
+.badge-banner.warn { background: rgba(255, 200, 0, 0.2); color: var(--duo-gold); }
+
+.canvas-wrap {
+  background: #050813;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+.canvas-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+canvas#envelopeCanvas {
+  width: 100%;
+  height: 90px;
+  display: block;
+}
+
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 4px 0;
+}
 .metric-row:last-child { border-bottom: none; }
 .metric-title { color: #cbd5e1; }
-.metric-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.82rem; }
+.metric-val { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 700; }
 .metric-val.ok { color: var(--duo-green); }
 .metric-val.err { color: var(--duo-red); }
+
+/* ==========================================================================
+   8. OSLAVNÝ MODAL (LEKCIA DOKONČENÁ)
+   ========================================================================== */
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 19, 43, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 120;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.celebration-overlay.active { display: flex; }
+
+.celebration-card {
+  background: var(--surface);
+  border: 2px solid var(--duo-gold);
+  border-radius: 28px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  animation: celebBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes celebBounce {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.trophy-bounce {
+  font-size: 4rem;
+  margin-bottom: 12px;
+  animation: trophyFloat 1.8s infinite ease-in-out;
+}
+@keyframes trophyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.celebration-title { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.celebration-sub { font-size: 0.86rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
+
+.stats-recap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.recap-card {
+  background: #0f172a;
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
+  padding: 10px 6px;
+}
+.recap-label { font-size: 0.65rem; font-weight: 900; color: var(--text-muted); margin-bottom: 4px; }
+.recap-val { font-size: 1rem; font-weight: 900; }
+.recap-val.xp { color: var(--duo-gold); }
+.recap-val.green { color: var(--duo-green); }
+.recap-val.fire { color: #ff9600; }
+
+/* ==========================================================================
+   9. PROFIL A ŠTATISTIKY MODAL
+   ========================================================================== */
+.profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 110;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.profile-overlay.active { display: flex; }
+
+.profile-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.profile-avatar { font-size: 2.4rem; }
+.profile-name { font-size: 1.35rem; font-weight: 900; color: #fff; }
+.profile-rank { font-size: 0.84rem; font-weight: 800; color: var(--duo-purple); }
+.profile-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.profile-section { margin-bottom: 18px; }
+.section-label { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; display: block; }
+
+.profile-input-row { display: flex; gap: 8px; }
+.profile-input-row input {
+  flex: 1;
+  background: #0f172a;
+  border: 2px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  outline: none;
+}
+.profile-input-row input:focus { border-color: var(--duo-blue); }
+
+.profile-stats-list {
+  background: #0f172a;
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pstat-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  color: #cbd5e1;
+}
+
+.profile-actions-row { display: flex; gap: 10px; }

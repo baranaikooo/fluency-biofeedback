@@ -505,7 +505,11 @@ function runGuillotineMode(meta) {
   targetWord.classList.add('expose');
   pacerCircle.textContent = 'Pokladňa...';
   pacerCircle.style.borderColor = '#ffc800';
-  const cashierScenario = REAL_AUDIO_SCENARIOS[1];
+
+  const scenarioIdx = (typeof duoLesson !== 'undefined' && duoLesson.isLessonActive && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined)
+    ? duoLesson.currentLevel.scenarioIndex
+    : 1;
+  const cashierScenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[1];
   statusAlert.textContent = `🛒 ${cashierScenario.caller} hovorí... Odpovedz po skončení!`;
 
   playScenarioAudio(cashierScenario, () => {
@@ -516,13 +520,22 @@ function runGuillotineMode(meta) {
 function armAmbushCall(meta) {
   startBtn.disabled = true;
   calibrateBtn.disabled = true;
-  const randomDelay = Math.floor(Math.random() * 8000) + 3500;
+
+  const isDuoLesson = (typeof duoLesson !== 'undefined' && duoLesson.isLessonActive);
+  const randomDelay = isDuoLesson ? 800 : (Math.floor(Math.random() * 8000) + 3500);
+
   pacerCircle.textContent = 'Pasca aktívna';
   pacerCircle.style.borderColor = '#ce82ff';
-  statusAlert.textContent = '📱 Odlož zrak z obrazovky. Telefón čoskoro nečakane zazvoní...';
+  statusAlert.textContent = isDuoLesson
+    ? '📱 Priprav sa, telefón o sekundu zazvoní...'
+    : '📱 Odlož zrak z obrazovky. Telefón čoskoro nečakane zazvoní...';
 
   ambushTimeout = setTimeout(() => {
-    const scenario = REAL_AUDIO_SCENARIOS[Math.floor(Math.random() * REAL_AUDIO_SCENARIOS.length)];
+    const scenarioIdx = (isDuoLesson && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined)
+      ? duoLesson.currentLevel.scenarioIndex
+      : Math.floor(Math.random() * REAL_AUDIO_SCENARIOS.length);
+    const scenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[0];
+
     callerNameEl.textContent = scenario.caller;
     callOverlay.classList.add('active');
     startRinging();
@@ -701,6 +714,9 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     banner.className = 'badge-banner warn';
     banner.textContent = '⚠️ PREBUDENÝ MIKROFÓN (Clipping) – Daj mobil/mikrofón o 10 cm ďalej od úst.';
     drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
+    window.dispatchEvent(new CustomEvent('dsp-evaluation-complete', {
+      detail: { passed: false, isPerfect: false, vrt: 0, latency: 0, reason: 'clipping', meta }
+    }));
     return;
   }
 
@@ -714,6 +730,9 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     setRow('m5', '-', false);
     updateHud(0, false);
     drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
+    window.dispatchEvent(new CustomEvent('dsp-evaluation-complete', {
+      detail: { passed: false, isPerfect: false, vrt: 0, latency: 0, reason: 'silent_block', meta }
+    }));
     return;
   }
 
@@ -846,8 +865,8 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   drawEnvelopeGraph(frames, sThresh, t20, t80, totalDurationMs);
 
   const passed = p1 && p2 && p3 && p4 && p5;
+  const isPerfect = (meta.type === 'vowel' ? (vrt >= 60 && vrt <= 140) : (vrt >= 15 && vrt <= 90)) && latency <= 500;
   if (passed) {
-    const isPerfect = (meta.type === 'vowel' ? (vrt >= 60 && vrt <= 140) : (vrt >= 15 && vrt <= 90)) && latency <= 500;
     updateHud(isPerfect ? 50 : 30, true);
     banner.className = 'badge-banner success';
     banner.textContent = isPerfect
@@ -859,6 +878,19 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     banner.textContent = '❌ DETEGOVANÝ BLOK ALEBO KŔČ – Skontroluj červené metriky nižšie.';
   }
   statusAlert.textContent = 'Vyhodnotenie dokončené.';
+
+  // Globálny event pre Duolingo herný engine
+  window.dispatchEvent(new CustomEvent('dsp-evaluation-complete', {
+    detail: {
+      passed,
+      isPerfect,
+      vrt,
+      latency,
+      p1, p2, p3, p4, p5,
+      meta,
+      frames
+    }
+  }));
 }
 
 function drawEnvelopeGraph(frames, threshDb, t20, t80, totalDurationMs) {
