@@ -324,12 +324,19 @@ cardioBtn.addEventListener('click', () => {
 });
 
 async function setupAudio() {
-  if (audioCtx) return;
+  if (audioCtx) {
+    window.audioCtx = audioCtx;
+    return;
+  }
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
   });
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const src = audioCtx.createMediaStreamSource(stream);
+
+  window.audioCtx = audioCtx;
+  window.mediaStreamSource = src;
+  window.micStream = stream;
 
   // Vedecká oprava: fftSize = 2048 pre spoľahlivé pokrytie mužského F0 (75 Hz pri 48 kHz)
   rawAnalyser = audioCtx.createAnalyser();
@@ -353,6 +360,7 @@ async function setupAudio() {
   hp.connect(lp);
   lp.connect(formantAnalyser);
 }
+window.setupAudio = setupAudio;
 
 function playBeep(freq = 520, duration = 0.12) {
   if (!audioCtx) return;

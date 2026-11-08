@@ -834,7 +834,276 @@ body.in-lesson #lessonScreen.active {
 }
 
 /* ==========================================================================
-   8. ZÁLOŽKA 3: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)
+   8. ZÁLOŽKA 3: 🎧 ASISTENT (ŽIVÝ DAF ODPOSLUCH V REÁLNOM ČASE)
+   ========================================================================== */
+.assistant-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.assistant-hero-card {
+  background: linear-gradient(135deg, #1c2a4f, #0f172a);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.assistant-badge {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--duo-blue);
+  letter-spacing: 1.2px;
+  margin-bottom: 6px;
+}
+
+.assistant-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+
+.assistant-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.assistant-headphone-alert {
+  background: rgba(28, 176, 246, 0.1);
+  border: 1px solid rgba(28, 176, 246, 0.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.assistant-headphone-alert .alert-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.assistant-headphone-alert .alert-text {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+.assistant-visual-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.pulse-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.assistant-pulse-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #162646 0%, #0b132b 100%);
+  border: 3px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, border-color 0.2s;
+}
+
+.assistant-pulse-circle.active {
+  border-color: var(--duo-green);
+  box-shadow: 0 0 24px rgba(88, 204, 2, 0.4);
+}
+
+.pulse-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  pointer-events: none;
+}
+
+.assistant-pulse-circle.active .pulse-ring-1 {
+  border-color: rgba(88, 204, 2, 0.35);
+  animation: ringPulse 2s infinite ease-out;
+}
+
+.assistant-pulse-circle.active .pulse-ring-2 {
+  border-color: rgba(28, 176, 246, 0.25);
+  animation: ringPulse 2s infinite ease-out 1s;
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+.pulse-inner-core {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #0b132b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface-border);
+}
+
+.pulse-icon {
+  font-size: 1.8rem;
+}
+
+.pulse-status-text {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.assistant-toggle-card {
+  width: 100%;
+}
+
+.assistant-main-btn {
+  font-size: 1.02rem;
+  padding: 16px 20px;
+  letter-spacing: 0.5px;
+}
+
+#assistantToggle.running,
+#assistantToggle.active {
+  background: var(--duo-green);
+  border-bottom-color: var(--duo-green-lip);
+  box-shadow: 0 0 22px rgba(88, 204, 2, 0.45);
+}
+
+.assistant-controls-card {
+  background: var(--surface);
+  border: 2px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.control-row-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.control-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-name {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.control-val-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.92rem;
+  font-weight: 900;
+  color: var(--duo-blue);
+  background: #0b132b;
+  border: 1px solid var(--surface-border);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.slider-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.assistant-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #0b132b;
+  outline: none;
+  border: 1px solid var(--surface-border);
+}
+
+.assistant-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--duo-blue);
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.assistant-slider::-webkit-slider-thumb:hover,
+.assistant-slider::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(28, 176, 246, 0.6);
+}
+
+.assistant-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--duo-blue);
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.slider-ticks-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  padding: 0 4px;
+}
+
+.tick-sweet {
+  color: var(--duo-green);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   9. ZÁLOŽKA 4: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)
    ========================================================================== */
 .telemetry-container {
   padding: 16px;

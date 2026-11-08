@@ -145,7 +145,97 @@
     </section>
 
     <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 3: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)                      -->
+    <!-- ZÁLOŽKA 3: 🎧 ASISTENT (ŽIVÝ DAF ODPOSLUCH V REÁLNOM ČASE)         -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="tab-pane" id="tabAsistent">
+      <div class="assistant-container">
+
+        <!-- Hero karta Asistenta -->
+        <div class="assistant-hero-card">
+          <div class="assistant-badge">🎧 SPEECHEASY DAF FEEDBACK</div>
+          <h2 class="assistant-title">Osobný Rečový Asistent</h2>
+          <p class="assistant-sub">Živý odposluch vlastného hlasu s jemným oneskorením do slúchadla v reálnom čase. Mozog vníma reč ako „zborový efekt“ (Choral Effect), čo reflexívne uvoľňuje kŕč hlasiviek pri prezentáciách, hovoroch či v teréne.</p>
+
+          <div class="assistant-headphone-alert">
+            <span class="alert-icon">🎧</span>
+            <span class="alert-text">Používaj so slúchadlami, aby nevznikla spätná väzba do mikrofónu.</span>
+          </div>
+        </div>
+
+        <!-- Vizuálny feedback (pulzujúci indikátor v reálnom čase) -->
+        <div class="assistant-visual-card">
+          <div class="pulse-wrapper">
+            <div class="assistant-pulse-circle" id="assistantPulseIndicator">
+              <div class="pulse-ring pulse-ring-1"></div>
+              <div class="pulse-ring pulse-ring-2"></div>
+              <div class="pulse-inner-core">
+                <span class="pulse-icon" id="assistantPulseIcon">🎧</span>
+              </div>
+            </div>
+            <div class="pulse-status-text" id="assistantPulseStatus">Asistent je pripravený</div>
+          </div>
+        </div>
+
+        <!-- Dominantný Master Switch -->
+        <div class="assistant-toggle-card">
+          <button class="btn-3d green full lg assistant-main-btn" id="assistantToggle">
+            <span class="btn-main-label">▶ Aktivovať asistenta</span>
+          </button>
+        </div>
+
+        <!-- Iba dva intuitívne ovládacie prvky -->
+        <div class="assistant-controls-card">
+          
+          <!-- 1. Rýchlosť odozvy (Delay) -->
+          <div class="control-row-group">
+            <div class="control-label-row">
+              <div class="control-title-wrap">
+                <span class="control-icon">⏱️</span>
+                <span class="control-name">Rýchlosť odozvy (Delay):</span>
+              </div>
+              <span class="control-val-badge" id="assistantDelayVal">70 ms</span>
+            </div>
+
+            <div class="slider-wrap">
+              <input type="range" class="assistant-slider" id="assistantDelaySlider" min="40" max="140" step="5" value="70">
+            </div>
+
+            <div class="slider-ticks-row">
+              <span>Jemný posun (40 ms)</span>
+              <span class="tick-sweet">Optimálny (70 ms)</span>
+              <span>Výrazný posun (140 ms)</span>
+            </div>
+          </div>
+
+          <!-- 2. Hlasitosť v uchu (Volume) -->
+          <div class="control-row-group">
+            <div class="control-label-row">
+              <div class="control-title-wrap">
+                <span class="control-icon">🔊</span>
+                <span class="control-name">Hlasitosť v uchu:</span>
+              </div>
+              <span class="control-val-badge" id="assistantVolVal">85 %</span>
+            </div>
+
+            <div class="slider-wrap">
+              <input type="range" class="assistant-slider" id="assistantVolSlider" min="0" max="100" step="1" value="85">
+            </div>
+
+            <div class="slider-ticks-row">
+              <span>0 % (Ticho)</span>
+              <span>85 % (Odporúčané)</span>
+              <span>100 % (Maximum)</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="tab-bottom-spacer"></div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- ZÁLOŽKA 4: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)                      -->
     <!-- ------------------------------------------------------------------ -->
     <section class="tab-pane" id="tabTelemetria">
       <div class="telemetry-container">
@@ -265,6 +355,10 @@
     <button class="nav-tab" data-tab="tabDril" id="navTabDril">
       <span class="nav-icon">⚡</span>
       <span class="nav-label">Rýchly Dril</span>
+    </button>
+    <button class="nav-tab" data-tab="tabAsistent" id="navTabAsistent">
+      <span class="nav-icon">🎧</span>
+      <span class="nav-label">Asistent</span>
     </button>
     <button class="nav-tab" data-tab="tabTelemetria" id="navTabTelemetria">
       <span class="nav-icon">📊</span>
@@ -498,5 +592,6 @@
 <script src="./questions-and-voices.js"></script>
 <script src="./dsp-core.js"></script>
 <script src="./gamification-engine.js"></script>
+<script src="./daf-assistant.js"></script>
 </body>
 </html>
