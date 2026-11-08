@@ -1,6 +1,10 @@
 package com.fluency.biofeedback;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,9 +14,29 @@ import org.json.JSONObject;
 
 public class MainActivity extends BridgeActivity {
 
+    private static final int PERMISSION_REQUEST_RECORD_AUDIO = 1001;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. Vyžiadanie systémového oprávnenia pre mikrofón pri štarte aplikácie
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.MODIFY_AUDIO_SETTINGS
+            }, PERMISSION_REQUEST_RECORD_AUDIO);
+        }
+
+        // 2. Nastavenie AudioManagera pre správne smerovanie WebAudio do slúchadiel / reproduktorov
+        try {
+            AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (am != null) {
+                am.setMode(AudioManager.MODE_NORMAL);
+            }
+        } catch (Exception ignored) {}
+
+        // 3. Spracovanie Deep Linku (návrat z Google overenia)
         handleDeepLinkIntent(getIntent(), 0);
     }
 

@@ -326,11 +326,62 @@ cardioBtn.addEventListener('click', () => {
 let dafFafPipeline = null;
 
 /**
+ * Robustné získanie mikrofónu s postupnými fallbackmi pre mobilné telefóny a Android WebView
+ */
+async function getMicrophoneStream() {
+  if (window.micStream && window.micStream.active) {
+    return window.micStream;
+  }
+
+  const constraintOptions = [
+    {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    },
+    {
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: false,
+        autoGainControl: true
+      }
+    },
+    { audio: true }
+  ];
+
+  let stream = null;
+  let lastErr = null;
+
+  for (const c of constraintOptions) {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(c);
+      if (stream && stream.active) {
+        console.log('[Audio] getUserMedia úspešný s profilom:', c);
+        break;
+      }
+    } catch (err) {
+      lastErr = err;
+      console.warn('[Audio] getUserMedia pokus zlyhal:', c, err.message);
+    }
+  }
+
+  if (!stream) {
+    throw lastErr || new Error('Nepodarilo sa aktivovať mikrofón. Skontroluj povolenie v nastaveniach mobilu.');
+  }
+
+  window.micStream = stream;
+  return stream;
+}
+
+/**
  * ŽIVÝ DAF & FAF ODOPOSLUCH DO SLÚCHADIEL (LIVE AUDITORY FEEDBACK PIPELINE)
- * Paralelné vetvy:
- *   1. DAF vetva: Oneskorenie 65 ms pre spomalenie tempa a uvoľnenie artikulácie
- *   2. FAF vetva: Frekvenčný posun F0 (Doppler LFO sweep) + formantový peaking zdvih pre zborový efekt (Choral Effect)
- * Signál smeruje priamo do audioCtx.destination so zabudovaným bezpečnostným dynamickým limiterom.
+ * 3 paralelné vetvy pre 100% zreteľný odposluch v uchu:
+ *   1. Priamy hlas (Sidetone): okamžitý čistý odposluch vlastného hlasu s predzosilnením (+9 dB)
+ *   2. DAF vetva: oneskorenie 65 ms pre stabilizáciu tempa
+ *   3. FAF vetva: frekvenčný posun F0 (Doppler LFO sweep) + formantový rezonančný peaking zdvih (Choral Effect)
+ * Všetky vetvy idú cez dynamický limiter priamo do audioCtx.destination (slúchadlá).
  */
 function setupDafFafHeadphoneOutput(src, ctx) {
   if (dafFafPipeline) return dafFafPipeline;
@@ -338,65 +389,80 @@ function setupDafFafHeadphoneOutput(src, ctx) {
   try {
     const now = ctx.currentTime;
 
-    // Master Gain pre slúchadlá (85% hlasitosť)
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.85, now);
+    // 1. PREDZOSILŇOVAČ MIKROFÓNU (+9 dB / 2.8x gain), aby bol hlas v slúchadlách výrazný a jasný
+    const preampGain = ctx.createGain();
+    preampGain.gain.setValueAtTime(2.8, now);
 
-    // Bezpečnostný dynamický limiter na ochranu sluchu a zamedzenie spätnej väzby
+    // 2. DYNAMICKÝ LIMITER / KOMPRESOR na ochranu sluchu pred prepálením a pískaním
     const limiter = ctx.createDynamicsCompressor();
-    limiter.threshold.setValueAtTime(-14, now);
-    limiter.knee.setValueAtTime(8, now);
-    limiter.ratio.setValueAtTime(10, now);
-    limiter.attack.setValueAtTime(0.003, now);
-    limiter.release.setValueAtTime(0.06, now);
+    limiter.threshold.setValueAtTime(-12, now);
+    limiter.knee.setValueAtTime(6, now);
+    limiter.ratio.setValueAtTime(12, now);
+    limiter.attack.setValueAtTime(0.002, now);
+    limiter.release.setValueAtTime(0.05, now);
 
-    // 1. PRIMÁRNA DAF VETVA (Delayed Auditory Feedback ~65 ms)
+    // 3. MASTER HLASITOSŤ SLÚCHADIEL
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(1.0, now);
+
+    src.connect(preampGain);
+
+    // VETVA A: PRIAMY ODPOSLUCH (Sidetone) - okamžitý prirodzený hlas
+    const directGain = ctx.createGain();
+    directGain.gain.setValueAtTime(0.85, now);
+    preampGain.connect(directGain);
+    directGain.connect(limiter);
+
+    // VETVA B: DAF ONESKORENÝ ODPOSLUCH (Primary Delay ~65 ms)
     const delayA = ctx.createDelay(1.0);
     delayA.delayTime.setValueAtTime(0.065, now);
-    const gainA = ctx.createGain();
-    gainA.gain.setValueAtTime(0.75, now);
+    const dafGain = ctx.createGain();
+    dafGain.gain.setValueAtTime(0.80, now);
 
-    src.connect(delayA);
-    delayA.connect(gainA);
-    gainA.connect(limiter);
+    preampGain.connect(delayA);
+    delayA.connect(dafGain);
+    dafGain.connect(limiter);
 
-    // 2. FAF VETVA (Frequency-Altered Feedback & Zborový detune)
+    // VETVA C: FAF ZBOROVÝ TÓN (Frequency-Altered Feedback)
     const delayB = ctx.createDelay(1.0);
     delayB.delayTime.setValueAtTime(0.078, now); // 78 ms offset
 
-    // LFO Doppler Pitch Modulator (kontinuálny frekvenčný posun FAF)
+    // LFO Doppler frekvenčný modulátor
     const fafLfo = ctx.createOscillator();
     fafLfo.type = 'sine';
-    fafLfo.frequency.setValueAtTime(0.55, now); // 0.55 Hz plynulá zmena
+    fafLfo.frequency.setValueAtTime(0.5, now);
     const fafLfoGain = ctx.createGain();
-    fafLfoGain.gain.setValueAtTime(0.0035, now); // 3.5 ms sweep = frekvenčná zmena +/- 45 Hz
+    fafLfoGain.gain.setValueAtTime(0.003, now);
 
     fafLfo.connect(fafLfoGain);
     fafLfoGain.connect(delayB.delayTime);
     fafLfo.start();
 
-    // Formantový rezonátor (peaking filter pre zreteľný druhý rečový hlas)
+    // Formantový peaking rezonátor pre zborový efekt (+6 dB zdvih)
     const formantFilter = ctx.createBiquadFilter();
     formantFilter.type = 'peaking';
-    formantFilter.frequency.setValueAtTime(2400, now);
-    formantFilter.Q.setValueAtTime(1.4, now);
-    formantFilter.gain.setValueAtTime(6.0, now); // +6 dB rezonancia
+    formantFilter.frequency.setValueAtTime(2200, now);
+    formantFilter.Q.setValueAtTime(1.3, now);
+    formantFilter.gain.setValueAtTime(6.0, now);
 
-    const gainB = ctx.createGain();
-    gainB.gain.setValueAtTime(0.65, now);
+    const fafGain = ctx.createGain();
+    fafGain.gain.setValueAtTime(0.70, now);
 
-    src.connect(delayB);
+    preampGain.connect(delayB);
     delayB.connect(formantFilter);
-    formantFilter.connect(gainB);
-    gainB.connect(limiter);
+    formantFilter.connect(fafGain);
+    fafGain.connect(limiter);
 
-    // Výstup limitera priamo do slúchadiel
+    // Prepojenie limitera na master a priamo do slúchadiel (audioCtx.destination)
     limiter.connect(masterGain);
     masterGain.connect(ctx.destination);
 
     dafFafPipeline = {
       masterGain,
-      limiter,
+      preampGain,
+      directGain,
+      dafGain,
+      fafGain,
       delayA,
       delayB,
       setDelay: (ms) => {
@@ -408,66 +474,88 @@ function setupDafFafHeadphoneOutput(src, ctx) {
         delayB.delayTime.setValueAtTime(sec + 0.013, t);
       },
       setVolume: (pct) => {
-        const v = Math.max(0, Math.min(1.0, pct / 100));
+        const v = Math.max(0, Math.min(1.5, (pct / 100) * 1.2));
         masterGain.gain.setValueAtTime(v, ctx.currentTime);
       },
       setEnabled: (enabled) => {
-        masterGain.gain.setValueAtTime(enabled ? 0.85 : 0.0, ctx.currentTime);
+        masterGain.gain.setValueAtTime(enabled ? 1.0 : 0.0, ctx.currentTime);
       }
     };
 
     window.dafFafPipeline = dafFafPipeline;
-    console.log('[Audio] DAF + FAF slúchadlový okruh zapojený a aktívny!');
+    console.log('[Audio] DAF + FAF Headphone pipeline ÚSPEŠNE ZAPOJENÝ do slúchadiel (destination)!');
     return dafFafPipeline;
   } catch (e) {
-    console.error('[Audio] Chyba pri zapájaní DAF/FAF odposluchu:', e);
+    console.error('[Audio] Chyba zapojenia DAF/FAF:', e);
   }
 }
 
 async function setupAudio() {
-  if (audioCtx) {
+  if (!audioCtx) {
+    const AudioClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioClass();
     window.audioCtx = audioCtx;
-    if (audioCtx.state === 'suspended') {
-      await audioCtx.resume();
-    }
-    return;
   }
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
-  });
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const src = audioCtx.createMediaStreamSource(stream);
 
-  window.audioCtx = audioCtx;
-  window.mediaStreamSource = src;
-  window.micStream = stream;
+  if (audioCtx.state === 'suspended') {
+    await audioCtx.resume();
+  }
 
-  // Vedecká oprava: fftSize = 2048 pre spoľahlivé pokrytie mužského F0 (75 Hz pri 48 kHz)
-  rawAnalyser = audioCtx.createAnalyser();
-  rawAnalyser.fftSize = 2048;
-  rawAnalyser.smoothingTimeConstant = 0.0;
-  src.connect(rawAnalyser);
+  if (!rawAnalyser) {
+    const stream = await getMicrophoneStream();
+    window.micStream = stream;
+    const src = audioCtx.createMediaStreamSource(stream);
+    window.mediaStreamSource = src;
 
-  const hp = audioCtx.createBiquadFilter();
-  hp.type = 'highpass';
-  hp.frequency.value = 260;
+    // Vedecká oprava: fftSize = 2048 pre spoľahlivé pokrytie mužského F0 (75 Hz pri 48 kHz)
+    rawAnalyser = audioCtx.createAnalyser();
+    rawAnalyser.fftSize = 2048;
+    rawAnalyser.smoothingTimeConstant = 0.0;
+    src.connect(rawAnalyser);
 
-  const lp = audioCtx.createBiquadFilter();
-  lp.type = 'lowpass';
-  lp.frequency.value = 3500;
+    const hp = audioCtx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 260;
 
-  formantAnalyser = audioCtx.createAnalyser();
-  formantAnalyser.fftSize = 2048;
-  formantAnalyser.smoothingTimeConstant = 0.0;
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 3500;
 
-  src.connect(hp);
-  hp.connect(lp);
-  lp.connect(formantAnalyser);
+    formantAnalyser = audioCtx.createAnalyser();
+    formantAnalyser.fftSize = 2048;
+    formantAnalyser.smoothingTimeConstant = 0.0;
 
-  // ZAPOJENIE ŽIVÉHO DAF + FAF ODPOSLUCHU DO SLÚCHADIEL
-  setupDafFafHeadphoneOutput(src, audioCtx);
+    src.connect(hp);
+    hp.connect(lp);
+    lp.connect(formantAnalyser);
+
+    // ZAPOJENIE ŽIVÉHO DAF + FAF ODPOSLUCHU DO SLÚCHADIEL
+    setupDafFafHeadphoneOutput(src, audioCtx);
+  } else if (window.mediaStreamSource) {
+    setupDafFafHeadphoneOutput(window.mediaStreamSource, audioCtx);
+  }
+
+  return audioCtx;
 }
 window.setupAudio = setupAudio;
+
+// Globálne odomknutie Web Audio pri prvom dotyku obrazovky
+(function unlockAudioOnFirstInteraction() {
+  const unlock = async () => {
+    try {
+      if (window.audioCtx && window.audioCtx.state === 'suspended') {
+        await window.audioCtx.resume();
+      }
+      if (typeof setupAudio === 'function' && !window.micStream) {
+        setupAudio().catch(() => {});
+      }
+    } catch (_) {}
+    window.removeEventListener('click', unlock, true);
+    window.removeEventListener('touchend', unlock, true);
+  };
+  window.addEventListener('click', unlock, true);
+  window.addEventListener('touchend', unlock, true);
+})();
 
 function playBeep(freq = 520, duration = 0.12) {
   if (!audioCtx) return;
@@ -540,6 +628,23 @@ function playScenarioAudio(scenario, onDone) {
   };
 
   audio.play().catch(() => audio.onerror());
+}
+
+// Interaktívny indikátor a prepínač slúchadlového odposluchu
+const hpIndicator = document.getElementById('headphoneLiveIndicator');
+if (hpIndicator) {
+  hpIndicator.addEventListener('click', async () => {
+    try {
+      await setupAudio();
+      if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+      if (dafFafPipeline) dafFafPipeline.setEnabled(true);
+      const txt = document.getElementById('headphoneStatusText');
+      if (txt) txt.textContent = 'DAF & FAF: Hlas v slúchadlách AKTÍVNY';
+      playBeep(880, 0.1);
+    } catch (e) {
+      alert('Chyba mikrofónu: ' + e.message);
+    }
+  });
 }
 
 // Kalibrácia šumu s robustným IQR priemerovaním

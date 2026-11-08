@@ -172,14 +172,14 @@
           this.mediaStreamSource = window.mediaStreamSource;
           this.audioCtx = window.audioCtx;
         } else {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false,
-              latency: 0
-            }
-          });
+          let stream;
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+            });
+          } catch (_) {
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          }
           window.micStream = stream;
           this.mediaStreamSource = this.audioCtx.createMediaStreamSource(stream);
           window.mediaStreamSource = this.mediaStreamSource;
