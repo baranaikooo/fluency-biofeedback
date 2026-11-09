@@ -4,7 +4,7 @@
 [![Live Web App](https://img.shields.io/badge/Live_App-Vercel-38bdf8?style=for-the-badge&logo=vercel&logoColor=white)](https://stutterbiofeedbackantigravity.vercel.app)
 [![Download Android APK](https://img.shields.io/badge/Download_APK-v1.0.0_Native-059669?style=for-the-badge&logo=android&logoColor=white)](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback-native.apk)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/baranaikooo/fluency-biofeedback/android-build.yml?branch=main&style=for-the-badge&label=Build_Status)](https://github.com/baranaikooo/fluency-biofeedback/actions)
-[![Copyright](https://img.shields.io/badge/Copyright-All_Rights_Reserved-dc2626?style=for-the-badge)](#-autorské-práva--duševné-vlastníctvo)
+[![Copyright](https://img.shields.io/badge/Copyright-All_Rights_Reserved-slate?style=for-the-badge)](#-copyright)
 
 Evidence-based neuroakustický trenažér plynulej reči a osobný asistent navrhnutý pre dospelých a dospievajúcich s **balbuties (zajakavosťou / koktavosťou)**. Žiadny vizuálny chaos, žiadne detské gýče ani prázdne ezoterické teórie. Všetko funguje na báze exaktnej akustickej biometrie v reálnom čase priamo v zariadení (**Edge DSP** cez Web Audio API).
 
@@ -174,11 +174,6 @@ Výsledné APK sa vygeneruje v priečinku `android/app/build/outputs/apk/debug/`
 
 ---
 
-## 📄 Autorské práva & Duševné vlastníctvo
+## 📄 Copyright
 
-© 2026 Fluency Biofeedback. Všetky práva vyhradené (**All Rights Reserved**).
-
-Tento projekt, jeho zdrojový kód, akustické signálové algoritmy (meranie Vocal Rise Time, real-time Doppler FAF pitch shifter), klinická metodika balbutologickej diagnostiky, štúdiové zvukové nahrávky a dizajn sú chráneným duševným vlastníctvom autora.
-
-* **Ochrana pred zneužitím:** Akékoľvek neoprávnené komerčné využitie, predaj, prenajímanie alebo redistribúcia aplikácie či jej častí bez predchádzajúceho výslovného písomného súhlasu autora sú prísne zakázané.
-* **Výskum a osobný tréning:** Aplikácia je určená na pomoc a vzdelávanie ľudí so zajakavosťou. Kopírovanie kódu, vytváranie klonov či odvodených komerčných produktov bez súhlasu nositeľa autorských práv nie je povolené.
+Copyright © 2026. All rights reserved.
