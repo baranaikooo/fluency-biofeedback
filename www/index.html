@@ -927,6 +927,27 @@
   </main>
 
   <!-- ==================================================================== -->
+  <!-- M3 COMPACT BIOFEEDBACK BAR (Zrkadlenie z Figma Material 3 Dizajnu)   -->
+  <!-- ==================================================================== -->
+  <div class="m3-compact-player" id="m3CompactPlayer">
+    <div class="m3-progress-indicator">
+      <div class="m3-progress-track" id="m3PlayerProgress"></div>
+    </div>
+    <div class="m3-player-inner">
+      <div class="m3-player-avatar" id="m3PlayerAvatar">🎙️</div>
+      <div class="m3-player-text">
+        <div class="m3-player-title" id="m3PlayerTitle">Tréning Plynulosti</div>
+        <div class="m3-player-sub" id="m3PlayerSub">Glide Biofeedback Engine • Pripravený</div>
+      </div>
+      <div class="m3-player-actions">
+        <button class="m3-btn-icon play" id="m3PlayerActionBtn" type="button" title="Spustiť tréning">
+          <span id="m3PlayerActionIcon">▶</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
   <!-- SPODNÁ NAVIGAČNÁ LIŠTA (Presne 3 záložky, skryje sa v lekcii)        -->
   <!-- ==================================================================== -->
   <nav class="bottom-nav" id="bottomNav">
@@ -1599,6 +1620,48 @@
     console.log('[PWA] Glide bola úspešne nainštalovaná!');
     if (pwaInstallBtn) pwaInstallBtn.style.display = 'none';
   });
+
+  // Material 3 Compact Player Wire-up
+  (function initM3CompactPlayer() {
+    var playerBtn = document.getElementById('m3PlayerActionBtn');
+    var playerTitle = document.getElementById('m3PlayerTitle');
+    var playerSub = document.getElementById('m3PlayerSub');
+    var playerAvatar = document.getElementById('m3PlayerAvatar');
+
+    if (playerBtn) {
+      playerBtn.addEventListener('click', function() {
+        var continueBtn = document.getElementById('continuePathBtn');
+        var startLessonBtn = document.getElementById('startLessonBtn');
+        if (continueBtn && continueBtn.offsetParent !== null) {
+          continueBtn.click();
+        } else if (startLessonBtn && startLessonBtn.offsetParent !== null) {
+          startLessonBtn.click();
+        } else {
+          var navCesta = document.getElementById('navTabCesta');
+          if (navCesta) navCesta.click();
+        }
+      });
+    }
+
+    // Pozorovanie zmien na DAF asistenta
+    var assistantBtn = document.getElementById('assistantToggle');
+    if (assistantBtn) {
+      assistantBtn.addEventListener('click', function() {
+        setTimeout(function() {
+          var isRunning = assistantBtn.classList.contains('active') || assistantBtn.textContent.indexOf('Zastaviť') !== -1;
+          if (isRunning) {
+            if (playerTitle) playerTitle.textContent = 'DAF Asistent Beží';
+            if (playerSub) playerSub.textContent = 'Choral Speech Effect • Slúchadlá pripojené';
+            if (playerAvatar) playerAvatar.textContent = '🎧';
+          } else {
+            if (playerTitle) playerTitle.textContent = 'Tréning Plynulosti';
+            if (playerSub) playerSub.textContent = 'Glide Biofeedback Engine • Pripravený';
+            if (playerAvatar) playerAvatar.textContent = '🎙️';
+          }
+        }, 100);
+      });
+    }
+  })();
 </script>
 </body>
 </html>
