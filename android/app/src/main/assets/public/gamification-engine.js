@@ -1757,4 +1757,27 @@ document.addEventListener('DOMContentLoaded', () => {
   duoState.renderHud();
   duoPath.render();
   duoState.renderTelemetry();
+
+  // Vela Breathing Capsule Interactive Cycle (Box Breathing)
+  const breathLabel = document.getElementById('stageBreathLabel');
+  const breathNum = document.getElementById('stageBreathNum');
+  if (breathLabel && breathNum) {
+    let phase = 0;
+    let count = 4;
+    const phases = [
+      { label: 'Nádych', max: 4 },
+      { label: 'Zadrž', max: 4 },
+      { label: 'Výdych', max: 4 },
+      { label: 'Pauza', max: 4 }
+    ];
+    setInterval(() => {
+      count--;
+      if (count <= 0) {
+        phase = (phase + 1) % phases.length;
+        count = phases[phase].max;
+        breathLabel.textContent = phases[phase].label;
+      }
+      breathNum.textContent = count;
+    }, 1000);
+  }
 });

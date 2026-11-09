@@ -15,6 +15,11 @@
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
+  <!-- Google Fonts: Fraunces (Editorial Serif) & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./style.css">
 
   <!-- OAuth Deep Link Relay: Keď používateľ dokončí Google prihlásenie v prehliadači, okamžite ho prepne späť do natívnej APK aplikácie -->
@@ -72,10 +77,14 @@
       <!-- Branding & Title -->
       <div class="welcome-hero">
         <div class="welcome-logo-badge">
-          <span class="welcome-logo-icon">🎙️</span>
+          <span class="vela-soundwave-logo welcome-sw-lg">
+            <span class="sw-col c1"></span>
+            <span class="sw-col c2"></span>
+            <span class="sw-col c3"></span>
+          </span>
         </div>
-        <h1 class="welcome-title">Glide Biofeedback</h1>
-        <p class="welcome-tagline">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
+        <h1 class="welcome-title">glide</h1>
+        <p class="welcome-tagline">Tvoj upokojujúci priestor pre plynulý hlas, neuro-tréning a sluchový biofeedback.</p>
 
         <div class="welcome-features-grid">
           <div class="wf-item">
@@ -361,8 +370,12 @@
   <header class="duo-header" id="mainHeader">
     <div class="header-inner">
       <div class="brand-badge" id="brandLogoBtn" title="Glide Biofeedback">
-        <span class="brand-icon">🎙️</span>
-        <span class="brand-name">Glide</span>
+        <span class="vela-soundwave-logo">
+          <span class="sw-col c1"></span>
+          <span class="sw-col c2"></span>
+          <span class="sw-col c3"></span>
+        </span>
+        <span class="brand-name">glide</span>
       </div>
 
       <div class="hud-metrics">
@@ -390,10 +403,10 @@
           <span class="rank-title-short" id="rankTitle">Novice</span>
         </div>
 
-        <!-- Profil Tlačidlo -->
+        <!-- Profil Tlačidlo (avatar like 'AM' in Vela) -->
         <button class="header-profile-btn" id="headerProfileBtn" type="button" title="Používateľský profil & Cloud synchronizácia">
-          <span class="profile-avatar-icon">👤</span>
-          <span class="profile-name-short" id="headerProfileName">Profil</span>
+          <span class="profile-avatar-circle" id="headerAvatarCircle">AB</span>
+          <span class="profile-name-short" id="headerProfileName" style="display:none;">Profil</span>
         </button>
       </div>
     </div>
@@ -409,13 +422,54 @@
     <!-- ------------------------------------------------------------------ -->
     <section class="tab-pane active" id="tabCesta">
       
-      <!-- Denná výzva -->
-      <div class="daily-quest-card">
-        <div class="quest-left">
-          <div class="quest-tag">DENNÁ VÝZVA</div>
-          <div class="quest-title" id="dailyQuestText">Zvládni 3 mäkké nábehy bez kŕča</div>
+      <!-- ================================================================ -->
+      <!-- VELA HERO: YOUR DAILY SPACE & TODAY'S FOCUS (Figma Mirror)       -->
+      <!-- ================================================================ -->
+      <div class="vela-daily-space">
+        <div class="vela-space-header">
+          <div class="space-text-wrap">
+            <span class="space-overline">TVOJ DENNÝ PRIESTOR</span>
+            <h1 class="space-greeting" id="dailyGreetingHeading">Dobré ráno, Alain.</h1>
+            <p class="space-sub">Zhlboka sa nadýchni. Nikam sa neponáhľaj.</p>
+          </div>
+          <button class="space-quick-btn" id="dailySpacePillBtn" type="button" title="Dychová prestávka">
+            <span class="quick-peach-icon">✨</span>
+          </button>
         </div>
-        <button class="btn-3d green sm" id="continuePathBtn">TRÉNOVAŤ</button>
+
+        <!-- HLAVNÁ KARTA: TODAY'S FOCUS -->
+        <div class="vela-focus-card">
+          <div class="focus-badge-pill">✨ DNEŠNÝ CIEĽ</div>
+          <h2 class="focus-title" id="dailyQuestText">Rozcvič si svoj hlas, jemne.</h2>
+          <p class="focus-desc">Tri krátke cvičenia navrhnuté tak, aby si sa uzemnil a pripravil svoje hlasivky na plynulý rečový deň.</p>
+          
+          <button class="vela-cta-pill" id="continuePathBtn" type="button">
+            <span>Spustiť tréning</span>
+            <span class="cta-arrow-circle">→</span>
+          </button>
+
+          <!-- ARTISTIC CONCENTRIC BREATHING CIRCLES -->
+          <div class="vela-breathing-stage" id="velaBreathingStage" title="Ťukni pre dychové cvičenie">
+            <div class="stage-circle green"></div>
+            <div class="stage-circle peach"></div>
+            <div class="stage-rings">
+              <svg viewBox="0 0 200 120" class="rings-svg">
+                <circle cx="100" cy="110" r="45" fill="none" stroke="rgba(109, 84, 181, 0.15)" stroke-width="1.2" stroke-dasharray="3 3"/>
+                <circle cx="100" cy="110" r="70" fill="none" stroke="rgba(109, 84, 181, 0.12)" stroke-width="1.2"/>
+                <circle cx="100" cy="110" r="95" fill="none" stroke="rgba(109, 84, 181, 0.08)" stroke-width="1"/>
+              </svg>
+            </div>
+            <div class="stage-breathing-capsule" id="stageBreathingCapsule">
+              <span class="capsule-sub" id="stageBreathLabel">Nádych</span>
+              <span class="capsule-num" id="stageBreathNum">4</span>
+              <span class="capsule-unit">sekundy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="plan-overline-row">
+          <span class="plan-overline">TVOJ PLÁN</span>
+        </div>
       </div>
 
       <!-- 5 Svetov s lineárnym stromom úrovní -->

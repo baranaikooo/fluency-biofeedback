@@ -625,6 +625,19 @@
       if (headerProfileName) {
         headerProfileName.textContent = name.split(' ')[0];
       }
+
+      const dailyGreetingHeading = document.getElementById('dailyGreetingHeading');
+      const headerAvatarCircle = document.getElementById('headerAvatarCircle');
+      if (headerAvatarCircle) {
+        const parts = name.trim().split(/\s+/);
+        const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].slice(0, 2).toUpperCase();
+        headerAvatarCircle.textContent = initials || 'AB';
+      }
+      if (dailyGreetingHeading) {
+        const hour = new Date().getHours();
+        const timeGreeting = hour < 12 ? 'Dobré ráno' : (hour < 18 ? 'Dobrý deň' : 'Dobrý večer');
+        dailyGreetingHeading.textContent = `${timeGreeting}, ${name.split(' ')[0]}.`;
+      }
     } else {
       if (authStatusBadge) {
         authStatusBadge.textContent = 'Hosť (Lokálny režim)';
@@ -638,6 +651,15 @@
       }
       if (headerProfileName) {
         headerProfileName.textContent = 'Prihlásiť';
+      }
+
+      const dailyGreetingHeading = document.getElementById('dailyGreetingHeading');
+      const headerAvatarCircle = document.getElementById('headerAvatarCircle');
+      if (headerAvatarCircle) headerAvatarCircle.textContent = 'AB';
+      if (dailyGreetingHeading) {
+        const hour = new Date().getHours();
+        const timeGreeting = hour < 12 ? 'Dobré ráno' : (hour < 18 ? 'Dobrý deň' : 'Dobrý večer');
+        dailyGreetingHeading.textContent = `${timeGreeting}.`;
       }
     }
 
