@@ -2,6 +2,9 @@
   "name": "fluency-biofeedback",
   "version": "3.7.0",
   "private": true,
+  "scripts": {
+    "pack:zip": "node scripts/pack-zip.js"
+  },
   "dependencies": {
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0"
