@@ -1,6 +1,6 @@
 {
   "appId": "com.fluency.biofeedback",
-  "appName": "Fluency Biofeedback",
+  "appName": "Glide",
   "webDir": "www",
   "server": {
     "androidScheme": "https"

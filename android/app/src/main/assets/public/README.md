@@ -1,4 +1,4 @@
-# 🎙️ Fluency – Evidence-Based Rečový Biofeedback & Neuroakustický Asistent
+# 🎙️ Glide – Evidence-Based Rečový Biofeedback & Neuroakustický Asistent
 
 Evidence-based neuroakustický trenažér plynulej reči a osobný asistent navrhnutý pre dospelých a dospievajúcich s **balbuties (zajakavosťou / koktavosťou)**. Žiadny vizuálny chaos, žiadne detské gýče ani prázdne ezoterické teórie. Všetko funguje na báze exaktnej akustickej biometrie v reálnom čase priamo v zariadení (**Edge DSP** cez Web Audio API).
 
@@ -22,7 +22,7 @@ Evidence-based neuroakustický trenažér plynulej reči a osobný asistent navr
 ## 🌟 5 Vedeckých pilierov aplikácie
 
 ### 1. 🎧 Osobný Rečový Asistent – Skutočný Doppler FAF + DAF
-* **Dual-Line Doppler Pitch Shifter (FAF – Frequency Altered Feedback):** Na rozdiel od bežných aplikácií, ktoré používajú iba lacný EQ filter na výšky, Fluency implementuje skutočný real-time pitch shifter s **dvoma paralelnými modulovanými delay linkami s fázovým posunom 180°** (Crossfaded Sawtooth LFO modulujúce oneskorenie v 15 ms okne).
+* **Dual-Line Doppler Pitch Shifter (FAF – Frequency Altered Feedback):** Na rozdiel od bežných aplikácií, ktoré používajú iba lacný EQ filter na výšky, Glide implementuje skutočný real-time pitch shifter s **dvoma paralelnými modulovanými delay linkami s fázovým posunom 180°** (Crossfaded Sawtooth LFO modulujúce oneskorenie v 15 ms okne).
 * **Posun o +2 poltóny (faktor ~1.12x):** Druhá vetva hlasu v reálnom čase zvyšuje základnú frekvenciu ($F_0$), čo v kombinácii s DAF (70 ms) generuje autentický **zborový efekt (Choral Speech Effect)** bez kovového hrebeňového skreslenia (comb filtering).
 * **Neurologický princíp:** Obchádza časovú dysfunkciu bazálnych ganglií a aktivuje temporo-parietálny feedbackový okruh (Kalinowski et al., Alm 2004).
 * **Ochrana pred spätnou väzbou:** Slúchadlový odposluch je pri štarte predvolene stlmený (`0.0 gain`), aby pri zapnutí bez slúchadiel nedochádzalo k pískaniu z reproduktora do mikrofónu. Indikátor v hornej lište umožňuje okamžité zapnutie/vypnutie jedným kliknutím.
@@ -130,4 +130,4 @@ Všetky akustické výpočty, DSP analýza mikrofónu, oneskorenie DAF aj frekve
 
 ## 📄 Copyright
 
-Copyright © 2026. All rights reserved.
+Copyright © 2026 Glide. All rights reserved.

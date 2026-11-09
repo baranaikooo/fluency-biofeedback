@@ -1,6 +1,6 @@
 {
-  "name": "Fluency – Rečový Biofeedback Trenažér",
-  "short_name": "Fluency",
+  "name": "Glide – Rečový Biofeedback",
+  "short_name": "Glide",
   "description": "Klinický biofeedback, DAF a FAF trenažér reči pre zvládanie balbuties.",
   "start_url": "./index.html",
   "scope": "./",
