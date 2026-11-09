@@ -175,7 +175,7 @@ function computeRms(buffer) {
 // Stavové premenné
 let audioCtx, rawAnalyser, formantAnalyser;
 let noiseDb = -58;
-let isCalibrated = true; // Predvolene nakalibrované pre okamžitý štart lekcií
+let isCalibrated = false; // Vyžaduje 1s tichú kalibráciu pred štartom pokusu
 let currentMode = 'standard';
 let ambushTimeout = null;
 let ringInterval = null;
@@ -296,6 +296,7 @@ cardioBtn.addEventListener('click', () => {
 });
 
 let dafFafPipeline = null;
+let isHeadphoneDafEnabled = false;
 
 /**
  * Robustné získanie mikrofónu s postupnými fallbackmi pre mobilné telefóny a Android WebView
@@ -373,9 +374,9 @@ function setupDafFafHeadphoneOutput(src, ctx) {
     limiter.attack.setValueAtTime(0.002, now);
     limiter.release.setValueAtTime(0.05, now);
 
-    // 3. MASTER HLASITOSŤ SLÚCHADIEL
+    // 3. MASTER HLASITOSŤ SLÚCHADIEL (predvolene 0.0 - vypnuté, aby nevznikala spätná väzba z reproduktora)
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(1.0, now);
+    masterGain.gain.setValueAtTime(isHeadphoneDafEnabled ? 1.0 : 0.0, now);
 
     src.connect(preampGain);
 
@@ -485,8 +486,10 @@ function setupDafFafHeadphoneOutput(src, ctx) {
         masterGain.gain.setValueAtTime(v, ctx.currentTime);
       },
       setEnabled: (enabled) => {
-        masterGain.gain.setValueAtTime(enabled ? 1.0 : 0.0, ctx.currentTime);
-      }
+        isHeadphoneDafEnabled = !!enabled;
+        masterGain.gain.setValueAtTime(isHeadphoneDafEnabled ? 1.0 : 0.0, ctx.currentTime);
+      },
+      isEnabled: () => isHeadphoneDafEnabled
     };
 
     window.dafFafPipeline = dafFafPipeline;
@@ -637,17 +640,31 @@ function playScenarioAudio(scenario, onDone) {
   audio.play().catch(() => audio.onerror());
 }
 
-// Interaktívny indikátor a prepínač slúchadlového odposluchu
+// Interaktívny indikátor a prepínač slúchadlového odposluchu (toggle ON/OFF)
 const hpIndicator = document.getElementById('headphoneLiveIndicator');
 if (hpIndicator) {
   hpIndicator.addEventListener('click', async () => {
     try {
       await setupAudio();
       if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
-      if (dafFafPipeline) dafFafPipeline.setEnabled(true);
+
+      const nextState = !isHeadphoneDafEnabled;
+      if (dafFafPipeline) {
+        dafFafPipeline.setEnabled(nextState);
+      } else {
+        isHeadphoneDafEnabled = nextState;
+      }
+
       const txt = document.getElementById('headphoneStatusText');
-      if (txt) txt.textContent = 'DAF & FAF: Hlas v slúchadlách AKTÍVNY';
-      playBeep(880, 0.1);
+      if (isHeadphoneDafEnabled) {
+        hpIndicator.classList.remove('off');
+        if (txt) txt.textContent = 'DAF & FAF Slúchadlá: Aktívne (Klikni pre vypnutie)';
+        playBeep(880, 0.1);
+      } else {
+        hpIndicator.classList.add('off');
+        if (txt) txt.textContent = 'DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)';
+        playBeep(440, 0.08);
+      }
     } catch (e) {
       alert('Chyba mikrofónu: ' + e.message);
     }

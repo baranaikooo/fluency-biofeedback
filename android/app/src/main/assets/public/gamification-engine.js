@@ -738,6 +738,13 @@ class DuoPathRenderer {
     this.container = document.getElementById(containerId);
   }
 
+  scrollToWorld(worldId) {
+    const el = document.getElementById(`world-section-${worldId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   render() {
     if (!this.container) return;
     this.container.innerHTML = '';

@@ -1703,6 +1703,16 @@ body.in-lesson #lessonScreen.active {
 .headphone-live-badge:active {
   transform: scale(0.96);
 }
+.headphone-live-badge.off {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+}
+.headphone-live-badge.off .hlb-dot {
+  background: #64748b;
+  box-shadow: none;
+  animation: none;
+}
 .hlb-dot {
   width: 8px;
   height: 8px;
@@ -1715,7 +1725,6 @@ body.in-lesson #lessonScreen.active {
   0% { transform: scale(0.9); opacity: 0.7; }
   50% { transform: scale(1.3); opacity: 1; }
   100% { transform: scale(0.9); opacity: 0.7; }
-}
 }
 
 /* Terč slova */
