@@ -8,10 +8,10 @@ Evidence-based neuroakustický trenažér plynulej reči a osobný asistent navr
 
 | Formát | Inštalačný odkaz | Špecifikácia |
 | :--- | :--- | :--- |
-| **Android APK** | [**📥 Stiahnuť fluency-biofeedback-native.apk**](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback-native.apk) | Najnovší inštalačný balíček pre Android (~4.99 MB) |
+| **Android APK** | [**📥 Stiahnuť glide-native.apk**](https://github.com/baranaikooo/glide/releases/latest/download/glide-native.apk) | Najnovší inštalačný balíček pre Android (~4.99 MB) |
 
 ### 🚀 Návod na inštaláciu APK do smartfónu:
-1. Klikni na odkaz vyššie a stiahni súbor `fluency-biofeedback-native.apk` priamo do telefónu.
+1. Klikni na odkaz vyššie a stiahni súbor `glide-native.apk` priamo do telefónu.
 2. Otvor stiahnutý súbor v notifikačnej lište alebo v správcovi súborov.
 3. Ak ťa Android vyzve, povoľ *„Inštalovať neznáme aplikácie“* pre daný prehliadač / správcu.
 4. Klikni na **Inštalovať** a po dokončení spusti aplikáciu priamo z plochy.

@@ -1,4 +1,4 @@
-name: Build Native Android APK
+name: Build Glide Native Android APK
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Native Debug APK
+    name: Build Glide Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -46,14 +46,15 @@ jobs:
 
       - name: Prepare APK release asset
         run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk glide-native.apk
           cp android/app/build/outputs/apk/debug/app-debug.apk fluency-biofeedback-native.apk
-          ls -la fluency-biofeedback-native.apk
+          ls -la glide-native.apk fluency-biofeedback-native.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fluency-biofeedback-native-apk
-          path: fluency-biofeedback-native.apk
+          name: glide-native-apk
+          path: glide-native.apk
           retention-days: 30
 
       - name: Update GitHub Release
@@ -61,7 +62,9 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.0
-          name: Fluency Biofeedback v1.0.0 (Native Android)
-          files: fluency-biofeedback-native.apk
+          name: Glide v1.0.0 (Native Android)
+          files: |
+            glide-native.apk
+            fluency-biofeedback-native.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
