@@ -4,15 +4,11 @@ Evidence-based neuroakustický trenažér plynulej reči a osobný asistent navr
 
 ---
 
-## 📲 Stiahnutie & Distribúcia (ZIP Archív, Web & Android)
+## 📲 Stiahnutie mobilnej aplikácie (Android)
 
-Aplikácia a kompletný zdrojový projekt sú k dispozícii na okamžité stiahnutie:
-
-| Platforma / Formát | Inštalačný odkaz | Špecifikácia & Popis |
+| Formát | Inštalačný odkaz | Špecifikácia |
 | :--- | :--- | :--- |
-| **📦 ZIP Archív celého projektu** | [**📥 Stiahnuť stutter_biofeedback_antigravity.zip**](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/stutter_biofeedback_antigravity.zip) | **Najnovší kompletný ZIP archív (~6.08 MB)** – Obsahuje čistý repozitár, Web Audio DSP engine, dialógy, ikony, Capacitor Android projekt aj dokumentáciu |
-| **🌐 Web / PWA** | [**🌐 Otvoriť Live Web App**](https://stutterbiofeedbackantigravity.vercel.app) | Okamžité spustenie v prehliadači (Chrome, Safari na iOS, Edge, Firefox) bez inštalácie |
-| **📱 Android APK (Natívne)** | [**📥 Stiahnuť fluency-biofeedback-native.apk**](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback-native.apk) | Natívny inštalačný balíček (~4.99 MB) s hardvérovým prístupom ku kamere a mikrofónu |
+| **Android APK** | [**📥 Stiahnuť fluency-biofeedback-native.apk**](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback-native.apk) | Najnovší inštalačný balíček pre Android (~4.99 MB) |
 
 ### 🚀 Návod na inštaláciu APK do smartfónu:
 1. Klikni na odkaz vyššie a stiahni súbor `fluency-biofeedback-native.apk` priamo do telefónu.
