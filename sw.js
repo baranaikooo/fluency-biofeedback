@@ -1,5 +1,5 @@
 // FLUENCY BIOFEEDBACK - SERVICE WORKER (PWA OFFLINE ENGINE)
-const CACHE_NAME = 'fluency-pwa-v1';
+const CACHE_NAME = 'fluency-pwa-v2';
 
 const STATIC_ASSETS = [
   './',
@@ -13,6 +13,7 @@ const STATIC_ASSETS = [
   './dsp-core.js',
   './gamification-engine.js',
   './daf-assistant.js',
+  './supabase-auth.js',
   './audio/courier.mp3',
   './audio/cashier.mp3',
   './audio/doctor.mp3',

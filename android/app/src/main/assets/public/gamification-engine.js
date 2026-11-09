@@ -983,9 +983,25 @@ class DuoLessonController {
     // Kalibrácia a reset z Telemetrie
     const calTelBtn = document.getElementById('calibrateFromTelemetryBtn');
     if (calTelBtn) {
-      calTelBtn.addEventListener('click', () => {
-        const cBtn = document.getElementById('calibrateBtn');
-        if (cBtn) cBtn.click();
+      calTelBtn.addEventListener('click', async () => {
+        calTelBtn.disabled = true;
+        calTelBtn.textContent = 'Meriam šum miestnosti (1s ticha)...';
+        try {
+          if (typeof window.runNoiseCalibration === 'function') {
+            const noise = await window.runNoiseCalibration();
+            calTelBtn.textContent = `✅ Nakalibrované (Základný šum: ${noise.toFixed(1)} dB)`;
+          } else {
+            const cBtn = document.getElementById('calibrateBtn');
+            if (cBtn) cBtn.click();
+            calTelBtn.textContent = '✅ Kalibrácia spustená';
+          }
+        } catch (err) {
+          calTelBtn.textContent = '❌ Chyba kalibrácie';
+        }
+        setTimeout(() => {
+          calTelBtn.disabled = false;
+          calTelBtn.textContent = '🎙️ Rýchla re-kalibrácia mikrofónu (1s)';
+        }, 3500);
       });
     }
 
@@ -1388,6 +1404,9 @@ class DuoLessonController {
 
     this.isLessonActive = true;
     this.isSosDrill = false;
+    if (typeof window.setDspMode === 'function') {
+      window.setDspMode(this.currentLevel.mode || 'standard');
+    }
     this.completedItemsCount = 0;
     this.mistakesCount = 0;
     this.totalAttemptsCount = 0;
@@ -1435,6 +1454,9 @@ class DuoLessonController {
 
     this.isLessonActive = true;
     this.isSosDrill = true;
+    if (typeof window.setDspMode === 'function') {
+      window.setDspMode(selectedMode);
+    }
     this.currentLevel = {
       id: "sos",
       title: "Rýchly SOS Dril",
@@ -1678,6 +1700,10 @@ class DuoLessonController {
     const modal = document.getElementById('celebrationModal');
     if (modal) modal.classList.remove('active');
 
+    if (typeof window.abortActiveDspSession === 'function') {
+      window.abortActiveDspSession();
+    }
+
     // Návrat z celoobrazovkového režimu
     this.exitFocusMode();
 
@@ -1693,6 +1719,9 @@ class DuoLessonController {
   confirmExitLesson() {
     if (confirm('Naozaj chceš opustiť tréning? Stratíš rozpracovaný postup.')) {
       this.isLessonActive = false;
+      if (typeof window.abortActiveDspSession === 'function') {
+        window.abortActiveDspSession();
+      }
       this.exitFocusMode();
 
       if (typeof camToggle !== 'undefined' && camToggle && camToggle.checked) {

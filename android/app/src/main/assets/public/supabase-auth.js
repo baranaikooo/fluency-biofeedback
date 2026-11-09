@@ -354,6 +354,13 @@
 
       // Aplikovanie progresu do gamifikačného enginu
       if (currentProfile && window.duoState) {
+        if (typeof currentProfile.xp === 'number') {
+          window.duoState.state.xp = Math.max(window.duoState.state.xp || 0, currentProfile.xp);
+        }
+        if (typeof currentProfile.streak === 'number') {
+          window.duoState.state.streak = Math.max(window.duoState.state.streak || 1, currentProfile.streak);
+        }
+
         if (currentProfile.progress && Object.keys(currentProfile.progress).length > 0) {
           window.duoState.applyCloudState(currentProfile);
 
@@ -367,6 +374,10 @@
           // Čerstvý profil, synchronizujeme aktuálny lokálny stav
           syncCloudProgress(window.duoState.state);
         }
+
+        window.duoState.save();
+        window.duoState.renderHud();
+        window.duoState.renderTelemetry();
       }
 
       updateUI();

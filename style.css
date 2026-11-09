@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
 
 :root {
+  --surface-card: #162240;
+  --text-main: #f8fafc;
+  --brand-cyan: #38bdf8;
+  --brand-emerald: #10b981;
   /* Slate & Dark Theme Palette */
   --bg: #0b132b;
   --bg-subtle: #111d40;

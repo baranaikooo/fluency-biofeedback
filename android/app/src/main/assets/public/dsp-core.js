@@ -46,7 +46,11 @@ function analyzePhonetics(word) {
   const clean = word.trim().toLowerCase();
   if (!clean) return { type: 'vowel', isPlosive: false, clusterLen: 0, label: 'Samohláska', wordCount: 1 };
 
-  const words = clean.split(/\s+/).filter(Boolean);
+  let words = clean.split(/\s+/).filter(Boolean);
+  const singlePrepositions = new Set(['v', 's', 'z', 'k', 'o', 'u']);
+  if (words.length > 1 && singlePrepositions.has(words[0])) {
+    words = [words[0] + words[1], ...words.slice(2)];
+  }
   const firstWord = words[0] || '';
 
   const phonemes = [];
@@ -167,38 +171,6 @@ function computeRms(buffer) {
   const db = 20 * Math.log10(Math.max(rms, 1e-7));
   return { db, rms, clipped };
 }
-
-// Gamifikácia (localStorage)
-let gameStats = JSON.parse(localStorage.getItem('fluency_v37_stats') || '{"xp":0,"combo":1,"streak":1}');
-function updateHud(addXp = 0, passed = null) {
-  if (passed === true) {
-    gameStats.xp += addXp * gameStats.combo;
-    gameStats.combo = Math.min(8, gameStats.combo + 1);
-  } else if (passed === false) {
-    gameStats.combo = 1;
-  }
-  localStorage.setItem('fluency_v37_stats', JSON.stringify(gameStats));
-
-  const xpEl = document.getElementById('xpVal');
-  const comboEl = document.getElementById('comboVal');
-  const streakEl = document.getElementById('streakVal');
-  const rankEl = document.getElementById('rankTitle');
-  const nextEl = document.getElementById('xpNextLabel');
-  const fillEl = document.getElementById('xpFillBar');
-
-  if (xpEl) xpEl.textContent = gameStats.xp;
-  if (comboEl) comboEl.textContent = gameStats.combo + 'x';
-  if (streakEl) streakEl.textContent = gameStats.streak;
-
-  const level = Math.floor(gameStats.xp / 500) + 1;
-  const inLevelXp = gameStats.xp % 500;
-  const ranks = ['Novice', 'Resonator', 'Flow Shaper', 'Pacemaker', 'Unblockable'];
-  const rankName = ranks[Math.min(ranks.length - 1, level - 1)];
-  if (rankEl) rankEl.textContent = `Rank ${level}: ${rankName}`;
-  if (nextEl) nextEl.textContent = `${inLevelXp} / 500 XP`;
-  if (fillEl) fillEl.style.width = `${(inLevelXp / 500) * 100}%`;
-}
-updateHud();
 
 // Stavové premenné
 let audioCtx, rawAnalyser, formantAnalyser;
@@ -647,47 +619,138 @@ if (hpIndicator) {
   });
 }
 
+
+// ============================================================================
+// CLEANUP A DYNAMICKÝ REŽIM DSP RELÁCIE
+// ============================================================================
+function abortActiveDspSession() {
+  if (ambushTimeout) {
+    clearTimeout(ambushTimeout);
+    ambushTimeout = null;
+  }
+  stopRinging();
+
+  if (activeCaptureHandle) {
+    clearInterval(activeCaptureHandle);
+    activeCaptureHandle = null;
+  }
+  activeFinishEarlyCallback = null;
+
+  if (activeAudioPlayer) {
+    try {
+      activeAudioPlayer.pause();
+      activeAudioPlayer.currentTime = 0;
+    } catch (_) {}
+    activeAudioPlayer = null;
+  }
+  if (typeof fluencyVoice !== 'undefined' && fluencyVoice && typeof fluencyVoice.stop === 'function') {
+    try {
+      fluencyVoice.stop();
+    } catch (_) {}
+  }
+
+  const callOverlay = document.getElementById('callOverlay');
+  if (callOverlay) callOverlay.classList.remove('active');
+
+  const lessonDialogueCard = document.getElementById('lessonDialogueCard');
+  if (lessonDialogueCard) lessonDialogueCard.style.display = 'none';
+
+  const startBtn = document.getElementById('startBtn');
+  if (startBtn) startBtn.disabled = false;
+
+  const calibrateBtn = document.getElementById('calibrateBtn');
+  if (calibrateBtn) calibrateBtn.disabled = false;
+
+  const pacerCircle = document.getElementById('pacerCircle');
+  if (pacerCircle) {
+    pacerCircle.style.transform = 'scale(1)';
+    pacerCircle.style.borderColor = '#334155';
+    pacerCircle.textContent = 'Pripravený';
+  }
+}
+window.abortActiveDspSession = abortActiveDspSession;
+
+function setDspMode(mode) {
+  currentMode = mode || 'standard';
+  if (ambushTimeout) {
+    clearTimeout(ambushTimeout);
+    ambushTimeout = null;
+  }
+  stopRinging();
+
+  const startBtn = document.getElementById('startBtn');
+  const m1Title = document.getElementById('m1Title');
+
+  if (currentMode === 'standard') {
+    if (startBtn) startBtn.textContent = '2. Štart pokusu (Pacer)';
+    if (m1Title) m1Title.textContent = '1. Reakčný čas (Tichý blok < 1600 ms)';
+  } else if (currentMode === 'guillotine') {
+    if (startBtn) startBtn.textContent = '2. Pokladňa (Limit 600 ms)';
+    if (m1Title) m1Title.textContent = '1. Časová gilotína (Štart < 600 ms)';
+  } else if (currentMode === 'ambush') {
+    if (startBtn) startBtn.textContent = '2. Aktivovať pascu hovoru';
+    if (m1Title) m1Title.textContent = '1. Pohotovosť v hovore (< 1200 ms)';
+  }
+}
+window.setDspMode = setDspMode;
+
 // Kalibrácia šumu s robustným IQR priemerovaním
+function runNoiseCalibration() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (calibrateBtn) calibrateBtn.disabled = true;
+      if (statusAlert) statusAlert.textContent = 'Meriam šum miestnosti (1 sekunda ticha)...';
+      await setupAudio();
+      if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+
+      const buf = new Float32Array(rawAnalyser.fftSize);
+      const readings = [];
+      const tStart = performance.now();
+
+      const timer = setInterval(() => {
+        rawAnalyser.getFloatTimeDomainData(buf);
+        readings.push(computeRms(buf).db);
+        if (performance.now() - tStart >= 1000) {
+          clearInterval(timer);
+          readings.sort((a, b) => a - b);
+          const quietHalf = readings.slice(Math.floor(readings.length * 0.1), Math.floor(readings.length * 0.6));
+          const avgNoise = quietHalf.reduce((acc, v) => acc + v, 0) / quietHalf.length;
+          noiseDb = avgNoise;
+
+          if (noiseDb > -30) {
+            if (statusAlert) statusAlert.textContent = `Hluk prostredia je privysoký (${noiseDb.toFixed(1)} dB). Stíš okolie a skús znova.`;
+            if (calibrateBtn) calibrateBtn.disabled = false;
+            reject(new Error('Hluk prostredia je privysoký'));
+          } else {
+            isCalibrated = true;
+            if (statusAlert) statusAlert.textContent = `Kalibrácia úspešná (Základný šum: ${noiseDb.toFixed(1)} dB). Pripravený!`;
+            if (startBtn) startBtn.disabled = false;
+            if (calibrateBtn) calibrateBtn.disabled = false;
+            resolve(noiseDb);
+          }
+        }
+      }, 25);
+    } catch (err) {
+      if (statusAlert) statusAlert.textContent = 'Chyba mikrofónu: ' + err.message;
+      if (calibrateBtn) calibrateBtn.disabled = false;
+      reject(err);
+    }
+  });
+}
+window.runNoiseCalibration = runNoiseCalibration;
+
 calibrateBtn.addEventListener('click', async () => {
   try {
-    calibrateBtn.disabled = true;
-    statusAlert.textContent = 'Meriam šum miestnosti (1 sekunda ticha)...';
-    await setupAudio();
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
-
-    const buf = new Float32Array(rawAnalyser.fftSize);
-    const readings = [];
-    const tStart = performance.now();
-
-    const timer = setInterval(() => {
-      rawAnalyser.getFloatTimeDomainData(buf);
-      readings.push(computeRms(buf).db);
-      if (performance.now() - tStart >= 1000) {
-        clearInterval(timer);
-        readings.sort((a, b) => a - b);
-        const quietHalf = readings.slice(Math.floor(readings.length * 0.1), Math.floor(readings.length * 0.6));
-        const avgNoise = quietHalf.reduce((acc, v) => acc + v, 0) / quietHalf.length;
-        noiseDb = avgNoise;
-
-        if (noiseDb > -30) {
-          statusAlert.textContent = `Hluk prostredia je privysoký (${noiseDb.toFixed(1)} dB). Stíš okolie a skús znova.`;
-          calibrateBtn.disabled = false;
-        } else {
-          isCalibrated = true;
-          statusAlert.textContent = `Kalibrácia úspešná (Základný šum: ${noiseDb.toFixed(1)} dB). Pripravený!`;
-          startBtn.disabled = false;
-          calibrateBtn.disabled = false;
-        }
-      }
-    }, 25);
-  } catch (err) {
-    statusAlert.textContent = 'Chyba mikrofónu: ' + err.message;
-    calibrateBtn.disabled = false;
-  }
+    await runNoiseCalibration();
+  } catch (_) {}
 });
 
 startBtn.addEventListener('click', async () => {
   try {
+    if (!isCalibrated) {
+      if (statusAlert) statusAlert.textContent = 'Pred štartom najprv meriam šum miestnosti (1s ticha)...';
+      await runNoiseCalibration();
+    }
     if (typeof setupAudio === 'function') {
       await setupAudio();
     }
@@ -695,7 +758,7 @@ startBtn.addEventListener('click', async () => {
       await audioCtx.resume();
     }
   } catch (e) {
-    console.warn('Audio resume error:', e);
+    console.warn('Audio setup/kalibrácia error:', e);
   }
 
   matrixPanel.classList.remove('active');
@@ -978,7 +1041,13 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   }
 
   const maxFDb = Math.max(...frames.map(f => f.smoothFDb));
-  const periodicHoldMs = frames.filter(f => f.smoothFDb > nThresh && f.dPrime < 0.44).length * 10;
+  let periodicHoldMs = 0;
+  for (let i = 0; i < frames.length; i++) {
+    if (frames[i].smoothFDb > nThresh && frames[i].dPrime < 0.44) {
+      const dt = i > 0 ? (frames[i].t - frames[i - 1].t) : 10;
+      periodicHoldMs += dt;
+    }
+  }
 
   matrixPanel.classList.add('active');
   const banner = document.getElementById('verdictBanner');
@@ -1001,7 +1070,6 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     setRow('m3', '-', false);
     setRow('m4', '-', false);
     setRow('m5', '-', false);
-    updateHud(0, false);
     drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
     window.dispatchEvent(new CustomEvent('dsp-evaluation-complete', {
       detail: { passed: false, isPerfect: false, vrt: 0, latency: 0, reason: 'silent_block', meta }
@@ -1042,8 +1110,9 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     const maxAllowedGap = 180 + (meta.clusterLen * 40);
     let maxGap = 0, curGap = 0;
     for (let i = firstSound; i < nucleus; i++) {
+      const dt = i > 0 ? (frames[i].t - frames[i - 1].t) : 10;
       if (frames[i].rawDb < sThresh - 2.0) {
-        curGap += 10;
+        curGap += dt;
         if (curGap > maxGap) maxGap = curGap;
       } else {
         curGap = 0;
@@ -1112,12 +1181,13 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   const nCoreEnd = Math.min(frames.length - 1, nucleus + 14);
   let earlyDropMs = 0, sustainedVoicingMs = 0;
   for (let i = nucleus; i <= nCoreEnd; i++) {
+    const dt = i > 0 ? (frames[i].t - frames[i - 1].t) : 10;
     if (frames[i].smoothFDb >= sThresh - 2.0 && frames[i].dPrime < 0.45) {
-      sustainedVoicingMs += 10;
+      sustainedVoicingMs += dt;
     } else {
       // Ak fonácia padla v prvých 30 ms po nucleus (abortovaný / zaseknutý začiatok):
       if (sustainedVoicingMs < 40) {
-        earlyDropMs += 10;
+        earlyDropMs += dt;
       }
     }
   }
@@ -1126,7 +1196,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   // V bežných viackladných slovách (napr. 'O-tec', 'Á-no', 'Au-to', 'Ká-va') je prechod na ďalšiu slabiku úplne normálny.
   // Repetícia nastáva IBA ak bol počiatočný pokus useknutý v zárodku (< 35 ms) a reštartovaný!
   let clonicDetected = false;
-  const firstVowelDuration = (pIdx - nucleus) * 10;
+  const firstVowelDuration = frames[pIdx].t - frames[nucleus].t;
   const minNormalVowelMs = meta.type === 'vowel' ? 35 : 45;
   if (firstVowelDuration < minNormalVowelMs) {
     for (let i = pIdx + 2; i < Math.min(frames.length - 4, pIdx + 16); i++) {
@@ -1154,13 +1224,11 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   const passed = p1 && p2 && p3 && p4 && p5;
   const isPerfect = (meta.type === 'vowel' ? (vrt >= 45 && vrt <= 180) : (vrt >= 15 && vrt <= 100)) && latency <= 700;
   if (passed) {
-    updateHud(isPerfect ? 50 : 30, true);
     banner.className = 'badge-banner success';
     banner.textContent = isPerfect
       ? '🌟 PERFECT ZÁSAH (+50 XP) – Dokonale uvoľnený štart hlasiviek!'
       : '✅ ÚSPEŠNÝ POKUS (+30 XP) – Plynulý nástup bez bloku!';
   } else {
-    updateHud(0, false);
     banner.className = 'badge-banner fail';
     banner.textContent = '❌ DETEGOVANÝ BLOK ALEBO KŔČ – Skontroluj červené metriky nižšie.';
   }
