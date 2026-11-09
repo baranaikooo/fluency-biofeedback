@@ -1,11 +1,5 @@
 # 🎙️ Fluency – Evidence-Based Rečový Biofeedback & Neuroakustický Asistent
 
-[![Download Project ZIP](https://img.shields.io/badge/Download_ZIP-v1.0.0_Projekt-2563eb?style=for-the-badge&logo=archive&logoColor=white)](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/stutter_biofeedback_antigravity.zip)
-[![Live Web App](https://img.shields.io/badge/Live_App-Vercel-38bdf8?style=for-the-badge&logo=vercel&logoColor=white)](https://stutterbiofeedbackantigravity.vercel.app)
-[![Download Android APK](https://img.shields.io/badge/Download_APK-v1.0.0_Native-059669?style=for-the-badge&logo=android&logoColor=white)](https://github.com/baranaikooo/fluency-biofeedback/releases/latest/download/fluency-biofeedback-native.apk)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/baranaikooo/fluency-biofeedback/android-build.yml?branch=main&style=for-the-badge&label=Build_Status)](https://github.com/baranaikooo/fluency-biofeedback/actions)
-[![Copyright](https://img.shields.io/badge/Copyright-All_Rights_Reserved-slate?style=for-the-badge)](#-copyright)
-
 Evidence-based neuroakustický trenažér plynulej reči a osobný asistent navrhnutý pre dospelých a dospievajúcich s **balbuties (zajakavosťou / koktavosťou)**. Žiadny vizuálny chaos, žiadne detské gýče ani prázdne ezoterické teórie. Všetko funguje na báze exaktnej akustickej biometrie v reálnom čase priamo v zariadení (**Edge DSP** cez Web Audio API).
 
 ---
@@ -124,42 +118,6 @@ Všetky akustické výpočty, DSP analýza mikrofónu, oneskorenie DAF aj frekve
 * Žiadny hlasový signál sa nikdy nenahráva na disk ani neodosiela na externé cloudové servery.
 * Telemetria v Supabase ukladá iba anonymné numerické metriky (XP, dĺžku dennej série a štatistický priemer VRT v milisekundách) po dobrovoľnom prihlásení používateľa.
 
----
-
-## 🛠️ Lokálny vývoj & Zostavenie projektu
-
-### Spustenie webovej verzie:
-Projekt nevyžaduje zložitý build proces pre web – stačí spustiť lokálny HTTP server:
-```bash
-# Naklonovanie repozitára
-git clone https://github.com/baranaikooo/fluency-biofeedback.git
-cd fluency-biofeedback
-
-# Spustenie lokálneho servera
-npx serve .
-```
-Otvor adresu `http://localhost:3000` v prehliadači Chrome alebo Edge.
-
-### 📦 Vygenerovanie najnovšieho ZIP archívu:
-Projekt obsahuje integrovaný baliaci skript, ktorý vytvorí čistý archív celého projektu bez zbytočných priečinkov `node_modules` a build cache:
-```bash
-npm run pack:zip
-```
-Výsledný archív `stutter_biofeedback_antigravity.zip` sa vygeneruje a automaticky zosynchronizuje do priečinka Stiahnuté súbory (`Downloads`) aj na Google Disk.
-
-### Zostavenie natívnej Android aplikácie (APK):
-```bash
-# Inštalácia závislostí
-npm install
-
-# Synchronizácia webových assetov do Android projektu
-npx cap sync android
-
-# Zostavenie debug APK pomocou Gradle
-cd android
-./gradlew assembleDebug
-```
-Výsledné APK sa vygeneruje v priečinku `android/app/build/outputs/apk/debug/`.
 
 ---
 
