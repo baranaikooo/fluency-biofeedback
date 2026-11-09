@@ -1,12 +1,19 @@
 /**
- * FLUENCY BIOFEEDBACK - LIVE DAF & CHORAL SPEECH ASSISTANT ENGINE
- * Paralelná vetva Web Audio API:
- *   mediaStreamSource ──┬──> DelayNode A (Primary DAF, napr. 70 ms) ─────────────┬──> MasterGain ──> destination
- *                       │                                                        │
- *                       └──> DelayNode B (Choral Lift, delayMs + 12 ms) ──> FormantEQ ──┘
+ * FLUENCY BIOFEEDBACK - LIVE DAF & FAF (FREQUENCY ALTERED FEEDBACK) ASSISTANT
+ * 
+ * Skutočný vedecký Real-Time Dual-Line Doppler Pitch Shifter (FAF):
+ *   mediaStreamSource ──> DelayNode A (Primary DAF, napr. 70 ms)
+ *                            │
+ *                            ├─> DirectGain (0.75) ──────────────────────────┬─> MasterGain ──> destination
+ *                            │                                               │
+ *                            └─> Dual-Line Doppler Pitch Shifter (+2 poltóny) │
+ *                                  ├─> DelayLine 1 (Sawtooth LFO 1) ──> Gain 1 ─┤
+ *                                  └─> DelayLine 2 (Sawtooth LFO 2) ──> Gain 2 ─┘
+ *                                        (180° fázový posun, sin(pi*phi) okno)
+ *                                        High-pass 140 Hz ──> FafVoiceGain (0.65) ─┘
  *
- * 100% spoľahlivá, nezamŕza, žiadne mŕtve AudioBufferSource nody.
- * Zvuk je v slúchadlách krištáľovo čistý, okamžitý a s prirodzeným zborovým harmonickým zdvihom.
+ * 100% natívne Web Audio API uzly bez flangeru a comb-filteringu.
+ * V uchu vzniká pravý efekt zborovej reči (Choral Speech Effect, +2 poltóny / 1.12x F0).
  */
 
 (function (window) {
@@ -21,10 +28,18 @@
       this.audioCtx = null;
       this.mediaStreamSource = null;
       this.delayNodeA = null;
-      this.delayNodeB = null;
-      this.choralFilter = null;
-      this.choralGain = null;
       this.directGain = null;
+
+      // FAF Pitch Shifter nody
+      this.fafDelay1 = null;
+      this.fafDelay2 = null;
+      this.fafGain1 = null;
+      this.fafGain2 = null;
+      this.fafFilter = null;
+      this.fafVoiceGain = null;
+      this.lfoSource = null;
+      this.lfoSplitter = null;
+
       this.masterGain = null;
       this.dafAnalyser = null;
       this.animFrameId = null;
@@ -186,32 +201,22 @@
         }
       }
 
-      // 3. Zostav paralelnú Zborovú DAF vetvu:
+      // 3. Zostav paralelnú Zborovú DAF + FAF vetvu:
       // Voice A (Prirodzený DAF odposluch): mediaStreamSource -> delayNodeA -> directGain -> masterGain -> destination
-      // Voice B (Zborový tón / Formantový lift): mediaStreamSource -> delayNodeB -> choralFilter -> choralGain -> masterGain -> destination
+      // Voice B (Skutočný FAF Pitch Shifter +2 poltóny): delayNodeA -> Dual-Line Doppler Pitch Shifter -> masterGain -> destination
       if (!this.masterGain) {
         const now = this.audioCtx.currentTime;
 
-        // Voice A: Základný oneskorený odposluch
+        // Voice A: Základný oneskorený odposluch (DAF, napr. 70 ms)
         this.delayNodeA = this.audioCtx.createDelay(1.0);
         this.delayNodeA.delayTime.setValueAtTime(this.delayMs / 1000, now);
 
         this.directGain = this.audioCtx.createGain();
-        this.directGain.gain.setValueAtTime(0.7, now);
+        this.directGain.gain.setValueAtTime(0.75, now);
 
-        // Voice B: Zborový partner s jemným harmonickým posunom (+12 ms offset a formantový zdvih)
-        this.delayNodeB = this.audioCtx.createDelay(1.0);
-        this.delayNodeB.delayTime.setValueAtTime((this.delayMs + 12) / 1000, now);
-
-        // Formantový Peaking filter pre vyšší, jasnejší rezonančný tón hlasu
-        this.choralFilter = this.audioCtx.createBiquadFilter();
-        this.choralFilter.type = 'peaking';
-        this.choralFilter.frequency.setValueAtTime(2800, now); // Rezonancia vyšších harmonických
-        this.choralFilter.Q.setValueAtTime(1.2, now);
-        this.choralFilter.gain.setValueAtTime(5.0, now); // +5 dB zdvih pre zreteľný druhý hlas
-
-        this.choralGain = this.audioCtx.createGain();
-        this.choralGain.gain.setValueAtTime(0.55, now);
+        // Voice B: Skutočný Real-Time Dual-Line Doppler Pitch Shifter (FAF, +2 poltóny / ~1.12x F0)
+        // Pripojený za delayNodeA (takže automaticky preberá nastavené DAF oneskorenie)
+        const fafVoiceGain = this.buildDopplerPitchShifter(this.delayNodeA);
 
         // Master Gain
         this.masterGain = this.audioCtx.createGain();
@@ -222,20 +227,108 @@
         this.dafAnalyser.fftSize = 256;
         this.dafAnalyser.smoothingTimeConstant = 0.2;
 
-        // Prepojenie Voice A
+        // Prepojenie Voice A (DAF)
         this.mediaStreamSource.connect(this.delayNodeA);
         this.delayNodeA.connect(this.directGain);
         this.directGain.connect(this.masterGain);
 
-        // Prepojenie Voice B (Choral)
-        this.mediaStreamSource.connect(this.delayNodeB);
-        this.delayNodeB.connect(this.choralFilter);
-        this.choralFilter.connect(this.choralGain);
-        this.choralGain.connect(this.masterGain);
+        // Prepojenie Voice B (FAF)
+        fafVoiceGain.connect(this.masterGain);
 
         // Prepojenie na Analyser pre vizualizáciu
         this.masterGain.connect(this.dafAnalyser);
       }
+    }
+
+    /**
+     * Vedecký Dual-Line Doppler Pitch Shifter (FAF):
+     * Dve modulované delay linky s fázovým posunom 180° a polsínusovým crossfade oknom.
+     * Pri 15 ms okne a 8.0 Hz LFO je rýchlosť d(delay)/dt = -0.015 * 8.0 = -0.120,
+     * čo zvyšuje frekvenciu o presne 1.120x (~+1.96 poltóna, pravý FAF posun o +2 poltóny).
+     */
+    buildDopplerPitchShifter(inputNode) {
+      const ctx = this.audioCtx;
+      const now = ctx.currentTime;
+      const sampleRate = ctx.sampleRate || 48000;
+
+      // 1. Dve paralelné delay linky
+      this.fafDelay1 = ctx.createDelay(0.1);
+      this.fafDelay1.delayTime.setValueAtTime(0, now);
+
+      this.fafDelay2 = ctx.createDelay(0.1);
+      this.fafDelay2.delayTime.setValueAtTime(0, now);
+
+      // 2. Crossfade gain linky (východzia hodnota 0, ovládané LFO)
+      this.fafGain1 = ctx.createGain();
+      this.fafGain1.gain.setValueAtTime(0, now);
+
+      this.fafGain2 = ctx.createGain();
+      this.fafGain2.gain.setValueAtTime(0, now);
+
+      // 3. AudioBuffer pre presné 8.0 Hz LFO (8 plných periód za sekundu)
+      const numCycles = 8;
+      const windowSec = 0.015;
+      const baseDelaySec = 0.003;
+      const bufferLength = sampleRate;
+
+      const lfoBuffer = ctx.createBuffer(4, bufferLength, sampleRate);
+      const chD1 = lfoBuffer.getChannelData(0);
+      const chG1 = lfoBuffer.getChannelData(1);
+      const chD2 = lfoBuffer.getChannelData(2);
+      const chG2 = lfoBuffer.getChannelData(3);
+
+      for (let i = 0; i < bufferLength; i++) {
+        const t = i / sampleRate;
+        const phi1 = (t * numCycles) % 1.0;
+        const phi2 = (phi1 + 0.5) % 1.0; // 180° offset
+
+        // Sawtooth sweep (klesajúci delay = zvýšenie frekvencie F0)
+        chD1[i] = baseDelaySec + windowSec * (1.0 - phi1);
+        chD2[i] = baseDelaySec + windowSec * (1.0 - phi2);
+
+        // Pol-sínusové okno: sin(pi * phi) zabezpečuje konštantný výkon (g1^2 + g2^2 == 1.0)
+        chG1[i] = Math.sin(Math.PI * phi1);
+        chG2[i] = Math.sin(Math.PI * phi2);
+      }
+
+      this.lfoSource = ctx.createBufferSource();
+      this.lfoSource.buffer = lfoBuffer;
+      this.lfoSource.loop = true;
+
+      this.lfoSplitter = ctx.createChannelSplitter(4);
+      this.lfoSource.connect(this.lfoSplitter);
+
+      // Prepojenie LFO kanálov na AudioParams
+      this.lfoSplitter.connect(this.fafDelay1.delayTime, 0);
+      this.lfoSplitter.connect(this.fafGain1.gain, 1);
+      this.lfoSplitter.connect(this.fafDelay2.delayTime, 2);
+      this.lfoSplitter.connect(this.fafGain2.gain, 3);
+
+      this.lfoSource.start(now);
+
+      // Prepojenie signálu z primárneho oneskorenia cez obe vetvy
+      inputNode.connect(this.fafDelay1);
+      inputNode.connect(this.fafDelay2);
+
+      this.fafDelay1.connect(this.fafGain1);
+      this.fafDelay2.connect(this.fafGain2);
+
+      // Filter na odstránenie sub-audible frekvencií pod 140 Hz (prevencia Dopplerovho brumu)
+      this.fafFilter = ctx.createBiquadFilter();
+      this.fafFilter.type = 'highpass';
+      this.fafFilter.frequency.setValueAtTime(140, now);
+      this.fafFilter.Q.setValueAtTime(0.7, now);
+
+      this.fafGain1.connect(this.fafFilter);
+      this.fafGain2.connect(this.fafFilter);
+
+      // Hlasitosť druhého zborového FAF hlasu (+2 poltóny)
+      this.fafVoiceGain = ctx.createGain();
+      this.fafVoiceGain.gain.setValueAtTime(0.65, now);
+      this.fafFilter.connect(this.fafVoiceGain);
+
+      return this.fafVoiceGain;
+    }
     }
 
     async start() {
@@ -300,16 +393,10 @@
       if (window.dafFafPipeline && typeof window.dafFafPipeline.setDelay === 'function') {
         window.dafFafPipeline.setDelay(this.delayMs);
       }
-      if (this.audioCtx) {
+      if (this.audioCtx && this.delayNodeA) {
         const now = this.audioCtx.currentTime;
-        if (this.delayNodeA) {
-          this.delayNodeA.delayTime.cancelScheduledValues(now);
-          this.delayNodeA.delayTime.setValueAtTime(this.delayMs / 1000, now);
-        }
-        if (this.delayNodeB) {
-          this.delayNodeB.delayTime.cancelScheduledValues(now);
-          this.delayNodeB.delayTime.setValueAtTime((this.delayMs + 12) / 1000, now);
-        }
+        this.delayNodeA.delayTime.cancelScheduledValues(now);
+        this.delayNodeA.delayTime.setValueAtTime(this.delayMs / 1000, now);
       }
     }
 

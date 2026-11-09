@@ -985,11 +985,11 @@ class DuoLessonController {
     if (calTelBtn) {
       calTelBtn.addEventListener('click', async () => {
         calTelBtn.disabled = true;
-        calTelBtn.textContent = 'Meriam šum miestnosti (1s ticha)...';
+        calTelBtn.textContent = '⏳ Meriam šum miestnosti (1s)...';
         try {
           if (typeof window.runNoiseCalibration === 'function') {
             const noise = await window.runNoiseCalibration();
-            calTelBtn.textContent = `✅ Nakalibrované (Základný šum: ${noise.toFixed(1)} dB)`;
+            calTelBtn.textContent = `✅ Nakalibrované (Šum: ${noise.toFixed(1)} dB)`;
           } else {
             const cBtn = document.getElementById('calibrateBtn');
             if (cBtn) cBtn.click();

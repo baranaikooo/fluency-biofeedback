@@ -395,34 +395,72 @@ function setupDafFafHeadphoneOutput(src, ctx) {
     delayA.connect(dafGain);
     dafGain.connect(limiter);
 
-    // VETVA C: FAF ZBOROVÝ TÓN (Frequency-Altered Feedback)
-    const delayB = ctx.createDelay(1.0);
-    delayB.delayTime.setValueAtTime(0.078, now); // 78 ms offset
+    // VETVA C: FAF SKUTOČNÝ REAL-TIME DOPPLER PITCH SHIFTER (+2 poltóny / ~1.12x F0)
+    // Dve paralelné modulované delay linky s fázovým posunom 180° a polsínusovým oknom
+    const fafDelay1 = ctx.createDelay(0.1);
+    fafDelay1.delayTime.setValueAtTime(0, now);
+    const fafDelay2 = ctx.createDelay(0.1);
+    fafDelay2.delayTime.setValueAtTime(0, now);
 
-    // LFO Doppler frekvenčný modulátor
-    const fafLfo = ctx.createOscillator();
-    fafLfo.type = 'sine';
-    fafLfo.frequency.setValueAtTime(0.5, now);
-    const fafLfoGain = ctx.createGain();
-    fafLfoGain.gain.setValueAtTime(0.003, now);
+    const fafGain1 = ctx.createGain();
+    fafGain1.gain.setValueAtTime(0, now);
+    const fafGain2 = ctx.createGain();
+    fafGain2.gain.setValueAtTime(0, now);
 
-    fafLfo.connect(fafLfoGain);
-    fafLfoGain.connect(delayB.delayTime);
-    fafLfo.start();
+    const sampleRate = ctx.sampleRate || 48000;
+    const lfoBuf = ctx.createBuffer(4, sampleRate, sampleRate);
+    const cD1 = lfoBuf.getChannelData(0);
+    const cG1 = lfoBuf.getChannelData(1);
+    const cD2 = lfoBuf.getChannelData(2);
+    const cG2 = lfoBuf.getChannelData(3);
 
-    // Formantový peaking rezonátor pre zborový efekt (+6 dB zdvih)
-    const formantFilter = ctx.createBiquadFilter();
-    formantFilter.type = 'peaking';
-    formantFilter.frequency.setValueAtTime(2200, now);
-    formantFilter.Q.setValueAtTime(1.3, now);
-    formantFilter.gain.setValueAtTime(6.0, now);
+    const numCycles = 8;
+    const winSec = 0.015;
+    const baseSec = 0.003;
+
+    for (let i = 0; i < sampleRate; i++) {
+      const t = i / sampleRate;
+      const phi1 = (t * numCycles) % 1.0;
+      const phi2 = (phi1 + 0.5) % 1.0; // 180° offset
+
+      cD1[i] = baseSec + winSec * (1.0 - phi1);
+      cD2[i] = baseSec + winSec * (1.0 - phi2);
+
+      cG1[i] = Math.sin(Math.PI * phi1);
+      cG2[i] = Math.sin(Math.PI * phi2);
+    }
+
+    const lfoSource = ctx.createBufferSource();
+    lfoSource.buffer = lfoBuf;
+    lfoSource.loop = true;
+
+    const lfoSplitter = ctx.createChannelSplitter(4);
+    lfoSource.connect(lfoSplitter);
+
+    lfoSplitter.connect(fafDelay1.delayTime, 0);
+    lfoSplitter.connect(fafGain1.gain, 1);
+    lfoSplitter.connect(fafDelay2.delayTime, 2);
+    lfoSplitter.connect(fafGain2.gain, 3);
+    lfoSource.start(now);
+
+    // Pripojenie FAF za primárny DAF delayA
+    delayA.connect(fafDelay1);
+    delayA.connect(fafDelay2);
+
+    fafDelay1.connect(fafGain1);
+    fafDelay2.connect(fafGain2);
+
+    const fafHighpass = ctx.createBiquadFilter();
+    fafHighpass.type = 'highpass';
+    fafHighpass.frequency.setValueAtTime(140, now);
+    fafHighpass.Q.setValueAtTime(0.7, now);
+
+    fafGain1.connect(fafHighpass);
+    fafGain2.connect(fafHighpass);
 
     const fafGain = ctx.createGain();
     fafGain.gain.setValueAtTime(0.70, now);
-
-    preampGain.connect(delayB);
-    delayB.connect(formantFilter);
-    formantFilter.connect(fafGain);
+    fafHighpass.connect(fafGain);
     fafGain.connect(limiter);
 
     // Prepojenie limitera na master a priamo do slúchadiel (audioCtx.destination)
@@ -436,14 +474,11 @@ function setupDafFafHeadphoneOutput(src, ctx) {
       dafGain,
       fafGain,
       delayA,
-      delayB,
       setDelay: (ms) => {
         const sec = Math.max(0.04, Math.min(0.16, ms / 1000));
         const t = ctx.currentTime;
         delayA.delayTime.cancelScheduledValues(t);
         delayA.delayTime.setValueAtTime(sec, t);
-        delayB.delayTime.cancelScheduledValues(t);
-        delayB.delayTime.setValueAtTime(sec + 0.013, t);
       },
       setVolume: (pct) => {
         const v = Math.max(0, Math.min(1.5, (pct / 100) * 1.2));
@@ -748,7 +783,7 @@ calibrateBtn.addEventListener('click', async () => {
 startBtn.addEventListener('click', async () => {
   try {
     if (!isCalibrated) {
-      if (statusAlert) statusAlert.textContent = 'Pred štartom najprv meriam šum miestnosti (1s ticha)...';
+      if (statusAlert) statusAlert.textContent = 'Najprv automaticky kalibrujem šum miestnosti (1s ticha)...';
       await runNoiseCalibration();
     }
     if (typeof setupAudio === 'function') {
