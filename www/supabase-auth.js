@@ -227,18 +227,18 @@
   };
 
   // 2. Inteligentné prihlásenie / registrácia cez email
-  async function handleEmailAuth(email, password, name) {
+  async function handleEmailAuth(email, password, name, targetFeedbackId = 'welcomeAuthFeedback') {
     if (!initSupabase()) return;
     if (!email || !email.includes('@')) {
-      setFeedback('Zadaj prosím platnú emailovú adresu.');
+      setFeedback('Zadaj prosím platnú emailovú adresu.', false, targetFeedbackId);
       return;
     }
     if (!password || password.length < 6) {
-      setFeedback('Heslo musí mať aspoň 6 znakov.');
+      setFeedback('Heslo musí mať aspoň 6 znakov.', false, targetFeedbackId);
       return;
     }
 
-    setFeedback('Overujem prihlasovacie údaje...', true);
+    setFeedback('Overujem prihlasovacie údaje...', true, targetFeedbackId);
 
     try {
       // 1. Skúsime sa prihlásiť
@@ -250,7 +250,7 @@
       if (!signInErr && signInData.user) {
         currentUser = signInData.user;
         sessionStorage.removeItem('fl_guest_mode');
-        setFeedback('Úspešne prihlásený!', true);
+        setFeedback('Úspešne prihlásený!', true, targetFeedbackId);
         await onAuthSuccess(currentUser);
         return;
       }
@@ -259,7 +259,7 @@
       if (signInErr && (signInErr.message.includes('Invalid login credentials') || signInErr.status === 400 || signInErr.message.includes('Email not confirmed'))) {
         const cleanName = (name && name.trim()) || email.split('@')[0];
         console.log('[Supabase Auth] Registrujem nový účet pre:', email);
-        setFeedback('Vytváram tvoj profil v cloude...', true);
+        setFeedback('Vytváram tvoj profil v cloude...', true, targetFeedbackId);
 
         const { data: signUpData, error: signUpErr } = await client.auth.signUp({
           email: email.trim(),
@@ -277,17 +277,17 @@
         if (signUpData.user) {
           currentUser = signUpData.user;
           sessionStorage.removeItem('fl_guest_mode');
-          setFeedback('Účet úspešne vytvorený!', true);
+          setFeedback('Účet úspešne vytvorený!', true, targetFeedbackId);
           await onAuthSuccess(currentUser);
         } else {
-          setFeedback('Registrácia odoslaná! Skontroluj si schránku a potvrď email.', true);
+          setFeedback('Registrácia odoslaná! Skontroluj si schránku a potvrď email.', true, targetFeedbackId);
         }
       } else if (signInErr) {
         throw signInErr;
       }
     } catch (err) {
       console.error('[Supabase Auth] Chyba autentifikácie:', err);
-      setFeedback('Chyba: ' + (err.message || err));
+      setFeedback('Chyba: ' + (err.message || err), false, targetFeedbackId);
     }
   }
 
@@ -722,6 +722,59 @@
     if (openAuthModalFromTelemetryBtn) {
       openAuthModalFromTelemetryBtn.addEventListener('click', () => {
         showAuthScreen();
+      });
+    }
+
+    // Priame prihlásenie z karty Telemetrie (#authLoggedOutView)
+    const btnGoogleLogin = document.getElementById('btnGoogleLogin');
+    if (btnGoogleLogin) {
+      btnGoogleLogin.addEventListener('click', () => signInWithGoogle());
+    }
+
+    const btnEmailLogin = document.getElementById('btnEmailLogin');
+    if (btnEmailLogin) {
+      btnEmailLogin.addEventListener('click', () => {
+        const emailEl = document.getElementById('authEmailInput');
+        const passEl = document.getElementById('authPasswordInput');
+        const email = emailEl ? emailEl.value : '';
+        const pass = passEl ? passEl.value : '';
+        handleEmailAuth(email, pass, '', 'authFeedbackMsg');
+      });
+    }
+
+    const authPassInput = document.getElementById('authPasswordInput');
+    if (authPassInput) {
+      authPassInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          if (btnEmailLogin) btnEmailLogin.click();
+        }
+      });
+    }
+
+    const btnMagicLink = document.getElementById('btnMagicLink');
+    if (btnMagicLink) {
+      btnMagicLink.addEventListener('click', async () => {
+        if (!initSupabase()) return;
+        const emailEl = document.getElementById('authEmailInput');
+        const email = emailEl ? emailEl.value.trim() : '';
+        if (!email || !email.includes('@')) {
+          setFeedback('Zadaj prosím platnú emailovú adresu pre odoslanie odkazu.', false, 'authFeedbackMsg');
+          return;
+        }
+        setFeedback('Odosielam prihlasovací link do emailu...', true, 'authFeedbackMsg');
+        try {
+          const { error } = await client.auth.signInWithOtp({
+            email,
+            options: {
+              emailRedirectTo: window.location.origin
+            }
+          });
+          if (error) throw error;
+          setFeedback('Prihlasovací link bol odoslaný! Skontroluj si schránku.', true, 'authFeedbackMsg');
+        } catch (err) {
+          console.error('[Supabase Auth] Magic Link chyba:', err);
+          setFeedback('Chyba: ' + (err.message || err), false, 'authFeedbackMsg');
+        }
       });
     }
 

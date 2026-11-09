@@ -20,11 +20,13 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Vyžiadanie systémového oprávnenia pre mikrofón pri štarte aplikácie
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        // 1. Vyžiadanie systémového oprávnenia pre mikrofón a kameru pri štarte aplikácie
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+            checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{
                 Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.MODIFY_AUDIO_SETTINGS
+                Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                Manifest.permission.CAMERA
             }, PERMISSION_REQUEST_RECORD_AUDIO);
         }
 

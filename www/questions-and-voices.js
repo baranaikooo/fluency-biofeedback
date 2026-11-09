@@ -22,8 +22,8 @@
       voiceStyle: 'fast',
       voicePitch: 1.18,
       voiceRate: 1.10,
-      promptText: 'Dobrý deň, budete platiť v hotovosti alebo kartou?',
-      suggestedResponse: 'Kartou, prosím',
+      promptText: 'Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?',
+      suggestedResponse: 'Zobral som to z regálu pri vchode',
       audioUrl: './audio/cashier.mp3',
       contextNote: 'Reakcia bez kŕča na pokladni pod tlakom radu za tebou'
     },
@@ -100,8 +100,8 @@
       voicePitch: 0.95,
       voiceRate: 1.18,
       isPhone: true,
-      promptText: 'Dobrý deň, mám tu pre vás zásielku na dobierku. S kým hovorím?',
-      suggestedResponse: 'Dobrý deň, pri telefóne Peter Novák',
+      promptText: 'Dobrý deň, tu je kuriér Packeta. Stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?',
+      suggestedResponse: 'Dobrý deň, je to prvý vchod na druhom poschodí',
       audioUrl: './audio/courier.mp3',
       contextNote: 'Prekonanie obavy z predstavenia sa a povedania svojho mena'
     },
@@ -166,8 +166,8 @@
       voicePitch: 0.82,
       voiceRate: 0.88,
       isPhone: true,
-      promptText: 'Ambulancia doktora Kováča. Povedzte mi, aké máte ťažkosti?',
-      suggestedResponse: 'Dobrý deň pán doktor, potrebujem kontrolu',
+      promptText: 'Dobrý, kvôli čomu ste prišli? A vaše meno poprosím ešte.',
+      suggestedResponse: 'Dobrý deň, volám sa Peter a prišiel som na kontrolu',
       audioUrl: './audio/doctor.mp3',
       contextNote: 'Pomalý autoritatívny tón lekára – zachovaj svoj vlastný pokoj'
     },
@@ -343,8 +343,8 @@
       voicePitch: 0.78,
       voiceRate: 1.02,
       isPhone: true,
-      promptText: 'Haló, tu je servis autosklo, počujeme sa? Kto volá?',
-      suggestedResponse: 'Dobrý deň, volám ohľadom auta',
+      promptText: 'Autoservis, prosím? Čo presne sa stalo s vaším autom a kedy ho viete priniesť?',
+      suggestedResponse: 'Dobrý deň, potrebujem vymeniť brzdy',
       audioUrl: './audio/automechanik.mp3',
       contextNote: 'Zemitý hovor z dielne s hlukom v pozadí'
     },

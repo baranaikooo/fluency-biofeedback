@@ -20,22 +20,22 @@ const REAL_AUDIO_SCENARIOS = [
   {
     caller: "Kuriér (Balík)",
     audioUrl: "./audio/courier.mp3",
-    fallbackPrompt: "Dobrý deň, mám tu pre vás zásielku, s kým hovorím?"
+    fallbackPrompt: "Dobrý deň, tu je kuriér Packeta. Stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?"
   },
   {
     caller: "Pokladňa / Obchod",
     audioUrl: "./audio/cashier.mp3",
-    fallbackPrompt: "Dobrý deň, budete platiť v hotovosti alebo kartou?"
+    fallbackPrompt: "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?"
   },
   {
     caller: "Lekár / Ambulancia",
     audioUrl: "./audio/doctor.mp3",
-    fallbackPrompt: "Prosím, pri telefóne, povedzte mi vaše celé meno."
+    fallbackPrompt: "Dobrý, kvôli čomu ste prišli? A vaše meno poprosím ešte."
   },
   {
     caller: "Automechanik / Servis",
     audioUrl: "./audio/automechanik.mp3",
-    fallbackPrompt: "Haló, tu je servis, počujeme sa? Kto volá?"
+    fallbackPrompt: "Autoservis, prosím? Čo presne sa stalo s vaším autom a kedy ho viete priniesť?"
   }
 ];
 
