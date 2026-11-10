@@ -18,6 +18,7 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        registerPlugin(GlideUpdatesPlugin.class);
         super.onCreate(savedInstanceState);
 
         // 1. Vyžiadanie systémového oprávnenia pre mikrofón a kameru pri štarte aplikácie

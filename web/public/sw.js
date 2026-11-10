@@ -1,4 +1,4 @@
-const CACHE = "glide-light-v3";
+const CACHE = "glide-light-v4";
 const ASSETS = [
   "/",
   "/manifest.json",
@@ -12,6 +12,7 @@ const ASSETS = [
   "/engine/interface.js",
   "/engine/supabase-auth.js",
   "/engine/lifecycle.js",
+  "/engine/updates.js",
   "/audio/courier.mp3",
   "/audio/cashier.mp3",
   "/audio/doctor.mp3",
