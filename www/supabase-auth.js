@@ -675,10 +675,38 @@
     const welcomeBtnGoogle = document.getElementById('welcomeBtnGoogle');
     const welcomeSubmitBtn = document.getElementById('welcomeSubmitBtn');
     const welcomeGuestBtn = document.getElementById('welcomeGuestBtn');
+    const welcomeStartDiagBtn = document.getElementById('welcomeStartDiagBtn');
+    const welcomeToggleAuthBtn = document.getElementById('welcomeToggleAuthBtn');
+    const welcomeAuthCardCollapse = document.getElementById('welcomeAuthCardCollapse');
     const headerProfileBtn = document.getElementById('headerProfileBtn');
     const btnLogout = document.getElementById('btnLogout');
     const reopenDiagnosticBtn = document.getElementById('reopenDiagnosticBtn');
     const openAuthModalFromTelemetryBtn = document.getElementById('openAuthModalFromTelemetryBtn');
+
+    // Štart diagnostiky z Onboardingu
+    if (welcomeStartDiagBtn) {
+      welcomeStartDiagBtn.addEventListener('click', () => {
+        sessionStorage.setItem('fl_guest_mode', '1');
+        showDiagnosticScreen(true);
+        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+          duoSfx.playTone(520, 'sine', 0.08, 0.12);
+        }
+      });
+    }
+
+    // Prepínanie prihlasovacieho formulára
+    if (welcomeToggleAuthBtn && welcomeAuthCardCollapse) {
+      welcomeToggleAuthBtn.addEventListener('click', () => {
+        const isHidden = welcomeAuthCardCollapse.style.display === 'none';
+        welcomeAuthCardCollapse.style.display = isHidden ? 'block' : 'none';
+        welcomeToggleAuthBtn.innerHTML = isHidden
+          ? '<span>✕ Skryť prihlasovací formulár</span>'
+          : '<span>🔑 Už máš účet? Prihlásiť sa</span>';
+        if (isHidden) {
+          welcomeAuthCardCollapse.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
 
     // Google Sign-In
     if (welcomeBtnGoogle) {

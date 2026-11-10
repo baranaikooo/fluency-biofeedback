@@ -72,50 +72,90 @@
 <div class="welcome-auth-overlay" id="welcomeAuthOverlay" style="display:none;">
   <div class="welcome-auth-modal">
 
-    <!-- KROK 1: PRIHLÁSENIE / REGISTRÁCIA -->
+    <!-- KROK 1: VELA SERENE ONBOARDING & VSTUP DO APLIKÁCIE -->
     <div id="welcomeAuthBox">
-      <!-- Branding & Title -->
-      <div class="welcome-hero">
-        <div class="welcome-logo-badge">
-          <span class="vela-soundwave-logo welcome-sw-lg">
-            <span class="sw-col c1"></span>
-            <span class="sw-col c2"></span>
-            <span class="sw-col c3"></span>
-          </span>
+      <!-- Brand & Hero Welcome -->
+      <div class="vela-welcome-hero">
+        <div class="vela-soundwave-logo welcome-sw-lg">
+          <span class="sw-col c1"></span>
+          <span class="sw-col c2"></span>
+          <span class="sw-col c3"></span>
         </div>
-        <h1 class="welcome-title">glide</h1>
-        <p class="welcome-tagline">Tvoj upokojujúci priestor pre plynulý hlas, neuro-tréning a sluchový biofeedback.</p>
+        <div class="welcome-brand-name">glide</div>
+        <span class="welcome-overline">TVOJ BEZPEČNÝ PRIESTOR PRE REČ</span>
+        <h1 class="welcome-hero-headline">Dýchaj voľne. Hovor s istotou.</h1>
+        <p class="welcome-hero-sub">Vedecký rečový biofeedback, upokojujúci sluchový asistent DAF a neuro-tréning mäkkého nábehu hlasu. Žiadny zhon, hodnotenie ani stres.</p>
+      </div>
 
-        <div class="welcome-features-grid">
-          <div class="wf-item">
-            <span class="wf-icon">🎧</span>
-            <div class="wf-text">
-              <strong>DAF & FAF</strong>
-              <span>Sluchová spätná väzba</span>
-            </div>
+      <!-- Concentric Breathing Stage (Ilustrácia z Figmy) -->
+      <div class="welcome-breathing-stage" id="welcomeBreathingStage">
+        <div class="wb-circle green"></div>
+        <div class="wb-circle peach"></div>
+        <div class="wb-rings">
+          <svg viewBox="0 0 200 120" class="wb-rings-svg">
+            <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(109, 84, 181, 0.15)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <circle cx="100" cy="100" r="65" fill="none" stroke="rgba(109, 84, 181, 0.12)" stroke-width="1.2"/>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(109, 84, 181, 0.08)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="wb-capsule">
+          <span class="wb-capsule-sub" id="wbBreathLabel">Nádych</span>
+          <span class="wb-capsule-num" id="wbBreathNum">4</span>
+          <span class="wb-capsule-unit">sekundy</span>
+        </div>
+      </div>
+
+      <!-- 3 Piliere plynulosti (Vela Piliere) -->
+      <div class="welcome-pillars-list">
+        <div class="pillar-card">
+          <span class="pillar-icon">🫁</span>
+          <div class="pillar-content">
+            <div class="pillar-title">Mäkký hlasivkový nábeh</div>
+            <div class="pillar-desc">Okamžitý biofeedback ťa naučí uvoľniť hlasivkový kŕč a začať reč jemným výdychovým prúdom.</div>
           </div>
-          <div class="wf-item">
-            <span class="wf-icon">🎯</span>
-            <div class="wf-text">
-              <strong>5 Svetov / 25 Úrovní</strong>
-              <span>Neuro-tréning nábehu</span>
-            </div>
+        </div>
+
+        <div class="pillar-card">
+          <span class="pillar-icon">🎧</span>
+          <div class="pillar-content">
+            <div class="pillar-title">Sluchový asistent DAF & FAF</div>
+            <div class="pillar-desc">Akustická spätná väzba s oneskorením a posunom tónu preukázateľne redukuje bloky a spomaľuje tempo.</div>
           </div>
-          <div class="wf-item">
-            <span class="wf-icon">☁️</span>
-            <div class="wf-text">
-              <strong>Cloud Záloha</strong>
-              <span>Ukladanie sérií & XP</span>
-            </div>
+        </div>
+
+        <div class="pillar-card">
+          <span class="pillar-icon">🗺️</span>
+          <div class="pillar-content">
+            <div class="pillar-title">5 Svetov & Neuro-profil</div>
+            <div class="pillar-desc">Personalizovaná cesta od jednotlivých hlások cez bežné nákupy až po reálne telefonáty.</div>
           </div>
         </div>
       </div>
 
-      <!-- Auth Card -->
-      <div class="welcome-auth-card">
+      <!-- Akcie pre používateľa -->
+      <div class="welcome-actions-container">
+        <!-- Hlavné CTA tlačidlo: Spustiť diagnostiku -->
+        <button class="vela-cta-pill welcome-main-btn" id="welcomeStartDiagBtn" type="button">
+          <span>Začať osobnú diagnostiku</span>
+          <span class="cta-arrow-circle">→</span>
+        </button>
+
+        <!-- Sekundárna akcia: Prepnutie prihlásenia -->
+        <button class="welcome-toggle-auth-btn" id="welcomeToggleAuthBtn" type="button">
+          <span>🔑 Už máš účet? Prihlásiť sa</span>
+        </button>
+
+        <!-- Hosťovský vstup priamo do aplikácie -->
+        <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
+          <span>👤 Vstúpiť bez prihlásenia (Lokálny režim)</span>
+        </button>
+      </div>
+
+      <!-- Zbaliteľná prihlasovacia / registračná karta -->
+      <div class="welcome-auth-card" id="welcomeAuthCardCollapse" style="display:none; margin-top: 14px;">
         <div class="welcome-auth-header">
-          <h2 class="welcome-auth-heading">Vstup do aplikácie</h2>
-          <p class="welcome-auth-sub">Prihlás sa jedným klikom cez Google alebo rýchlou registráciou cez email.</p>
+          <h2 class="welcome-auth-heading">Prihlásenie & Cloud synchronizácia</h2>
+          <p class="welcome-auth-sub">Ukladaj si svoje série, XP body a históriu na všetkých svojich zariadeniach.</p>
         </div>
 
         <!-- Google Sign-in 1-Click -->
@@ -138,7 +178,7 @@
         <div class="welcome-auth-form">
           <div class="auth-field-group">
             <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
-            <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Peter Novák" autocomplete="name" />
+            <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Alain Baraňai" autocomplete="name" />
           </div>
 
           <div class="auth-field-group">
@@ -153,15 +193,8 @@
 
           <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
 
-          <button class="btn-3d green full" id="welcomeSubmitBtn" type="button">
-            <span id="welcomeSubmitText">🚀 Pokračovať (Prihlásiť / Zaregistrovať)</span>
-          </button>
-        </div>
-
-        <!-- Guest bypass -->
-        <div class="welcome-guest-row">
-          <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
-            <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
+          <button class="vela-cta-pill full-width" id="welcomeSubmitBtn" type="button" style="width:100%; justify-content:center; margin-top:8px;">
+            <span id="welcomeSubmitText">🚀 Prihlásiť / Zaregistrovať</span>
           </button>
         </div>
       </div>
@@ -400,7 +433,7 @@
         <!-- Rank Odznak -->
         <div class="rank-badge" id="hudRankBadge" title="Tvoja aktuálna úroveň plynulosti">
           <span class="rank-icon">👑</span>
-          <span class="rank-title-short" id="rankTitle">Novice</span>
+          <span class="rank-title-short" id="rankTitle">Začiatočník</span>
         </div>
 
         <!-- Profil Tlačidlo (avatar like 'AM' in Vela) -->
@@ -746,7 +779,7 @@
                 <input type="text" id="telemetryNameInput" value="Peter Novák" placeholder="Tvoje celé meno..." />
                 <button class="btn-3d blue sm" id="saveTelemetryNameBtn">Uložiť</button>
               </div>
-              <div class="profile-rank-tag" id="telemetryRankTitle">Rank 1: Resonator</div>
+              <div class="profile-rank-tag" id="telemetryRankTitle">Úroveň 1: Začiatočník</div>
             </div>
           </div>
 

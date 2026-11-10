@@ -3936,26 +3936,13 @@ canvas#envelopeCanvas {
   }
 }
 
-.welcome-hero {
+/* Vela Welcome Hero */
+.vela-welcome-hero {
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6px 0 2px;
-}
-
-.welcome-logo-badge {
-  position: relative;
-  width: 64px;
-  height: 64px;
-  background: var(--brand-purple-light);
-  border: 1px solid rgba(109, 84, 181, 0.18);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 24px rgba(109, 84, 181, 0.12);
-  margin-bottom: 12px;
+  padding: 8px 4px 2px;
 }
 
 .welcome-sw-lg .sw-col {
@@ -3967,66 +3954,216 @@ canvas#envelopeCanvas {
 .welcome-sw-lg .c2 { height: 28px; }
 .welcome-sw-lg .c3 { height: 20px; }
 
-.welcome-logo-icon {
-  font-size: 2.2rem;
-  line-height: 1;
+.welcome-brand-name {
+  font-family: var(--font-sans);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.4px;
+  margin-top: 6px;
 }
 
-.welcome-title {
+.welcome-overline {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-overline);
+  margin-top: 10px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.welcome-hero-headline {
   font-family: var(--font-serif);
-  font-size: 2.25rem;
+  font-size: 2.15rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--text-main);
-  margin: 0;
-  line-height: 1.15;
+  margin: 2px 0 8px 0;
+  line-height: 1.16;
 }
 
-.welcome-tagline {
-  font-size: 0.9rem;
+.welcome-hero-sub {
+  font-size: 0.88rem;
   color: var(--text-muted);
   line-height: 1.45;
-  margin: 6px 0 16px 0;
-  max-width: 380px;
+  margin: 0 auto 12px auto;
+  max-width: 95%;
 }
 
-.welcome-features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+/* Concentric Breathing Stage (Hero Visual) */
+.welcome-breathing-stage {
+  position: relative;
   width: 100%;
-  margin-top: 2px;
+  height: 140px;
+  margin: 2px 0 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.wf-item {
-  background: #ffffff;
-  border: 1px solid var(--surface-border);
-  border-radius: 16px;
-  padding: 12px 8px;
+.wb-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(1px);
+}
+.wb-circle.green {
+  left: 8%;
+  width: 100px;
+  height: 100px;
+  background: #d4e7a5;
+  opacity: 0.85;
+}
+.wb-circle.peach {
+  right: 10%;
+  width: 115px;
+  height: 115px;
+  background: #fdbfa6;
+  opacity: 0.85;
+}
+
+.wb-rings {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.wb-rings-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.wb-capsule {
+  position: relative;
+  z-index: 2;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(109, 84, 181, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: 4px;
-  box-shadow: 0 4px 12px rgba(30, 27, 46, 0.04);
+  justify-content: center;
+  animation: breathingPulse 6s ease-in-out infinite;
 }
 
-.wf-icon {
-  font-size: 1.35rem;
+.wb-capsule-sub {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  line-height: 1;
+}
+.wb-capsule-num {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.1;
+  margin: 1px 0;
+}
+.wb-capsule-unit {
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  line-height: 1;
 }
 
-.wf-text strong {
-  display: block;
-  font-size: 0.76rem;
+/* 3 Piliere plynulosti */
+.welcome-pillars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.pillar-card {
+  background: #ffffff;
+  border: 1px solid var(--surface-border);
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(30, 27, 46, 0.04);
+}
+
+.pillar-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pillar-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pillar-title {
+  font-size: 0.92rem;
   font-weight: 800;
   color: var(--text-main);
+  line-height: 1.25;
+  margin-bottom: 2px;
 }
 
-.wf-text span {
-  display: block;
-  font-size: 0.66rem;
+.pillar-desc {
+  font-size: 0.8rem;
   color: var(--text-muted);
-  margin-top: 1px;
+  line-height: 1.4;
+}
+
+/* Akcie pre používateľa */
+.welcome-actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.welcome-main-btn {
+  width: 100% !important;
+  max-width: 380px;
+  justify-content: center !important;
+  padding: 14px 24px !important;
+  font-size: 1.02rem !important;
+}
+
+.welcome-toggle-auth-btn {
+  background: #ffffff;
+  border: 1.5px solid var(--surface-border);
+  border-radius: 9999px;
+  color: var(--text-main);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  max-width: 380px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(30, 27, 46, 0.04);
+}
+.welcome-toggle-auth-btn:hover {
+  background: var(--brand-purple-light);
+  border-color: var(--brand-purple);
+  color: var(--brand-purple);
+}
+.welcome-toggle-auth-btn:active {
+  transform: translateY(1px);
 }
 
 .welcome-auth-card {

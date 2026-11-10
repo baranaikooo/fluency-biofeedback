@@ -626,11 +626,11 @@ class DuoStateManager {
 
   getRank() {
     const xp = this.state.xp;
-    if (xp < 250) return { title: "Novice", level: 1 };
-    if (xp < 750) return { title: "Resonator", level: 2 };
-    if (xp < 1600) return { title: "Flow Shaper", level: 3 };
-    if (xp < 3000) return { title: "Pacemaker", level: 4 };
-    return { title: "Unblockable", level: 5 };
+    if (xp < 250) return { title: "Začiatočník", level: 1 };
+    if (xp < 750) return { title: "Rezonátor", level: 2 };
+    if (xp < 1600) return { title: "Rečník plynulosti", level: 3 };
+    if (xp < 3000) return { title: "Majster rytmu", level: 4 };
+    return { title: "Nezastaviteľný rečník", level: 5 };
   }
 
   renderHud() {
@@ -657,7 +657,7 @@ class DuoStateManager {
 
     if (nameInput) nameInput.value = this.state.userName;
     const rank = this.getRank();
-    if (rankTitle) rankTitle.textContent = `Rank ${rank.level}: ${rank.title}`;
+    if (rankTitle) rankTitle.textContent = `Úroveň ${rank.level}: ${rank.title}`;
     if (xpVal) xpVal.textContent = `${this.state.xp}`;
     if (streakVal) streakVal.textContent = `${this.state.streak} dní 🔥`;
 
@@ -717,7 +717,7 @@ class DuoStateManager {
             </div>
             <div class="h-badge-col">
               <span class="h-status-badge ${item.passed ? (item.isPerfect ? 'perfect' : 'ok') : 'err'}">
-                ${item.passed ? (item.isPerfect ? '🌟 PERFECT' : '✓ OK') : '✕ BLOK'}
+                ${item.passed ? (item.isPerfect ? '🌟 DOKONALÉ' : '✓ SPRÁVNE') : '✕ BLOK'}
               </span>
             </div>
           </div>
@@ -1590,7 +1590,7 @@ class DuoLessonController {
     if (passed) {
       if (isPerfect) {
         duoSfx.playPerfect();
-        if (headEl) headEl.textContent = '🌟 Dokonalý nábeh (PERFECT)!';
+        if (headEl) headEl.textContent = '🌟 Dokonalý mäkký nábeh!';
         if (subEl) subEl.textContent = `Hlasivky naskočili uvoľnene v sweet-spote (VRT ${vrt ? vrt.toFixed(1) : '70'} ms).`;
         if (xpBadge) xpBadge.textContent = '+50 XP';
         duoState.addXp(50);
@@ -1758,10 +1758,13 @@ document.addEventListener('DOMContentLoaded', () => {
   duoPath.render();
   duoState.renderTelemetry();
 
-  // Vela Breathing Capsule Interactive Cycle (Box Breathing)
+  // Vela Breathing Capsule Interactive Cycle (Box Breathing pre Domov aj Onboarding)
   const breathLabel = document.getElementById('stageBreathLabel');
   const breathNum = document.getElementById('stageBreathNum');
-  if (breathLabel && breathNum) {
+  const wbLabel = document.getElementById('wbBreathLabel');
+  const wbNum = document.getElementById('wbBreathNum');
+
+  if (breathLabel || wbLabel) {
     let phase = 0;
     let count = 4;
     const phases = [
@@ -1775,9 +1778,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (count <= 0) {
         phase = (phase + 1) % phases.length;
         count = phases[phase].max;
-        breathLabel.textContent = phases[phase].label;
+        if (breathLabel) breathLabel.textContent = phases[phase].label;
+        if (wbLabel) wbLabel.textContent = phases[phase].label;
       }
-      breathNum.textContent = count;
+      if (breathNum) breathNum.textContent = count;
+      if (wbNum) wbNum.textContent = count;
     }, 1000);
   }
 });
