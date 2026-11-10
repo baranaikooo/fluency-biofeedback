@@ -13,10 +13,13 @@
   h2,
   h3,
   p,
-  button,
-  label,
   strong {
     overflow-wrap: anywhere;
+  }
+  /* Buttons and labels wrap at word boundaries; only a single over-long word may break. */
+  button,
+  label {
+    overflow-wrap: break-word;
   }
 }
 
@@ -331,4 +334,67 @@
   .tstat-box {
     padding: 12px;
   }
+}
+
+/* Questionnaire: same light surfaces as the rest of the app. */
+.questionnaire-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #4a3baa;
+  background: #ebe7fb;
+  border-color: #d3cbf3;
+}
+.questionnaire-progress {
+  background: #eeebe3;
+}
+.situation-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.situation-btn {
+  background: var(--surface);
+  border-color: var(--surface-border);
+  color: var(--ink);
+  min-width: 0;
+}
+.situation-btn:hover {
+  border-color: #b9ace5;
+  background: #f4f0ff;
+}
+.situation-btn span {
+  flex: 0 0 18px;
+  background: #fff;
+  border-color: #b9ace5;
+}
+.situation-btn.selected {
+  background: #ebe7fb;
+  border-color: var(--purple);
+  color: #4a3baa;
+}
+.situation-btn.selected span {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+}
+@media (max-width: 480px) {
+  .situation-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .situation-btn {
+    padding: 12px 14px;
+  }
+}
+
+.first-name-skip {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.first-name-skip:hover {
+  background: #eeebe3;
 }

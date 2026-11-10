@@ -1594,12 +1594,6 @@ You might need to use a local HTTP server (instead of file://): https://react.de
 
       <!-- Minimalistické tréningové javisko počas reči -->
       <div class="lesson-stage">
-        <!-- Video zrkadlo kamery (pre Boss fighty a očný kontakt) -->
-        <video id="cameraFeed" autoplay playsinline muted></video>
-        <div class="eye-contact-prompt" id="interlocutorPrompt">
-          👀 Udrž očný kontakt s kamerou!
-        </div>
-
         <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->
         <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none">
           <div class="ld-speaker-badge">
@@ -1617,22 +1611,6 @@ You might need to use a local HTTP server (instead of file://): https://react.de
 
         <!-- Kontext lekcie -->
         <div class="lesson-context-badge" id="lessonContextBadge">Svet 1 • Cvičenie 1 z 4</div>
-
-        <!-- Živý indikátor slúchadiel DAF + FAF -->
-        <div
-          id="headphoneLiveIndicator"
-          class="headphone-live-badge off"
-          title="Klikni pre zapnutie alebo vypnutie zvuku v slúchadlách"
-        >
-          <span class="hlb-icon">🎧</span>
-          <span class="hlb-text" id="headphoneStatusText"
-            >DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)</span
-          >
-          <span id="micStatus" class="hud-sub-label" style="display: none"
-            >Mikrofón pripravený</span
-          >
-          <span class="hlb-dot"></span>
-        </div>
 
         <!-- Veľký dominantný terč slova -->
         <div class="target-word-container">
@@ -1660,27 +1638,15 @@ You might need to use a local HTTP server (instead of file://): https://react.de
 
         <!-- Ovládacie tlačidlá lekcie -->
         <div class="lesson-controls" id="lessonControls">
-          <button id="calibrateBtn" class="btn-3d amber sm">1. Kalibrovať ticho</button>
           <button id="startBtn" class="btn-3d green md">▶ Spustiť slovo (Pacer)</button>
         </div>
 
         <!-- Prepínače stresorov -->
         <div class="lesson-toggles">
-          <label class="toggle-pill" title="Zapne webkameru do pozadia pre nácvik očného kontaktu">
-            <input type="checkbox" id="camToggle" />
-            <span>📷 Očný kontakt</span>
-          </label>
           <label class="toggle-pill" title="Použiť reálne MP3 hlasy zo štúdia (/audio)">
             <input type="checkbox" id="voicePromptToggle" checked />
             <span>🔊 Reálny hlas (/audio)</span>
           </label>
-          <button
-            id="cardioBtn"
-            class="btn-3d purple sm"
-            style="padding: 6px 12px; font-size: 0.78rem"
-          >
-            ⚡ Tepový šok (30s)
-          </button>
         </div>
 
         <!-- Kompatibilita pre dsp-core.js -->
@@ -2362,7 +2328,6 @@ You might need to use a local HTTP server (instead of file://): https://react.de
                   </h3>
                   <p class="sc-summary">
                     Postupné vrstvenie psychofyziologickej záťaže od samohlások po prepadové hovory
-                    s kamerou
                   </p>
                 </div>
               </div>
@@ -2377,7 +2342,6 @@ You might need to use a local HTTP server (instead of file://): https://react.de
                 <span class="sc-tag">Stress Inoculation Training</span>
                 <span class="sc-tag">Van Riper Therapy</span>
                 <span class="sc-tag">Reakčný limit 550 ms</span>
-                <span class="sc-tag">Kamerový očný kontakt</span>
               </div>
 
               <div class="sc-section">

@@ -323,6 +323,7 @@
       if (typeof duoSfx !== "undefined" && duoSfx.playLevelComplete) {
         duoSfx.playLevelComplete();
       }
+      window.askFirstName?.();
     });
   }
 

@@ -292,9 +292,19 @@
           },
         });
 
-        if (signUpErr) throw signUpErr;
+        if (signUpErr) {
+          if (/already registered|already exists/i.test(signUpErr.message || "")) {
+            setFeedback(
+              "Tento email už má účet, ale heslo nesedí. Skús iné heslo.",
+              false,
+              targetFeedbackId,
+            );
+            return;
+          }
+          throw signUpErr;
+        }
 
-        if (signUpData.user) {
+        if (signUpData.user && signUpData.session) {
           currentUser = signUpData.user;
           sessionStorage.removeItem("fl_guest_mode");
           setFeedback("Účet úspešne vytvorený!", true, targetFeedbackId);
@@ -321,6 +331,11 @@
 
     hideWelcomeOverlay();
     updateUI();
+
+    // Dotazník nasleduje hneď po prihlásení, ak ho tento účet ešte nevyplnil.
+    if (!isDiagnosticCompleted()) {
+      showDiagnosticScreen(true);
+    }
   }
 
   function isDiagnosticCompleted() {
@@ -429,14 +444,23 @@
           updated_at: new Date().toISOString(),
         };
 
-        const { error } = await client.from("profiles").update(payload).eq("id", currentUser.id);
-
-        if (!error) {
-          const syncBadge = document.getElementById("profileSyncText");
-          if (syncBadge) {
-            syncBadge.textContent = "Cloud synchronizácia aktívna (uložené)";
-          }
+        // update() nehlási chybu, ak riadok profilu ešte neexistuje, preto ho vtedy vytvoríme.
+        let { data: updated, error } = await client
+          .from("profiles")
+          .update(payload)
+          .eq("id", currentUser.id)
+          .select("id");
+        if (!error && (!updated || updated.length === 0)) {
+          ({ error } = await client.from("profiles").insert({ id: currentUser.id, ...payload }));
         }
+
+        const syncBadge = document.getElementById("profileSyncText");
+        if (syncBadge) {
+          syncBadge.textContent = error
+            ? "Cloud synchronizácia zlyhala, progres je uložený v zariadení"
+            : "Cloud synchronizácia aktívna (uložené)";
+        }
+        if (error) console.warn("[Supabase Sync] Uloženie zlyhalo:", error.message);
       } catch (err) {
         console.warn("[Supabase Sync] Výnimka pri synchronizácii:", err);
       }
@@ -754,6 +778,7 @@
         sessionStorage.setItem("fl_guest_mode", "1");
         hideWelcomeOverlay();
         updateUI();
+        if (!isDiagnosticCompleted()) showDiagnosticScreen(true);
       });
     }
 
@@ -902,6 +927,11 @@
         await fetchProfile(currentUser);
       } else {
         sessionStorage.setItem("fl_guest_mode", "1");
+        // Úvodná obrazovka sa ukáže len pri úplne prvom spustení; dá sa zavrieť.
+        if (!localStorage.getItem("fl_welcome_seen") && !isDiagnosticCompleted()) {
+          localStorage.setItem("fl_welcome_seen", "1");
+          showWelcomeOverlay();
+        }
       }
       updateUI();
     } catch (err) {

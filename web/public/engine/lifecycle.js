@@ -19,15 +19,21 @@
     });
   }
 
-  // Ask once at the entrance, never as a form on the journey screen.
-  if (!localStorage.getItem("fl_custom_name")?.trim()) {
+  // The first name is asked once, right after the questionnaire is completed (never on entry).
+  window.askFirstName = function () {
+    if (localStorage.getItem("fl_custom_name")?.trim()) return;
+    if (document.getElementById("firstNameDialog")) return;
     const dialog = document.createElement("dialog");
     dialog.id = "firstNameDialog";
     dialog.className = "first-name-dialog";
     dialog.setAttribute("aria-labelledby", "firstNameTitle");
     const form = document.createElement("form");
     form.innerHTML =
-      '<span class="section-kicker">VITAJ V GLIDE</span><h1 id="firstNameTitle">Ako ťa môžem osloviť?</h1><p>Stačí tvoje krstné meno.</p><label for="personalName">Krstné meno</label><input id="personalName" placeholder="Tvoje meno" autocomplete="given-name" maxlength="32" required /><button class="btn-primary" type="submit">Pokračovať</button>';
+      '<span class="section-kicker">VITAJ V GLIDE</span><h1 id="firstNameTitle">Ako ťa môžem osloviť?</h1><p>Stačí tvoje krstné meno.</p><label for="personalName">Krstné meno</label><input id="personalName" placeholder="Tvoje meno" autocomplete="given-name" maxlength="32" required /><button class="btn-primary" type="submit">Pokračovať</button><button class="first-name-skip" id="firstNameSkipBtn" type="button">Teraz nie</button>';
+    const close = () => {
+      if (dialog.open) dialog.close();
+      dialog.remove();
+    };
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const input = form.querySelector("input");
@@ -40,15 +46,19 @@
       window.duoState.save();
       window.duoState.renderTelemetry();
       window.fluencyAuth.refreshUI();
-      dialog.close();
-      dialog.remove();
+      close();
     });
-    dialog.addEventListener("cancel", (event) => event.preventDefault());
+    form.querySelector("#firstNameSkipBtn").addEventListener("click", close);
+    dialog.addEventListener("cancel", close);
     dialog.appendChild(form);
     document.body.appendChild(dialog);
-    dialog.showModal();
-    form.querySelector("input").focus();
-  }
+    try {
+      dialog.showModal();
+      form.querySelector("input").focus();
+    } catch (_) {
+      dialog.setAttribute("open", "");
+    }
+  };
   // Keep deeper explanations available, without making every screen an essay.
   document.querySelectorAll(".tab-pane p").forEach((paragraph) => {
     if (paragraph.textContent.trim().length < 180) return;

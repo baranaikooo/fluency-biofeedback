@@ -287,14 +287,13 @@ const WORLDS_DATA = [
       },
       {
         id: "5.4",
-        title: "Boss 4: Očný kontakt + Zvonenie",
-        desc: "Zapnuté zrkadlo kamery! Hovor s kuriérom pri pohľade do objektívu.",
+        title: "Boss 4: Zvonenie od kuriéra",
+        desc: "Záverečný hovor s kuriérom bez prípravy.",
         mode: "ambush",
         scenarioIndex: 0,
         ambushCategory: "kurier",
         words: ["Áno, čakám balík, ďakujem"],
         xp: 100,
-        forceCam: true,
         icon: "👁️",
       },
       {
@@ -1509,17 +1508,14 @@ class DuoLessonController {
     if (hpTxt) hpTxt.textContent = "DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)";
 
     if (typeof setupAudio === "function") {
-      setupAudio().catch((e) => console.warn("Audio auto-init error:", e));
+      setupAudio()
+        .then(() => window.ensureNoiseCalibration?.())
+        .catch((e) => console.warn("Audio auto-init error:", e));
     }
 
     // Nastavenie režimu a kamery
     if (typeof currentMode !== "undefined") {
       currentMode = this.currentLevel.mode || "standard";
-    }
-
-    if (this.currentLevel.forceCam && typeof camToggle !== "undefined" && camToggle) {
-      camToggle.checked = true;
-      camToggle.dispatchEvent(new Event("change"));
     }
 
     this.updateLessonProgress();
@@ -1564,7 +1560,9 @@ class DuoLessonController {
 
     // Okamžitá aktivácia audio potrubia s DAF/FAF odposluchom do slúchadiel
     if (typeof setupAudio === "function") {
-      setupAudio().catch((e) => console.warn("Audio auto-init error:", e));
+      setupAudio()
+        .then(() => window.ensureNoiseCalibration?.())
+        .catch((e) => console.warn("Audio auto-init error:", e));
     }
 
     if (typeof currentMode !== "undefined") {
@@ -1626,7 +1624,7 @@ class DuoLessonController {
 
     if (statusAlertEl) {
       if (typeof isCalibrated !== "undefined" && !isCalibrated) {
-        statusAlertEl.textContent = "Najprv kalibruj ticho v miestnosti (1 sekunda).";
+        statusAlertEl.textContent = "Ticho miestnosti sa zmeria automaticky pri prvom štarte.";
       } else {
         statusAlertEl.textContent = 'Stlač "Spustiť slovo" a nasleduj dychový pacer.';
       }
@@ -1634,10 +1632,8 @@ class DuoLessonController {
 
     this.updateLessonProgress();
 
-    if (typeof isCalibrated !== "undefined" && isCalibrated) {
-      const startBtn = document.getElementById("startBtn");
-      if (startBtn) startBtn.disabled = false;
-    }
+    const startBtn = document.getElementById("startBtn");
+    if (startBtn) startBtn.disabled = false;
   }
 
   handleAttemptResult(result) {
@@ -1798,11 +1794,6 @@ class DuoLessonController {
     // Návrat z celoobrazovkového režimu
     this.exitFocusMode();
 
-    if (typeof camToggle !== "undefined" && camToggle && camToggle.checked) {
-      camToggle.checked = false;
-      camToggle.dispatchEvent(new Event("change"));
-    }
-
     duoPath.render();
     duoState.renderTelemetry();
   }
@@ -1814,11 +1805,6 @@ class DuoLessonController {
         window.abortActiveDspSession();
       }
       this.exitFocusMode();
-
-      if (typeof camToggle !== "undefined" && camToggle && camToggle.checked) {
-        camToggle.checked = false;
-        camToggle.dispatchEvent(new Event("change"));
-      }
     }
   }
 }

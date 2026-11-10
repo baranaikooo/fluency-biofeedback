@@ -17,42 +17,69 @@ async function openApp(page) {
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
 }
 
-test("fresh preview is clickable without an account and optional overlays can be dismissed", async ({
+async function completeQuestionnaire(page) {
+  await page.locator("#qAdultCheck").check();
+  await page.locator("#qConsentCheck").check();
+  await page.locator("#qNextBtn").click();
+  for (let step = 1; step <= 3; step++) {
+    const scales = page.locator(`#qStep${step} .answer-scale`);
+    for (let i = 0; i < (await scales.count()); i++) {
+      await scales.nth(i).locator('input[type="radio"]').nth(2).check();
+    }
+    await page.locator("#qNextBtn").click();
+  }
+  await page.locator("#qNextBtn").click();
+  await page.locator("#qFinishEnterBtn").click();
+}
+
+test("first launch shows the welcome screen, then questionnaire, and only then asks for the name", async ({
   page,
 }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
-  await expect(page.locator("#welcomeAuthOverlay")).toBeHidden();
+  // The welcome screen is first; the name is not asked at entry.
+  await expect(page.locator("#welcomeAuthOverlay")).toBeVisible();
+  await expect(page.locator("#firstNameDialog")).toHaveCount(0);
+  await page.locator("#welcomeGuestBtn").click();
+  await expect(page.locator("#figmaQuestionnaireModal")).toBeVisible();
+  await expect(page.locator("#firstNameDialog")).toHaveCount(0);
+  await completeQuestionnaire(page);
   await expect(page.locator("#figmaQuestionnaireModal")).toBeHidden();
-  await page.locator("#personalName").fill("Nina");
   await expect(page.locator("#firstNameDialog")).toBeVisible();
+  await page.locator("#personalName").fill("Nina");
   await page.getByRole("button", { name: "Pokračovať", exact: true }).click();
   await expect(page.locator("#firstNameDialog")).toHaveCount(0);
   await expect(page.locator("#dailyGreetingHeading")).toHaveText(
     /^(Dobré ráno|Dobrý deň|Dobrý večer), Nina\.$/,
   );
-  await page.locator("#sidebarTabDril").click();
-  await expect(page.locator("#tabDril")).toHaveClass(/active/);
-  await page.locator("#wordInput").fill("Objednávka");
-  await page.locator("#wordInput").press("Tab");
   expect(await page.evaluate(() => localStorage.getItem("fl_custom_name"))).toBe("Nina");
-  await page.locator("#sidebarProfileBtn").click();
-  await expect(page.locator("#welcomeAuthOverlay")).toBeVisible();
-  await page.locator("#closeAuthBtn").click();
-  await page.locator("#sidebarTabTelemetria").click();
-  await page.locator("#reopenDiagnosticBtn").click();
-  await expect(page.locator("#figmaQuestionnaireModal")).toBeVisible();
-  await page.locator("#closeQuestionnaireBtn").click();
-  await page.locator("#sidebarTabAsistent").click();
-  await expect(page.locator("#tabAsistent")).toHaveClass(/active/);
+  // Reload: nothing blocks the app any more.
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
-  await expect(page.locator("#dailyGreetingHeading")).toHaveText(
-    /^(Dobré ráno|Dobrý deň|Dobrý večer), Nina\.$/,
-  );
+  await expect(page.locator("#welcomeAuthOverlay")).toBeHidden();
   await expect(page.locator("#figmaQuestionnaireModal")).toBeHidden();
   await expect(page.locator("#firstNameDialog")).toHaveCount(0);
   await expect(page.locator("#tabCesta #personalName")).toHaveCount(0);
+});
+
+test("the welcome screen and name prompt never block the app", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
+  await expect(page.locator("#welcomeAuthOverlay")).toBeVisible();
+  await page.locator("#closeAuthBtn").click();
+  await page.locator("#sidebarTabDril").click();
+  await expect(page.locator("#tabDril")).toHaveClass(/active/);
+  await page.locator("#wordInput").fill("Objednávka");
+  await page.locator("#sidebarTabTelemetria").click();
+  await page.locator("#reopenDiagnosticBtn").click();
+  await expect(page.locator("#figmaQuestionnaireModal")).toBeVisible();
+  await completeQuestionnaire(page);
+  await expect(page.locator("#firstNameDialog")).toBeVisible();
+  await page.locator("#firstNameSkipBtn").click();
+  await expect(page.locator("#firstNameDialog")).toHaveCount(0);
+  await page.locator("#sidebarTabAsistent").click();
+  await expect(page.locator("#tabAsistent")).toHaveClass(/active/);
+  await expect(page.locator("#cardioBtn")).toHaveCount(0);
 });
 
 test("React remount keeps the engine-owned DOM and controls alive", async ({ page }) => {
@@ -266,7 +293,7 @@ test("microphone denial never marks assistant active", async ({ page }) => {
   await expect(page.locator("#assistantToggle")).not.toHaveClass(/active/);
 });
 
-test("lesson feedback records attempts, three successes master a vault word, camera stops on exit", async ({
+test("lesson feedback records attempts, three successes master a vault word and silence calibration persists", async ({
   page,
 }) => {
   const errors = [];
@@ -277,13 +304,15 @@ test("lesson feedback records attempts, three successes master a vault word, cam
   await page.locator("#wordInput").fill("Peter Novák");
   await page.locator("#launchSosDrillBtn").click();
   await expect(page.locator("#lessonScreen")).toBeVisible();
-  await page.locator("#camToggle").check();
-  await expect
-    .poll(() => page.evaluate(() => !!document.querySelector("#cameraFeed").srcObject))
-    .toBe(true);
+  for (const id of ["camToggle", "cameraFeed", "headphoneLiveIndicator", "calibrateBtn"]) {
+    await expect(page.locator("#" + id)).toHaveCount(0);
+  }
+  // The silence calibration belongs to the app session, not to each lesson.
   await page.evaluate(() => {
-    window.cameraTracks = document.querySelector("#cameraFeed").srcObject.getTracks();
+    isCalibrated = true;
+    window.releaseGlideAudio();
   });
+  expect(await page.evaluate(() => isCalibrated)).toBe(true);
   // Feed deterministic analysis events to verify the lesson state machine separately from acoustic tests.
   for (let i = 0; i < 3; i++) {
     await page.evaluate(() =>
@@ -305,9 +334,7 @@ test("lesson feedback records attempts, three successes master a vault word, cam
   expect(data.vault.find((item) => item.word === "Peter Novák").isMastered).toBe(true);
   await page.locator("#celebrationBackBtn").click();
   await expect(page.locator("#lessonScreen")).toBeHidden();
-  expect(
-    await page.evaluate(() => window.cameraTracks.every((track) => track.readyState === "ended")),
-  ).toBe(true);
+  expect(await page.evaluate(() => isCalibrated)).toBe(true);
   expect(errors).toEqual([]);
 });
 
@@ -438,4 +465,86 @@ test("telemetry only includes requested training cards and drill controls stay o
   await page.locator("#vFilterTraining").click();
   await expect(page.locator("#vFilterTraining")).toHaveClass(/active/);
   expect(errors).toEqual([]);
+});
+
+test("sign-up is followed by the questionnaire and the profile row is created in the cloud", async ({
+  page,
+}) => {
+  const requests = [];
+  const user = {
+    id: "11111111-1111-4111-8111-111111111111",
+    aud: "authenticated",
+    role: "authenticated",
+    email: "nina@example.com",
+    user_metadata: { full_name: "Nina" },
+    app_metadata: {},
+    created_at: new Date().toISOString(),
+  };
+  const session = {
+    access_token: "a.b.c",
+    refresh_token: "r",
+    token_type: "bearer",
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    user,
+  };
+  await page.route("**/*.supabase.co/**", async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const reply = (status, body) =>
+      route.fulfill({
+        status,
+        contentType: "application/json",
+        headers: { "access-control-allow-origin": "*" },
+        body: JSON.stringify(body),
+      });
+    if (request.method() === "OPTIONS") {
+      return route.fulfill({
+        status: 204,
+        headers: {
+          "access-control-allow-origin": "*",
+          "access-control-allow-headers": "*",
+          "access-control-allow-methods": "*",
+        },
+      });
+    }
+    requests.push(`${request.method()} ${url.pathname}`);
+    if (url.pathname.endsWith("/token"))
+      return reply(400, { code: "invalid_credentials", message: "Invalid login credentials" });
+    if (url.pathname.endsWith("/signup")) return reply(200, session);
+    if (url.pathname.includes("/rest/v1/profiles")) {
+      // The row does not exist yet: reads and updates match nothing, the insert creates it.
+      return reply(request.method() === "POST" ? 201 : 200, []);
+    }
+    return reply(200, {});
+  });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
+  await expect(page.locator("#welcomeAuthOverlay")).toBeVisible();
+  await page.locator("#welcomeEmailInput").fill("nina@example.com");
+  await page.locator("#welcomePasswordInput").fill("secret12");
+  await page.locator("#welcomeSubmitBtn").click();
+  await expect(page.locator("#welcomeAuthOverlay")).toBeHidden();
+  await expect(page.locator("#figmaQuestionnaireModal")).toBeVisible();
+  await page.locator("#qAdultCheck").check();
+  await page.locator("#qConsentCheck").check();
+  await page.locator("#qNextBtn").click();
+  for (let step = 1; step <= 3; step++) {
+    const scales = page.locator(`#qStep${step} .answer-scale`);
+    for (let i = 0; i < (await scales.count()); i++) {
+      await scales.nth(i).locator('input[type="radio"]').nth(2).check();
+    }
+    await page.locator("#qNextBtn").click();
+  }
+  await page.locator(".motor-profile summary").click();
+  for (const key of ["laryngeal", "plosives", "prolongation", "clonic", "social"]) {
+    await page.locator(`[data-profile-score="${key}"]`).selectOption("2");
+  }
+  await page.locator("#qNextBtn").click();
+  await page.locator("#qFinishEnterBtn").click();
+  await expect(page.locator("#figmaQuestionnaireModal")).toBeHidden();
+  // The account already supplies the name, so it is not asked again.
+  await expect(page.locator("#firstNameDialog")).toHaveCount(0);
+  await expect.poll(() => requests.includes("POST /rest/v1/profiles")).toBe(true);
+  expect(requests).toContain("PATCH /rest/v1/profiles");
 });

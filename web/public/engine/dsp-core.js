@@ -198,14 +198,12 @@ let isCalibrated = false; // Vyžaduje 1s tichú kalibráciu pred štartom pokus
 let currentMode = "standard";
 let ambushTimeout = null;
 let ringInterval = null;
-let camStream = null;
 let activeAudioPlayer = null;
 let activeCaptureHandle = null;
 let activeFinishEarlyCallback = null;
 let audioSetupPromise = null;
 let audioGeneration = 0;
 let cancelCalibration = null;
-let cardioTimer = null;
 const dspTimeouts = new Set();
 function scheduleDspTimeout(callback, delay) {
   const handle = setTimeout(() => {
@@ -220,16 +218,11 @@ function scheduleDspTimeout(callback, delay) {
 const wordInput = document.getElementById("wordInput");
 const targetWord = document.getElementById("targetWord");
 const targetMeta = document.getElementById("targetMeta");
-const calibrateBtn = document.getElementById("calibrateBtn");
 const startBtn = document.getElementById("startBtn");
 const statusAlert = document.getElementById("statusAlert");
 const pacerCircle = document.getElementById("pacerCircle");
 const matrixPanel = document.getElementById("matrixPanel");
-const camToggle = document.getElementById("camToggle");
 const voicePromptToggle = document.getElementById("voicePromptToggle");
-const cameraFeed = document.getElementById("cameraFeed");
-const interlocutorPrompt = document.getElementById("interlocutorPrompt");
-const cardioBtn = document.getElementById("cardioBtn");
 const callOverlay = document.getElementById("callOverlay");
 const callerNameEl = document.getElementById("callerName");
 const answerCallBtn = document.getElementById("answerCallBtn");
@@ -291,65 +284,6 @@ if (pacerCircle) {
     if (activeFinishEarlyCallback) {
       activeFinishEarlyCallback();
     }
-  });
-}
-
-// Kamera
-if (camToggle) {
-  camToggle.addEventListener("change", async () => {
-    if (camToggle.checked) {
-      try {
-        const generation = audioGeneration;
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
-          audio: false,
-        });
-        if (generation !== audioGeneration || !camToggle.checked) {
-          stream.getTracks().forEach((track) => track.stop());
-          return;
-        }
-        camStream = stream;
-        if (cameraFeed) {
-          cameraFeed.srcObject = camStream;
-          cameraFeed.classList.add("active");
-        }
-        if (interlocutorPrompt) interlocutorPrompt.classList.add("visible");
-      } catch (err) {
-        if (statusAlert) statusAlert.textContent = "Nepodarilo sa zapnúť kameru: " + err.message;
-        camToggle.checked = false;
-      }
-    } else {
-      if (camStream) camStream.getTracks().forEach((t) => t.stop());
-      if (cameraFeed) cameraFeed.classList.remove("active");
-      if (interlocutorPrompt) interlocutorPrompt.classList.remove("visible");
-    }
-  });
-}
-
-// Interoceptívny stresor
-if (cardioBtn) {
-  cardioBtn.addEventListener("click", () => {
-    let sec = 30;
-    cardioBtn.disabled = true;
-    if (statusAlert)
-      statusAlert.textContent =
-        "⚡ Zdvihni tep! Rob rýchle kľuky alebo drepy, kým nevyprší časovač...";
-    cardioTimer = setInterval(() => {
-      sec--;
-      if (cardioBtn) cardioBtn.textContent = `⚡ Tepový šok (${sec}s)`;
-      if (sec <= 0) {
-        clearInterval(cardioTimer);
-        cardioTimer = null;
-        if (cardioBtn) {
-          cardioBtn.disabled = false;
-          cardioBtn.textContent = "⚡ Tepový šok (30s)";
-        }
-        if (statusAlert)
-          statusAlert.textContent =
-            "🔥 Tep je hore! OKAMŽITE stlač Štart a trénuj mäkký nábeh so zadýchaním!";
-        playBeep(660, 0.25);
-      }
-    }, 1000);
   });
 }
 
@@ -503,16 +437,10 @@ window.releaseGlideAudio = function () {
   abortActiveDspSession();
   window.dafAssistant?.dispose();
   if (window.micStream) window.micStream.getTracks().forEach((track) => track.stop());
-  if (camStream) camStream.getTracks().forEach((track) => track.stop());
-  if (cameraFeed) {
-    cameraFeed.srcObject = null;
-    cameraFeed.classList.remove("active");
-  }
-  if (camToggle) camToggle.checked = false;
   if (audioCtx && audioCtx.state !== "closed") audioCtx.close().catch(() => {});
   audioCtx = rawAnalyser = formantAnalyser = null;
   window.audioCtx = window.mediaStreamSource = window.micStream = null;
-  isCalibrated = false;
+  // Tiché prostredie sa kalibruje len raz za spustenie aplikácie; mikrofón sa len uvoľní.
   isHeadphoneDafEnabled = false;
 };
 
@@ -589,49 +517,10 @@ function playScenarioAudio(scenario, onDone) {
   audio.play().catch(() => audio.onerror());
 }
 
-// Interaktívny indikátor a prepínač slúchadlového odposluchu (toggle ON/OFF)
-const hpIndicator = document.getElementById("headphoneLiveIndicator");
-if (hpIndicator) {
-  hpIndicator.addEventListener("click", async () => {
-    try {
-      await setupAudio();
-      if (audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
-
-      const nextState = !window.dafAssistant.isActive;
-      if (dafFafPipeline) {
-        await dafFafPipeline.setEnabled(nextState);
-      } else {
-        isHeadphoneDafEnabled = nextState;
-      }
-
-      const txt = document.getElementById("headphoneStatusText");
-      if (isHeadphoneDafEnabled) {
-        hpIndicator.classList.remove("off");
-        if (txt) txt.textContent = "DAF & FAF Slúchadlá: Aktívne (Klikni pre vypnutie)";
-        playBeep(880, 0.1);
-      } else {
-        hpIndicator.classList.add("off");
-        if (txt) txt.textContent = "DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)";
-        playBeep(440, 0.08);
-      }
-    } catch (e) {
-      alert("Chyba mikrofónu: " + e.message);
-    }
-  });
-}
-
 // ============================================================================
 // CLEANUP A DYNAMICKÝ REŽIM DSP RELÁCIE
 // ============================================================================
 function abortActiveDspSession() {
-  if (cardioTimer) {
-    clearInterval(cardioTimer);
-    cardioTimer = null;
-    if (cardioBtn) {
-      cardioBtn.disabled = false;
-      cardioBtn.textContent = "Tepový tréning (30s)";
-    }
-  }
   dspTimeouts.forEach(clearTimeout);
   dspTimeouts.clear();
   if (cancelCalibration) cancelCalibration();
@@ -673,9 +562,6 @@ function abortActiveDspSession() {
   const startBtn = document.getElementById("startBtn");
   if (startBtn) startBtn.disabled = false;
 
-  const calibrateBtn = document.getElementById("calibrateBtn");
-  if (calibrateBtn) calibrateBtn.disabled = false;
-
   const pacerCircle = document.getElementById("pacerCircle");
   if (pacerCircle) {
     pacerCircle.style.transform = "scale(1)";
@@ -713,7 +599,6 @@ window.setDspMode = setDspMode;
 function runNoiseCalibration() {
   return new Promise(async (resolve, reject) => {
     try {
-      if (calibrateBtn) calibrateBtn.disabled = true;
       if (statusAlert) statusAlert.textContent = "Meriam šum miestnosti (1 sekunda ticha)...";
       await setupAudio();
       if (audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
@@ -739,14 +624,12 @@ function runNoiseCalibration() {
           if (noiseDb > -30) {
             if (statusAlert)
               statusAlert.textContent = `Hluk prostredia je privysoký (${noiseDb.toFixed(1)} dB). Stíš okolie a skús znova.`;
-            if (calibrateBtn) calibrateBtn.disabled = false;
             reject(new Error("Hluk prostredia je privysoký"));
           } else {
             isCalibrated = true;
             if (statusAlert)
               statusAlert.textContent = `Kalibrácia úspešná (Základný šum: ${noiseDb.toFixed(1)} dB). Pripravený!`;
             if (startBtn) startBtn.disabled = false;
-            if (calibrateBtn) calibrateBtn.disabled = false;
             resolve(noiseDb);
           }
         }
@@ -758,12 +641,24 @@ function runNoiseCalibration() {
       };
     } catch (err) {
       if (statusAlert) statusAlert.textContent = "Chyba mikrofónu: " + err.message;
-      if (calibrateBtn) calibrateBtn.disabled = false;
       reject(err);
     }
   });
 }
 window.runNoiseCalibration = runNoiseCalibration;
+
+// Jedna automatická kalibrácia ticha za spustenie aplikácie, ďalšie lekcie ju už preskočia.
+let calibrationPromise = null;
+function ensureNoiseCalibration() {
+  if (isCalibrated) return Promise.resolve(noiseDb);
+  if (!calibrationPromise) {
+    calibrationPromise = runNoiseCalibration().finally(() => {
+      calibrationPromise = null;
+    });
+  }
+  return calibrationPromise;
+}
+window.ensureNoiseCalibration = ensureNoiseCalibration;
 
 function setPacerText(text) {
   const pText = document.getElementById("pacerText");
@@ -774,21 +669,13 @@ function setPacerText(text) {
   }
 }
 
-if (calibrateBtn) {
-  calibrateBtn.addEventListener("click", async () => {
-    try {
-      await runNoiseCalibration();
-    } catch (_) {}
-  });
-}
-
 if (startBtn) {
   startBtn.addEventListener("click", async () => {
     try {
       if (!isCalibrated) {
         if (statusAlert)
-          statusAlert.textContent = "Najprv automaticky kalibrujem šum miestnosti (1s ticha)...";
-        await runNoiseCalibration();
+          statusAlert.textContent = "Kalibrujem šum miestnosti (1 s ticha, len raz)...";
+        await ensureNoiseCalibration();
       }
       if (typeof setupAudio === "function") {
         await setupAudio();
@@ -819,7 +706,6 @@ if (startBtn) {
 
 function runStandardPacer(meta) {
   if (startBtn) startBtn.disabled = true;
-  if (calibrateBtn) calibrateBtn.disabled = true;
 
   if (targetWord) targetWord.classList.add("expose");
   if (pacerCircle) {
@@ -846,7 +732,6 @@ function runStandardPacer(meta) {
 
 function runGuillotineMode(meta) {
   if (startBtn) startBtn.disabled = true;
-  if (calibrateBtn) calibrateBtn.disabled = true;
   if (targetWord) targetWord.classList.add("expose");
   setPacerText("Pokladňa...");
   if (pacerCircle) pacerCircle.style.borderColor = "#ffc800";
@@ -882,7 +767,6 @@ function runGuillotineMode(meta) {
 
 function armAmbushCall(meta) {
   if (startBtn) startBtn.disabled = true;
-  if (calibrateBtn) calibrateBtn.disabled = true;
 
   const isDuoLesson = typeof duoLesson !== "undefined" && duoLesson.isLessonActive;
   const randomDelay = isDuoLesson ? 800 : Math.floor(Math.random() * 8000) + 3500;
@@ -948,7 +832,6 @@ function armAmbushCall(meta) {
         if (callOverlay) callOverlay.classList.remove("active");
         if (statusAlert) statusAlert.textContent = "Hovor zrušený. Stlač Štart pre nový pokus.";
         if (startBtn) startBtn.disabled = false;
-        if (calibrateBtn) calibrateBtn.disabled = false;
       };
     }
   }, randomDelay);
@@ -1001,7 +884,6 @@ function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
     scheduleDspTimeout(() => {
       runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, maxDurationMs);
       startBtn.disabled = false;
-      calibrateBtn.disabled = false;
     }, 200);
   };
 
