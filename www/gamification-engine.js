@@ -739,7 +739,8 @@ class DuoPathRenderer {
   }
 
   scrollToWorld(worldId) {
-    const el = document.getElementById(`world-section-${worldId}`);
+    const id = String(worldId).replace(/^world-section-/, '');
+    const el = document.getElementById(`world-section-${id}`) || document.getElementById(`world-section-${worldId}`);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -1428,12 +1429,15 @@ class DuoLessonController {
     // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
     this.enterFocusMode();
 
-    // Okamžitá aktivácia audio potrubia s DAF/FAF odposluchom do slúchadiel
-    if (typeof setupAudio === 'function') {
-      setupAudio().catch(e => console.warn('Audio auto-init error:', e));
+    // DAF/FAF slúchadlový odposluch predvolene stíšený (prevencia spätnej väzby bez slúchadiel)
+    if (window.dafFafPipeline) {
+      window.dafFafPipeline.setEnabled(false);
     }
+    const hpInd = document.getElementById('headphoneLiveIndicator');
+    if (hpInd) hpInd.classList.add('off');
+    const hpTxt = document.getElementById('headphoneStatusText');
+    if (hpTxt) hpTxt.textContent = 'DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)';
 
-    // Okamžitá aktivácia audio potrubia s DAF/FAF odposluchom do slúchadiel
     if (typeof setupAudio === 'function') {
       setupAudio().catch(e => console.warn('Audio auto-init error:', e));
     }
@@ -1662,7 +1666,9 @@ class DuoLessonController {
 
   completeCurrentLesson() {
     this.isLessonActive = false;
-    duoSfx.playFanfare();
+    if (typeof duoSfx !== 'undefined' && duoSfx.playFanfare) {
+      duoSfx.playFanfare();
+    }
 
     const accuracy = Math.max(50, Math.round(((this.totalAttemptsCount - this.mistakesCount) / Math.max(1, this.totalAttemptsCount)) * 100));
     const baseReward = this.currentLevel.xp || 40;

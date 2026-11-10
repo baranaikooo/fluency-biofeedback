@@ -1,42 +1,89 @@
 /* ==========================================================================
-   GLIDE — UNIFIED FIGMA VELA DESIGN SYSTEM
+   GLIDE — UNIFIED FIGMA VELA DESIGN SYSTEM (PURPLE THEME)
+   Hlboká fialová paleta "Vale" z Figmy s biofeedbackom, DAF/FAF a Duolingo gamifikáciou
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Nunito:wght@600;700;800;900&display=swap');
 
 :root {
-  --bg: #f8f6f0;                    /* Upokojujúca smotanová */
-  --bg-subtle: #f2efe7;
-  --surface: #ffffff;               /* Čisté biele papierové karty */
-  --surface-card: #ffffff;
-  --surface-border: #e9e6de;
-  --surface-lip: #e2ddd4;
+  /* Hlboké tmavofialové pozadia Vale */
+  --bg: #0f0a1c;
+  --bg-subtle: #160f29;
+  --bg-darker: #090514;
+  --bg-elevation: #1b1233;
 
-  --ink: #252341;                   /* Tmavý bridlicový atrament */
-  --text: #252341;
-  --text-main: #252341;
-  --text-muted: #6b7280;
-  --text-dim: #9ca3af;
+  /* Fialové sklenené karty s jemným fialovým borderom */
+  --surface: rgba(35, 23, 66, 0.75);
+  --surface-solid: #1f1638;
+  --surface-card: rgba(35, 23, 66, 0.75);
+  --surface-card-hover: rgba(48, 32, 88, 0.85);
+  --surface-border: rgba(168, 85, 247, 0.25);
+  --surface-border-subtle: rgba(168, 85, 247, 0.15);
+  --surface-lip: rgba(22, 14, 42, 0.95);
 
-  --purple: #6d5bd0;
-  --purple-hover: #5b49be;
-  --purple-soft: #ede9fe;
-  --lavender: #ede9fe;
-  --lavender-card: #e9e4fc;
-  
-  --coral: #f08a78;
-  --coral-soft: #ffece8;
+  /* Typografia & text */
+  --ink: #f8fafc;
+  --text: #f8fafc;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
+  --text-lavender: #c4b5fd;
 
+  /* Primárne akcenty: Fialová, Levanduľa & Glow efekty */
+  --purple: #8b5cf6;
+  --purple-hover: #7c3aed;
+  --purple-bright: #a855f7;
+  --purple-glow: rgba(168, 85, 247, 0.45);
+  --lavender: #c084fc;
+  --lavender-card: rgba(35, 23, 66, 0.75);
+  --lavender-soft: rgba(168, 85, 247, 0.18);
+
+  /* Status farby prispôsobené tmavofialovému režimu */
+  --coral: #f43f5e;
+  --coral-soft: rgba(244, 63, 94, 0.2);
   --green: #10b981;
-  --green-soft: #e6f9f0;
+  --green-soft: rgba(16, 185, 129, 0.2);
+  --green-glow: rgba(16, 185, 129, 0.45);
   --amber: #f59e0b;
+  --amber-soft: rgba(245, 158, 11, 0.2);
   --red: #ef4444;
+  --red-soft: rgba(239, 68, 68, 0.2);
 
+  /* Gamifikačné Duolingo tokeny namapované na Vale Purple */
+  --duo-green: #10b981;
+  --duo-green-lip: #059669;
+  --duo-green-subtle: rgba(16, 185, 129, 0.18);
+
+  --duo-blue: #8b5cf6;
+  --duo-blue-lip: #6d28d9;
+  --duo-blue-subtle: rgba(139, 92, 246, 0.2);
+
+  --duo-amber: #f59e0b;
+  --duo-amber-lip: #d97706;
+  --duo-amber-subtle: rgba(245, 158, 11, 0.18);
+
+  --duo-gold: #fbbf24;
+  --duo-gold-lip: #d97706;
+
+  --duo-red: #ef4444;
+  --duo-red-lip: #b91c1c;
+  --duo-red-subtle: rgba(239, 68, 68, 0.18);
+
+  --duo-purple: #a855f7;
+  --duo-purple-lip: #7e22ce;
+  --duo-purple-subtle: rgba(168, 85, 247, 0.2);
+
+  --duo-gray: #64748b;
+  --duo-gray-lip: #475569;
+  --duo-gray-light: rgba(148, 163, 184, 0.14);
+
+  /* Zaoblenia */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
   --radius-full: 9999px;
 
+  /* Fonty */
   --font-serif: 'Newsreader', Georgia, serif;
   --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -86,8 +133,10 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
     position: fixed;
     top: 0;
     left: 0;
-    background: #ffffff;
+    background: rgba(22, 15, 41, 0.95);
     border-right: 1px solid var(--surface-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     padding: 28px 16px;
     z-index: 100;
   }
@@ -107,6 +156,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
     font-size: 1.55rem;
     font-weight: 700;
     color: var(--ink);
+    letter-spacing: -0.01em;
   }
 
   .sidebar-nav {
@@ -123,23 +173,25 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
     padding: 12px 14px;
     border-radius: var(--radius-md);
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-muted);
     cursor: pointer;
     text-align: left;
-    transition: all 0.15s ease;
+    transition: all 0.18s ease;
   }
 
   .sidebar-nav-item:hover {
-    background: var(--bg);
+    background: rgba(168, 85, 247, 0.12);
     color: var(--ink);
   }
 
   .sidebar-nav-item.active {
-    background: var(--lavender);
-    color: var(--purple);
+    background: rgba(168, 85, 247, 0.22);
+    color: var(--lavender);
+    border-color: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.2);
     font-weight: 700;
   }
 
@@ -155,23 +207,25 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
     width: 100%;
     padding: 10px;
     border-radius: var(--radius-md);
-    background: var(--bg);
+    background: rgba(35, 23, 66, 0.6);
     border: 1px solid var(--surface-border);
     cursor: pointer;
     text-align: left;
+    color: var(--text);
   }
 
   .sidebar-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #c8e6c9;
-    color: #2e7d32;
+    background: linear-gradient(135deg, #a855f7, #6d28d9);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     font-size: 0.85rem;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
   }
 
   .sidebar-user-info {
@@ -191,13 +245,13 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 
   .sidebar-user-status {
     font-size: 0.72rem;
-    color: var(--text-muted);
+    color: var(--text-dim);
     display: block;
   }
 
   .sidebar-settings-icon {
     font-size: 1rem;
-    opacity: 0.6;
+    opacity: 0.7;
   }
 
   .app-layout {
@@ -238,9 +292,10 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
     position: sticky;
     top: 0;
     z-index: 90;
-    background: rgba(248, 246, 240, 0.96);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 10, 28, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--surface-border);
     padding: 12px 0;
   }
 
@@ -251,7 +306,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
     left: 0;
     right: 0;
     z-index: 90;
-    background: rgba(255, 255, 255, 0.96);
+    background: rgba(22, 15, 41, 0.96);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--surface-border);
@@ -274,7 +329,8 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 .sw-col {
   width: 3.5px;
   border-radius: 4px;
-  background: var(--purple);
+  background: var(--purple-bright);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
   display: block;
 }
 .brand-soundwave.lg .sw-col {
@@ -288,13 +344,118 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #c8e6c9;
-  color: #2e7d32;
+  background: linear-gradient(135deg, #a855f7, #6d28d9);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 0.8rem;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+}
+
+/* HUD Elementy (Mince, Streak, XP, Životy) */
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.hud-metrics {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(35, 23, 66, 0.8);
+  border: 1px solid var(--surface-border);
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.hud-pill.fire {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+.hud-pill.xp {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+.hud-pill.hearts {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(109, 40, 217, 0.35));
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lavender);
+}
+.header-profile-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.profile-name-short {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* Spodná navigácia */
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  padding: 6px 0;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.nav-tab .nav-icon {
+  font-size: 1.25rem;
+  transition: transform 0.15s ease;
+}
+.nav-tab .nav-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.nav-tab.active {
+  color: var(--lavender);
+}
+.nav-tab.active .nav-icon {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
 }
 
 /* ==========================================================================
@@ -304,9 +465,9 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   position: fixed !important;
   inset: 0 !important;
   z-index: 99999 !important;
-  background: rgba(37, 35, 65, 0.65) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(10, 6, 20, 0.88) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   display: none;
   align-items: center;
   justify-content: center;
@@ -315,16 +476,17 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 }
 
 .auth-modal-card {
-  background: #ffffff;
+  background: #19112e !important;
   border-radius: var(--radius-xl);
   max-width: 480px;
   width: 100%;
   padding: 32px 28px;
-  box-shadow: 0 20px 60px rgba(37, 35, 65, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.2);
   border: 1px solid var(--surface-border);
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
+  color: var(--ink);
 }
 
 .auth-modal-hero {
@@ -342,7 +504,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--purple);
+  color: var(--lavender);
   text-transform: uppercase;
   display: block;
   margin: 4px 0 6px 0;
@@ -362,9 +524,9 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 }
 
 .social-login-btn.google {
-  background: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: rgba(35, 23, 66, 0.9);
+  color: #f8fafc;
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 12px 18px;
   font-weight: 600;
@@ -374,11 +536,14 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
   width: 100%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 .social-login-btn.google:hover {
-  background: #f9fafb;
+  background: rgba(48, 32, 88, 1);
+  border-color: var(--purple-bright);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
 }
 
 .auth-divider {
@@ -405,7 +570,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 .auth-field-label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--text-muted);
   display: block;
   margin-bottom: 4px;
 }
@@ -414,20 +579,21 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   padding: 11px 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border);
-  background: #ffffff;
+  background: rgba(22, 15, 41, 0.85);
   font-size: 0.92rem;
-  color: var(--ink);
+  color: #f8fafc;
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .auth-input:focus {
-  border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(109, 91, 208, 0.15);
+  border-color: var(--purple-bright);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
 }
 
 .btn-primary {
-  background: var(--purple);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   color: #ffffff;
-  border: none;
+  border: 1px solid rgba(192, 132, 252, 0.35);
   border-radius: var(--radius-md);
   padding: 12px 20px;
   font-weight: 700;
@@ -437,13 +603,18 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
-.btn-primary:hover { background: var(--purple-hover); }
+.btn-primary:hover {
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
+}
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
-  background: var(--bg);
+  background: rgba(35, 23, 66, 0.8);
   color: var(--ink);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
@@ -456,7 +627,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 .guest-bypass-btn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--text-dim);
   font-size: 0.85rem;
   cursor: pointer;
   padding: 10px;
@@ -465,21 +636,25 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   display: block;
   width: 100%;
 }
+.guest-bypass-btn:hover {
+  color: var(--lavender);
+}
 
 /* ==========================================================================
    FIGMA DOTAZNÍK (MODAL CARD)
    ========================================================================== */
 .questionnaire-modal-card {
-  background: #ffffff;
+  background: #19112e !important;
   border-radius: var(--radius-xl);
   max-width: 680px;
   width: 100%;
   padding: 36px 32px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(37, 35, 65, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.2);
   border: 1px solid var(--surface-border);
   position: relative;
+  color: var(--ink);
 }
 
 .questionnaire-top {
@@ -492,7 +667,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--purple);
+  color: var(--lavender);
   text-transform: uppercase;
   margin-bottom: 4px;
 }
@@ -505,15 +680,16 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 .questionnaire-count {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-muted);
-  background: var(--bg);
+  color: var(--lavender);
+  background: rgba(35, 23, 66, 0.9);
+  border: 1px solid var(--surface-border);
   padding: 4px 10px;
   border-radius: var(--radius-full);
 }
 
 .questionnaire-progress {
-  height: 4px;
-  background: var(--bg-subtle);
+  height: 6px;
+  background: rgba(22, 15, 41, 0.8);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 28px;
@@ -521,7 +697,8 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 .questionnaire-progress span {
   display: block;
   height: 100%;
-  background: var(--purple);
+  background: linear-gradient(90deg, #8b5cf6, #c084fc);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
   transition: width 0.3s ease;
 }
 
@@ -532,7 +709,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--purple);
+  color: var(--lavender);
   text-transform: uppercase;
   display: block;
   margin-bottom: 6px;
@@ -559,7 +736,8 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: var(--bg);
+  background: rgba(35, 23, 66, 0.6);
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 14px;
 }
@@ -598,7 +776,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   margin: 20px 0;
 }
 .question-item {
-  background: var(--bg);
+  background: rgba(35, 23, 66, 0.6);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 16px;
@@ -623,24 +801,26 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   justify-content: center;
   padding: 8px 4px;
   border-radius: var(--radius-sm);
-  background: #ffffff;
+  background: rgba(22, 15, 41, 0.7);
   border: 1px solid var(--surface-border);
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
+  color: var(--text);
 }
 .answer-scale label span {
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-dim);
   margin-top: 4px;
 }
 .answer-scale label:has(input:checked) {
-  background: var(--lavender);
-  border-color: var(--purple);
+  background: rgba(168, 85, 247, 0.25);
+  border-color: var(--purple-bright);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
 }
 .answer-scale label:has(input:checked) span {
-  color: var(--purple);
+  color: var(--lavender);
   font-weight: 700;
 }
 
@@ -656,32 +836,32 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   gap: 10px;
   padding: 12px 14px;
   border-radius: var(--radius-md);
-  background: var(--bg);
+  background: rgba(35, 23, 66, 0.6);
   border: 1px solid var(--surface-border);
   color: var(--ink);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
 }
 .situation-btn span {
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  border: 1.5px solid var(--text-dim);
+  border: 1.5px solid var(--surface-border);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .situation-btn.selected {
-  background: var(--lavender);
-  border-color: var(--purple);
-  color: var(--purple);
+  background: rgba(168, 85, 247, 0.25);
+  border-color: var(--purple-bright);
+  color: var(--lavender);
 }
 .situation-btn.selected span {
-  background: var(--purple);
-  border-color: var(--purple);
+  background: var(--purple-bright);
+  border-color: var(--purple-bright);
   color: #fff;
 }
 
@@ -698,6 +878,8 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   padding: 10px;
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border);
+  background: rgba(22, 15, 41, 0.85);
+  color: #f8fafc;
   font-size: 0.88rem;
   outline: none;
 }
@@ -712,10 +894,13 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   height: 60px;
   border-radius: 50%;
   background: var(--green-soft);
+  color: var(--green);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px auto;
+  font-size: 1.8rem;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
 }
 .result-domains {
   display: flex;
@@ -725,7 +910,8 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   text-align: left;
 }
 .domain-card {
-  background: var(--bg);
+  background: rgba(35, 23, 66, 0.6);
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 14px;
 }
@@ -735,23 +921,25 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   margin-bottom: 6px;
   font-size: 0.85rem;
   font-weight: 700;
+  color: var(--ink);
 }
 .domain-bar {
   height: 6px;
-  background: #e5e7eb;
+  background: rgba(22, 15, 41, 0.8);
   border-radius: 4px;
   overflow: hidden;
 }
 .domain-bar span {
   display: block;
   height: 100%;
-  background: var(--purple);
+  background: linear-gradient(90deg, #8b5cf6, #c084fc);
 }
 
 .sit-pill {
   display: inline-block;
-  background: var(--lavender);
-  color: var(--purple);
+  background: rgba(168, 85, 247, 0.2);
+  color: var(--lavender);
+  border: 1px solid rgba(168, 85, 247, 0.3);
   font-size: 0.8rem;
   font-weight: 600;
   padding: 4px 10px;
@@ -779,7 +967,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--lavender);
   display: block;
   margin-bottom: 6px;
 }
@@ -798,7 +986,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 }
 
 .todays-focus-card {
-  background: var(--lavender-card);
+  background: rgba(35, 23, 66, 0.75);
   border-radius: var(--radius-xl);
   padding: 28px 24px;
   position: relative;
@@ -808,9 +996,11 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  border: 1px solid rgba(109, 91, 208, 0.12);
-  box-shadow: 0 6px 24px rgba(109, 91, 208, 0.08);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(168, 85, 247, 0.12);
   margin-bottom: 32px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 .focus-card-left {
   flex: 1;
@@ -820,7 +1010,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--purple);
+  color: var(--lavender);
   margin-bottom: 8px;
 }
 .focus-title {
@@ -838,9 +1028,9 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   max-width: 320px;
 }
 .focus-cta-btn {
-  background: var(--ink);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   color: #ffffff;
-  border: none;
+  border: 1px solid rgba(192, 132, 252, 0.35);
   border-radius: var(--radius-full);
   padding: 13px 24px;
   font-size: 0.92rem;
@@ -850,11 +1040,12 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   align-items: center;
   gap: 8px;
   transition: all 0.18s ease;
-  box-shadow: 0 4px 14px rgba(37, 35, 65, 0.18);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 .focus-cta-btn:hover {
-  background: #1b1930;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
   transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.5);
 }
 .focus-card-visual {
   flex-shrink: 0;
@@ -864,8 +1055,9 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   width: 110px;
   height: 110px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(37, 35, 65, 0.08);
+  background: rgba(22, 15, 41, 0.9);
+  border: 2px solid var(--surface-border);
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -875,12 +1067,12 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   position: absolute;
   inset: -8px;
   border-radius: 50%;
-  border: 2px solid rgba(109, 91, 208, 0.25);
+  border: 2px solid rgba(168, 85, 247, 0.4);
   animation: breathingPulse 4s ease-in-out infinite;
 }
 @keyframes breathingPulse {
   0% { transform: scale(0.92); opacity: 0.4; }
-  50% { transform: scale(1.08); opacity: 0.85; border-color: rgba(109, 91, 208, 0.4); }
+  50% { transform: scale(1.08); opacity: 0.9; border-color: rgba(192, 132, 252, 0.6); }
   100% { transform: scale(0.92); opacity: 0.4; }
 }
 .breathing-circle-core {
@@ -893,7 +1085,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 .bc-label {
   font-size: 0.68rem;
   font-weight: 700;
-  color: var(--purple);
+  color: var(--lavender);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -907,7 +1099,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 }
 .bc-unit {
   font-size: 0.65rem;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 .curriculum-section-header {
@@ -917,7 +1109,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: var(--text-muted);
+  color: var(--lavender);
   text-transform: uppercase;
   margin-bottom: 4px;
 }
@@ -928,7 +1120,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 }
 
 /* ==========================================================================
-   KARTY A ELEMENTY ZÁLOŽIEK (BIELY PAPIER, ATRAMENT, TIENE)
+   KARTY A ELEMENTY ZÁLOŽIEK (FIALOVÉ SKLO & VALE PALETA)
    ========================================================================== */
 .tab-pane {
   display: none;
@@ -944,14 +1136,16 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 
 .telemetry-card, .sandbox-hero-card, .sandbox-input-card, .sandbox-mode-card,
 .assistant-hero-card, .assistant-visual-card, .assistant-controls-card,
-.telemetry-hero-card, .node-popover-card, .celebration-card {
+.telemetry-hero-card, .node-popover-card, .celebration-card, .assistant-toggle-card {
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-lg);
   color: var(--ink);
   padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(37, 35, 65, 0.04);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .card-title, .sandbox-title, .assistant-title, .popover-title, .celebration-title {
@@ -967,71 +1161,112 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   line-height: 1.45;
 }
 
-/* 5 Svetov Gamifikácia */
+/* ==========================================================================
+   5 SVETOV DUOLINGO MAPA & UZLY
+   ========================================================================== */
 .worlds-wrapper {
   display: flex;
   flex-direction: column;
   gap: 28px;
   margin-top: 16px;
 }
-.world-card {
-  background: var(--surface);
+.world-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.world-header-banner {
+  background: rgba(35, 23, 66, 0.85);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-xl);
-  padding: 24px 20px;
-  box-shadow: 0 4px 20px rgba(37, 35, 65, 0.05);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.world-header {
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--surface-border);
-  padding-bottom: 14px;
+.world-banner-content {
+  flex: 1;
 }
-.world-badge {
+.world-banner-tag {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--purple);
+  color: var(--lavender);
   text-transform: uppercase;
 }
-.world-title {
-  font-size: 1.4rem;
+.world-banner-title {
+  font-size: 1.35rem;
   font-weight: 600;
   color: var(--ink);
+  margin: 2px 0 4px 0;
+}
+.world-banner-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.world-banner-icon {
+  font-size: 2rem;
+  margin-left: 14px;
+}
+.world-recommended-badge {
+  display: inline-block;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin: 4px 0;
 }
 
-.level-path-container {
+.world-nodes-track {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
+  gap: 24px;
   position: relative;
-  padding: 10px 0;
+  padding: 16px 0;
 }
-.level-node {
-  width: 66px;
-  height: 66px;
+.path-node-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.path-node-btn, .level-node {
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  background: #ffffff;
+  background: rgba(35, 23, 66, 0.95);
   border: 3px solid var(--surface-border);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(37, 35, 65, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
   position: relative;
+  color: #f8fafc;
 }
-.level-node:hover {
+.path-node-btn:hover {
   transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
 }
-.level-node.completed {
+.path-node-btn.completed {
   border-color: var(--green);
-  background: var(--green-soft);
+  background: rgba(16, 185, 129, 0.2);
   color: var(--green);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
 }
-.level-node.current {
-  border-color: var(--purple);
-  box-shadow: 0 0 0 5px rgba(109, 91, 208, 0.2);
+.path-node-btn.current {
+  border-color: var(--purple-bright);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.35), rgba(109, 40, 217, 0.45));
+  box-shadow: 0 0 0 6px rgba(168, 85, 247, 0.25), 0 0 24px rgba(168, 85, 247, 0.5);
   animation: pulseNode 2s infinite;
 }
 @keyframes pulseNode {
@@ -1039,23 +1274,112 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   50% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
-.level-node.locked {
-  opacity: 0.55;
-  background: #f3f4f6;
+.path-node-btn.locked {
+  opacity: 0.5;
+  background: rgba(22, 15, 41, 0.8);
   cursor: not-allowed;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+.node-current-beacon {
+  position: absolute;
+  top: -24px;
+  background: var(--purple-bright);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+  white-space: nowrap;
+}
+.node-stars-badge {
+  position: absolute;
+  bottom: -6px;
+  font-size: 0.65rem;
+  color: #fbbf24;
+}
+.node-label-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 120px;
 }
 
-/* SOS Dril */
-.custom-word-input {
+/* POPOVER PRE UZOL */
+.node-popover-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(10, 6, 20, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.node-popover-card {
+  background: #19112e !important;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  max-width: 380px;
   width: 100%;
-  padding: 14px 16px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 25px rgba(168, 85, 247, 0.25);
+  position: relative;
+}
+.popover-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.popover-world-tag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--lavender);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.popover-meta {
+  margin: 14px 0 20px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   SOS DRIL (ZÁLOŽKA 2)
+   ========================================================================== */
+.sandbox-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.custom-word-input, .vault-input {
+  width: 100%;
+  padding: 13px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border);
   font-size: 1.05rem;
   font-weight: 600;
-  color: var(--ink);
+  color: #f8fafc;
   outline: none;
-  background: #ffffff;
+  background: rgba(22, 15, 41, 0.85);
+  transition: border-color 0.2s;
+}
+.custom-word-input:focus, .vault-input:focus {
+  border-color: var(--purple-bright);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+}
+.sandbox-input-wrap, .vault-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
 }
 .preset-chips {
   display: flex;
@@ -1064,7 +1388,7 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   margin: 12px 0;
 }
 .chip {
-  background: var(--bg);
+  background: rgba(35, 23, 66, 0.7);
   border: 1px solid var(--surface-border);
   color: var(--ink);
   padding: 6px 12px;
@@ -1072,30 +1396,102 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 .chip:hover {
-  background: var(--lavender);
-  color: var(--purple);
+  background: rgba(168, 85, 247, 0.25);
+  color: var(--lavender);
+  border-color: var(--purple-bright);
+}
+.mode-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+.mode-card-radio {
+  cursor: pointer;
+}
+.mode-card-radio input {
+  display: none;
+}
+.mode-card-inner {
+  background: rgba(22, 15, 41, 0.8);
+  border: 1.5px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  transition: all 0.15s ease;
+}
+.mode-card-radio input:checked + .mode-card-inner {
+  border-color: var(--purple-bright);
+  background: rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+}
+.mode-card-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+  display: block;
+}
+.mode-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.vault-select {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-border);
+  background: rgba(22, 15, 41, 0.85);
+  color: #f8fafc;
+  outline: none;
 }
 
-/* DAF Asistent */
+/* ==========================================================================
+   DAF & FAF ASISTENT (ZÁLOŽKA 3)
+   ========================================================================== */
+.assistant-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.assistant-headphone-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin-top: 14px;
+  font-size: 0.82rem;
+  color: var(--lavender);
+}
 .assistant-pulse-circle {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: var(--lavender);
-  border: 3px solid var(--purple);
+  background: rgba(35, 23, 66, 0.85);
+  border: 3px solid var(--purple-bright);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   position: relative;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+}
+.pulse-status-text {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 .assistant-slider {
   width: 100%;
   height: 8px;
   border-radius: 4px;
-  background: var(--bg-subtle);
+  background: rgba(22, 15, 41, 0.9);
+  border: 1px solid var(--surface-border);
   outline: none;
   -webkit-appearance: none;
   appearance: none;
@@ -1105,19 +1501,72 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--purple);
+  background: var(--purple-bright);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(109, 91, 208, 0.4);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+  border: 2px solid #ffffff;
+}
+.control-row-group {
+  margin-bottom: 20px;
+}
+.control-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.control-val-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lavender);
+  background: rgba(35, 23, 66, 0.8);
+  border: 1px solid var(--surface-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
 }
 .slider-ruler {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
-  font-size: 0.72rem;
+  position: relative;
+  height: 24px;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+.ruler-mark {
+  position: absolute;
+  transform: translateX(-50%);
+  cursor: pointer;
+  text-align: center;
+}
+.ruler-mark.sweet {
+  color: var(--lavender);
+  font-weight: 700;
+}
+.ruler-mark.active {
+  color: #ffffff;
+}
+.assistant-feature-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(35, 23, 66, 0.6);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 0.82rem;
   color: var(--text-muted);
+  line-height: 1.45;
 }
 
-/* Telemetria */
+/* ==========================================================================
+   TELEMETRIA & PROFIL (ZÁLOŽKA 4)
+   ========================================================================== */
+.telemetry-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .vrt-big-number {
   font-size: 3rem;
   font-weight: 700;
@@ -1150,7 +1599,8 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   margin-top: 14px;
 }
 .tstat-box {
-  background: var(--bg);
+  background: rgba(22, 15, 41, 0.8);
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 12px 10px;
   text-align: center;
@@ -1163,10 +1613,12 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
 }
 .tstat-name {
   font-size: 0.68rem;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
-/* Tlačidlá 3D mapované na čistý moderný štýl */
+/* ==========================================================================
+   TLAČIDLÁ 3D MAPOVANÉ NA VALE PURPLE DIZAJN
+   ========================================================================== */
 .btn-3d {
   padding: 12px 20px;
   border-radius: var(--radius-md);
@@ -1180,26 +1632,84 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   gap: 8px;
   transition: all 0.15s ease;
 }
-.btn-3d.green { background: var(--green); color: #fff; }
-.btn-3d.blue { background: var(--purple); color: #fff; }
-.btn-3d.amber { background: var(--coral); color: #fff; }
-.btn-3d.purple { background: var(--purple); color: #fff; }
-.btn-3d.red { background: var(--red); color: #fff; }
-.btn-3d.slate { background: var(--bg-subtle); color: var(--ink); border: 1px solid var(--surface-border); }
+.btn-3d.green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+.btn-3d.blue, .btn-3d.purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+}
+.btn-3d.amber {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+.btn-3d.red {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+.btn-3d.slate {
+  background: rgba(35, 23, 66, 0.8);
+  color: var(--ink);
+  border: 1px solid var(--surface-border);
+}
 .btn-3d.full { width: 100%; }
 .btn-3d.sm { padding: 8px 14px; font-size: 0.82rem; }
 .btn-3d.lg { padding: 15px 28px; font-size: 1.05rem; }
 
-/* Lesson Screen */
+/* ==========================================================================
+   CELOOBRAZOVKOVÝ TRÉNING (LESSON SCREEN)
+   ========================================================================== */
 .lesson-screen {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #fbf9f5;
+  background: #0f0a1c !important;
   display: none;
   flex-direction: column;
   overflow-y: auto;
   padding: 20px;
+  color: var(--ink);
+}
+.lesson-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.lesson-exit-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.lesson-progress-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(22, 15, 41, 0.9);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--surface-border);
+}
+.lesson-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #c084fc);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+  transition: width 0.3s ease;
+}
+.lesson-hearts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: #f43f5e;
 }
 .target-word {
   font-family: var(--font-serif);
@@ -1207,25 +1717,99 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   font-weight: 700;
   color: var(--ink);
   text-align: center;
-  margin: 20px 0;
+  margin: 16px 0 6px 0;
+  letter-spacing: -0.01em;
+}
+.target-meta {
+  font-size: 0.85rem;
+  color: var(--lavender);
+  text-align: center;
+  margin-bottom: 20px;
 }
 .pacer-circle {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 4px solid var(--purple);
+  background: rgba(35, 23, 66, 0.85);
+  border: 4px solid var(--purple-bright);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  box-shadow: 0 10px 30px rgba(109, 91, 208, 0.15);
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.35);
   cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
 }
 .pacer-text {
   font-size: 1rem;
   font-weight: 700;
   color: var(--ink);
+}
+.status-alert {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.lesson-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+.lesson-toggles {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+.toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(35, 23, 66, 0.8);
+  border: 1px solid var(--surface-border);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* Živý indikátor slúchadiel DAF + FAF */
+.headphone-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(139, 92, 246, 0.25);
+  border: 1px solid var(--purple-bright);
+  color: var(--lavender);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.35);
+  transition: all 0.2s ease;
+  margin: 0 auto 16px auto;
+}
+.headphone-live-badge.off {
+  background: rgba(100, 116, 139, 0.15);
+  border-color: rgba(148, 163, 184, 0.25);
+  color: var(--text-dim);
+  box-shadow: none;
+}
+.hlb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+.headphone-live-badge.off .hlb-dot {
+  background: #64748b;
+  box-shadow: none;
 }
 
 /* Feedback Drawer */
@@ -1234,24 +1818,229 @@ h1, h2, h3, .hero-greeting, .focus-title, .curriculum-title, .q-main-title {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: #19112e !important;
   border-top: 2px solid var(--green);
   border-radius: 20px 20px 0 0;
   padding: 24px;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
   display: none;
   z-index: 10000;
+  color: var(--ink);
+}
+.feedback-drawer.active {
+  display: block;
+  animation: slideUpDrawer 0.25s ease;
+}
+@keyframes slideUpDrawer {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 .matrix-panel {
   display: none;
-  background: var(--bg);
+  background: rgba(22, 15, 41, 0.85);
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   padding: 14px;
   margin: 14px 0;
 }
+.matrix-panel.active {
+  display: block;
+}
 canvas#envelopeCanvas {
   width: 100%;
   height: 90px;
-  background: #000;
+  background: #090514;
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
+}
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--surface-border-subtle);
+}
+.metric-val.ok {
+  color: #34d399;
+  font-weight: 700;
+}
+.metric-val.err {
+  color: #f87171;
+  font-weight: 700;
+}
+
+/* Video kamery */
+video#cameraFeed {
+  width: 100%;
+  max-width: 320px;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  border: 2px solid var(--surface-border);
+  display: none;
+  margin: 0 auto 12px auto;
+}
+video#cameraFeed.active {
+  display: block;
+}
+.eye-contact-prompt {
+  display: none;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lavender);
+  margin-bottom: 10px;
+}
+.eye-contact-prompt.visible {
+  display: block;
+}
+
+/* Prepadový hovor Overlay */
+.call-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(10, 6, 20, 0.88);
+  backdrop-filter: blur(14px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.call-overlay.active {
+  display: flex;
+}
+.call-box {
+  background: #19112e;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 32px 24px;
+  text-align: center;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.25);
+}
+.caller-avatar-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.2);
+  border: 2px solid var(--purple-bright);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+.caller-name {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.caller-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+.call-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Oslavný modal (Celebration Overlay) */
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  background: rgba(10, 6, 20, 0.88);
+  backdrop-filter: blur(14px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.celebration-overlay.active {
+  display: flex;
+}
+.celebration-card {
+  background: #19112e !important;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  padding: 36px 28px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.3);
+}
+.trophy-bounce {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+}
+.stats-recap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 20px 0 24px 0;
+}
+.recap-card {
+  background: rgba(22, 15, 41, 0.85);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+}
+.recap-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.recap-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.recap-val.xp { color: var(--lavender); }
+.recap-val.green { color: #34d399; }
+.recap-val.fire { color: #fbbf24; }
+
+/* Science Modal */
+.science-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10003;
+  background: rgba(10, 6, 20, 0.88);
+  backdrop-filter: blur(14px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.science-overlay.active {
+  display: flex;
+}
+.science-modal {
+  background: #19112e;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.25);
+  color: var(--ink);
+}
+
+/* Spinner pre kalibráciu a načítanie */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

@@ -19,22 +19,30 @@ const PLOSIVES = new Set(['p','t','ť','k','b','d','ď','g']);
 const REAL_AUDIO_SCENARIOS = [
   {
     caller: "Kuriér (Balík)",
+    avatar: "📦",
     audioUrl: "./audio/courier.mp3",
+    promptText: "Dobrý deň, tu je kuriér Packeta. Stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?",
     fallbackPrompt: "Dobrý deň, tu je kuriér Packeta. Stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?"
   },
   {
     caller: "Pokladňa / Obchod",
+    avatar: "🛒",
     audioUrl: "./audio/cashier.mp3",
+    promptText: "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?",
     fallbackPrompt: "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?"
   },
   {
     caller: "Lekár / Ambulancia",
+    avatar: "🩺",
     audioUrl: "./audio/doctor.mp3",
+    promptText: "Dobrý, kvôli čomu ste prišli? A vaše meno poprosím ešte.",
     fallbackPrompt: "Dobrý, kvôli čomu ste prišli? A vaše meno poprosím ešte."
   },
   {
     caller: "Automechanik / Servis",
+    avatar: "🔧",
     audioUrl: "./audio/automechanik.mp3",
+    promptText: "Autoservis, prosím? Čo presne sa stalo s vaším autom a kedy ho viete priniesť?",
     fallbackPrompt: "Autoservis, prosím? Čo presne sa stalo s vaším autom a kedy ho viete priniesť?"
   }
 ];
@@ -222,74 +230,93 @@ document.querySelectorAll('.mode-tabs button').forEach(btn => {
     clearTimeout(ambushTimeout);
     stopRinging();
 
+    const m1T = document.getElementById('m1Title');
     if (currentMode === 'standard') {
-      startBtn.textContent = '2. Štart pokusu (Pacer)';
-      document.getElementById('m1Title').textContent = '1. Reakčný čas (Tichý blok < 700 ms)';
+      if (startBtn) startBtn.textContent = '2. Štart pokusu (Pacer)';
+      if (m1T) m1T.textContent = '1. Reakčný čas (Tichý blok < 700 ms)';
     } else if (currentMode === 'guillotine') {
-      startBtn.textContent = '2. Pokladňa (Limit 550 ms)';
-      document.getElementById('m1Title').textContent = '1. Časová gilotína (Štart < 550 ms)';
+      if (startBtn) startBtn.textContent = '2. Pokladňa (Limit 550 ms)';
+      if (m1T) m1T.textContent = '1. Časová gilotína (Štart < 550 ms)';
     } else if (currentMode === 'ambush') {
-      startBtn.textContent = '2. Aktivovať pascu hovoru';
-      document.getElementById('m1Title').textContent = '1. Pohotovosť v hovore (< 750 ms)';
+      if (startBtn) startBtn.textContent = '2. Aktivovať pascu hovoru';
+      if (m1T) m1T.textContent = '1. Pohotovosť v hovore (< 750 ms)';
     }
   });
 });
 
 document.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', () => {
-    wordInput.value = chip.dataset.word;
-    refreshMeta();
+    if (wordInput && chip.dataset.word) {
+      wordInput.value = chip.dataset.word;
+      refreshMeta();
+    }
   });
 });
 
 function refreshMeta() {
-  const w = wordInput.value.trim() || 'Peter Novák';
-  targetWord.textContent = w.toUpperCase();
+  const w = (wordInput && wordInput.value.trim()) ? wordInput.value.trim() : 'Peter Novák';
+  if (targetWord) targetWord.textContent = w.toUpperCase();
   const info = analyzePhonetics(w);
-  targetMeta.textContent = `Klasifikácia: ${info.label}`;
+  if (targetMeta) targetMeta.textContent = `Klasifikácia: ${info.label}`;
 }
-wordInput.addEventListener('input', refreshMeta);
+if (wordInput) {
+  wordInput.addEventListener('input', refreshMeta);
+}
 refreshMeta();
 
 // Pacer kruh ako interaktívne tlačidlo skorého ukončenia
-pacerCircle.addEventListener('click', () => {
-  if (activeFinishEarlyCallback) {
-    activeFinishEarlyCallback();
-  }
-});
+if (pacerCircle) {
+  pacerCircle.addEventListener('click', () => {
+    if (activeFinishEarlyCallback) {
+      activeFinishEarlyCallback();
+    }
+  });
+}
 
 // Kamera
-camToggle.addEventListener('change', async () => {
-  if (camToggle.checked) {
-    try {
-      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-      cameraFeed.srcObject = camStream;
-      cameraFeed.classList.add('active');
-      interlocutorPrompt.classList.add('visible');
-    } catch (err) {
-      statusAlert.textContent = 'Nepodarilo sa zapnúť kameru: ' + err.message;
-      camToggle.checked = false;
+if (camToggle) {
+  camToggle.addEventListener('change', async () => {
+    if (camToggle.checked) {
+      try {
+        camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        if (cameraFeed) {
+          cameraFeed.srcObject = camStream;
+          cameraFeed.classList.add('active');
+        }
+        if (interlocutorPrompt) interlocutorPrompt.classList.add('visible');
+      } catch (err) {
+        if (statusAlert) statusAlert.textContent = 'Nepodarilo sa zapnúť kameru: ' + err.message;
+        camToggle.checked = false;
+      }
+    } else {
+      if (camStream) camStream.getTracks().forEach(t => t.stop());
+      if (cameraFeed) cameraFeed.classList.remove('active');
+      if (interlocutorPrompt) interlocutorPrompt.classList.remove('visible');
     }
-  } else {
-    if (camStream) camStream.getTracks().forEach(t => t.stop());
-    cameraFeed.classList.remove('active');
-    interlocutorPrompt.classList.remove('visible');
-  }
-});
+  });
+}
 
 // Interoceptívny stresor
-cardioBtn.addEventListener('click', () => {
-  let sec = 30;
-  cardioBtn.disabled = true;
-  statusAlert.textContent = '⚡ Zdvihni tep! Rob rýchle kľuky alebo drepy, kým nevyprší časovač...';
-  const iv = setInterval(() => {
-    sec--;
-    cardioBtn.textContent = `⚡ Tepový šok (${sec}s)`;
-    if (sec <= 0) {
-      clearInterval(iv);
-      cardioBtn.disabled = false;
-      cardioBtn.textContent = '⚡ Tepový šok (30s)';
-      statusAlert.textContent = '🔥 Tep je hore! OKAMŽITE stlač Štart a trénuj mäkký nábeh so zadýchaním!';
+if (cardioBtn) {
+  cardioBtn.addEventListener('click', () => {
+    let sec = 30;
+    cardioBtn.disabled = true;
+    if (statusAlert) statusAlert.textContent = '⚡ Zdvihni tep! Rob rýchle kľuky alebo drepy, kým nevyprší časovač...';
+    const iv = setInterval(() => {
+      sec--;
+      if (cardioBtn) cardioBtn.textContent = `⚡ Tepový šok (${sec}s)`;
+      if (sec <= 0) {
+        clearInterval(iv);
+        if (cardioBtn) {
+          cardioBtn.disabled = false;
+          cardioBtn.textContent = '⚡ Tepový šok (30s)';
+        }
+        if (statusAlert) statusAlert.textContent = '🔥 Tep je hore! OKAMŽITE stlač Štart a trénuj mäkký nábeh so zadýchaním!';
+        playBeep(660, 0.25);
+      }
+    }, 1000);
+  });
+}
       playBeep(660, 0.25);
     }
   }, 1000);
@@ -791,59 +818,76 @@ function runNoiseCalibration() {
 }
 window.runNoiseCalibration = runNoiseCalibration;
 
-calibrateBtn.addEventListener('click', async () => {
-  try {
-    await runNoiseCalibration();
-  } catch (_) {}
-});
+function setPacerText(text) {
+  const pText = document.getElementById('pacerText');
+  if (pText) {
+    pText.textContent = text;
+  } else if (pacerCircle) {
+    pacerCircle.textContent = text;
+  }
+}
 
-startBtn.addEventListener('click', async () => {
-  try {
-    if (!isCalibrated) {
-      if (statusAlert) statusAlert.textContent = 'Najprv automaticky kalibrujem šum miestnosti (1s ticha)...';
+if (calibrateBtn) {
+  calibrateBtn.addEventListener('click', async () => {
+    try {
       await runNoiseCalibration();
-    }
-    if (typeof setupAudio === 'function') {
-      await setupAudio();
-    }
-    if (audioCtx && audioCtx.state === 'suspended') {
-      await audioCtx.resume();
-    }
-  } catch (e) {
-    console.warn('Audio setup/kalibrácia error:', e);
-  }
+    } catch (_) {}
+  });
+}
 
-  matrixPanel.classList.remove('active');
-  targetWord.className = 'target-word';
+if (startBtn) {
+  startBtn.addEventListener('click', async () => {
+    try {
+      if (!isCalibrated) {
+        if (statusAlert) statusAlert.textContent = 'Najprv automaticky kalibrujem šum miestnosti (1s ticha)...';
+        await runNoiseCalibration();
+      }
+      if (typeof setupAudio === 'function') {
+        await setupAudio();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+    } catch (e) {
+      console.warn('Audio setup/kalibrácia error:', e);
+    }
 
-  const w = wordInput.value.trim() || 'Peter Novák';
-  const meta = analyzePhonetics(w);
+    if (matrixPanel) matrixPanel.classList.remove('active');
+    if (targetWord) targetWord.className = 'target-word';
 
-  if (currentMode === 'standard') {
-    runStandardPacer(meta);
-  } else if (currentMode === 'guillotine') {
-    runGuillotineMode(meta);
-  } else if (currentMode === 'ambush') {
-    armAmbushCall(meta);
-  }
-});
+    const w = (wordInput && wordInput.value.trim()) ? wordInput.value.trim() : 'Peter Novák';
+    const meta = analyzePhonetics(w);
+
+    if (currentMode === 'standard') {
+      runStandardPacer(meta);
+    } else if (currentMode === 'guillotine') {
+      runGuillotineMode(meta);
+    } else if (currentMode === 'ambush') {
+      armAmbushCall(meta);
+    }
+  });
+}
 
 function runStandardPacer(meta) {
-  startBtn.disabled = true;
-  calibrateBtn.disabled = true;
+  if (startBtn) startBtn.disabled = true;
+  if (calibrateBtn) calibrateBtn.disabled = true;
 
-  targetWord.classList.add('expose');
-  pacerCircle.style.transform = 'scale(1)';
-  pacerCircle.style.borderColor = '#475569';
-  pacerCircle.textContent = 'Pozri na slovo';
-  statusAlert.textContent = 'Fáza 1: Prijmi slovo a uvoľni trapézy.';
+  if (targetWord) targetWord.classList.add('expose');
+  if (pacerCircle) {
+    pacerCircle.style.transform = 'scale(1)';
+    pacerCircle.style.borderColor = '#475569';
+  }
+  setPacerText('Pozri na slovo');
+  if (statusAlert) statusAlert.textContent = 'Fáza 1: Prijmi slovo a uvoľni trapézy.';
 
   setTimeout(() => {
-    pacerCircle.style.transition = 'transform 2.2s ease-out, border-color 0.3s';
-    pacerCircle.style.transform = 'scale(1.55)';
-    pacerCircle.style.borderColor = '#1cb0f6';
-    pacerCircle.textContent = 'Nádych + sánka';
-    statusAlert.textContent = 'Fáza 2: Mäkký nádych do bránice, uvoľni sánku.';
+    if (pacerCircle) {
+      pacerCircle.style.transition = 'transform 2.2s ease-out, border-color 0.3s';
+      pacerCircle.style.transform = 'scale(1.55)';
+      pacerCircle.style.borderColor = '#1cb0f6';
+    }
+    setPacerText('Nádych + sánka');
+    if (statusAlert) statusAlert.textContent = 'Fáza 2: Mäkký nádych do bránice, uvoľni sánku.';
 
     setTimeout(() => {
       triggerGoSignal(meta, 1600);
@@ -852,11 +896,11 @@ function runStandardPacer(meta) {
 }
 
 function runGuillotineMode(meta) {
-  startBtn.disabled = true;
-  calibrateBtn.disabled = true;
-  targetWord.classList.add('expose');
-  pacerCircle.textContent = 'Pokladňa...';
-  pacerCircle.style.borderColor = '#ffc800';
+  if (startBtn) startBtn.disabled = true;
+  if (calibrateBtn) calibrateBtn.disabled = true;
+  if (targetWord) targetWord.classList.add('expose');
+  setPacerText('Pokladňa...');
+  if (pacerCircle) pacerCircle.style.borderColor = '#ffc800';
 
   let cashierScenario;
   if (typeof fluencyVoice !== 'undefined' && fluencyVoice && fluencyVoice.rotate) {
@@ -868,7 +912,7 @@ function runGuillotineMode(meta) {
     cashierScenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[1];
   }
 
-  statusAlert.textContent = `${cashierScenario.avatar || '🛒'} ${cashierScenario.caller} hovorí... Odpovedz po skončení!`;
+  if (statusAlert) statusAlert.textContent = `${cashierScenario.avatar || '🛒'} ${cashierScenario.caller} hovorí... Odpovedz po skončení!`;
 
   if (typeof duoLesson !== 'undefined' && duoLesson.showDialogueBubble) {
     duoLesson.showDialogueBubble(cashierScenario);
@@ -883,17 +927,19 @@ function runGuillotineMode(meta) {
 }
 
 function armAmbushCall(meta) {
-  startBtn.disabled = true;
-  calibrateBtn.disabled = true;
+  if (startBtn) startBtn.disabled = true;
+  if (calibrateBtn) calibrateBtn.disabled = true;
 
   const isDuoLesson = (typeof duoLesson !== 'undefined' && duoLesson.isLessonActive);
   const randomDelay = isDuoLesson ? 800 : (Math.floor(Math.random() * 8000) + 3500);
 
-  pacerCircle.textContent = 'Pasca aktívna';
-  pacerCircle.style.borderColor = '#ce82ff';
-  statusAlert.textContent = isDuoLesson
-    ? '📱 Priprav sa, telefón o sekundu zazvoní...'
-    : '📱 Odlož zrak z obrazovky. Telefón čoskoro nečakane zazvoní...';
+  setPacerText('Pasca aktívna');
+  if (pacerCircle) pacerCircle.style.borderColor = '#ce82ff';
+  if (statusAlert) {
+    statusAlert.textContent = isDuoLesson
+      ? '📱 Priprav sa, telefón o sekundu zazvoní...'
+      : '📱 Odlož zrak z obrazovky. Telefón čoskoro nečakane zazvoní...';
+  }
 
   ambushTimeout = setTimeout(() => {
     let scenario;
@@ -909,28 +955,47 @@ function armAmbushCall(meta) {
       scenario = REAL_AUDIO_SCENARIOS[scenarioIdx] || REAL_AUDIO_SCENARIOS[0];
     }
 
-    callerNameEl.textContent = `${scenario.avatar || '📞'} ${scenario.caller}`;
+    if (callerNameEl) callerNameEl.textContent = `${scenario.avatar || '📞'} ${scenario.caller}`;
     const callerSub = document.getElementById('callerSub');
-    if (callerSub && scenario.promptText) {
-      callerSub.textContent = `Prichádzajúci hovor: „${scenario.promptText}“`;
+    if (callerSub && (scenario.promptText || scenario.fallbackPrompt)) {
+      callerSub.textContent = `Prichádzajúci hovor: „${scenario.promptText || scenario.fallbackPrompt}“`;
     }
 
-    callOverlay.classList.add('active');
+    if (callOverlay) callOverlay.classList.add('active');
     startRinging();
 
-    answerCallBtn.onclick = () => {
-      stopRinging();
-      callOverlay.classList.remove('active');
-      targetWord.classList.add('expose');
-      pacerCircle.textContent = 'Volajúci hovorí';
-      statusAlert.textContent = `📞 ${scenario.caller}... Počúvaj a hneď odpovedz!`;
+    if (answerCallBtn) {
+      answerCallBtn.onclick = () => {
+        stopRinging();
+        if (callOverlay) callOverlay.classList.remove('active');
+        if (targetWord) targetWord.classList.add('expose');
+        setPacerText('Volajúci hovorí');
+        if (statusAlert) statusAlert.textContent = `📞 ${scenario.caller}... Počúvaj a hneď odpovedz!`;
 
-      if (typeof duoLesson !== 'undefined' && duoLesson.showDialogueBubble) {
-        duoLesson.showDialogueBubble(scenario);
-      }
+        if (typeof duoLesson !== 'undefined' && duoLesson.showDialogueBubble) {
+          duoLesson.showDialogueBubble(scenario);
+        }
 
-      playScenarioAudio(scenario, () => {
-        if (typeof duoLesson !== 'undefined' && duoLesson.hideDialogueBubble) {
+        playScenarioAudio(scenario, () => {
+          if (typeof duoLesson !== 'undefined' && duoLesson.hideDialogueBubble) {
+            duoLesson.hideDialogueBubble();
+          }
+          triggerGoSignal(meta, 750);
+        });
+      };
+    }
+
+    if (declineCallBtn) {
+      declineCallBtn.onclick = () => {
+        stopRinging();
+        if (callOverlay) callOverlay.classList.remove('active');
+        if (statusAlert) statusAlert.textContent = 'Hovor zrušený. Stlač Štart pre nový pokus.';
+        if (startBtn) startBtn.disabled = false;
+        if (calibrateBtn) calibrateBtn.disabled = false;
+      };
+    }
+  }, randomDelay);
+}
           duoLesson.hideDialogueBubble();
         }
         triggerGoSignal(meta, 1200);
@@ -1286,6 +1351,10 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   }
   statusAlert.textContent = 'Vyhodnotenie dokončené.';
 
+  // Aktualizácia indikátorov VRT a metriky
+  const vrtEl = document.getElementById('vrtValue');
+  if (vrtEl) vrtEl.textContent = `${Math.round(vrt)} ms`;
+
   // Globálny event pre Duolingo herný engine
   window.dispatchEvent(new CustomEvent('dsp-evaluation-complete', {
     detail: {
@@ -1301,9 +1370,11 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
 }
 
 function drawEnvelopeGraph(frames, threshDb, t20, t80, totalDurationMs) {
-  const ctx = envelopeCanvas.getContext('2d');
-  const W = envelopeCanvas.width;
-  const H = envelopeCanvas.height;
+  const canvas = envelopeCanvas || document.getElementById('envelopeCanvas') || document.getElementById('rmsCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
   const minDb = -75, maxDb = -5;

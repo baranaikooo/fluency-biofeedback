@@ -7,7 +7,7 @@
 
   <!-- PWA & Mobile Web App Meta -->
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#f8f6f0">
+  <meta name="theme-color" content="#0f0a1c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Glide">
@@ -714,7 +714,8 @@
 
             <div class="slider-track-container">
               <div class="slider-wrap">
-                <input type="range" class="assistant-slider" id="assistantDelaySlider"><input type="hidden" id="dafDelaySlider" min="40" max="140" step="5" value="70">
+                <input type="range" class="assistant-slider" id="assistantDelaySlider" min="40" max="140" step="5" value="70">
+                <input type="hidden" id="dafDelaySlider" value="70">
               </div>
 
               <!-- Presná matematicky zarovnaná stupnica (40..140 ms, 70 ms leží na presne 30%) -->
@@ -771,6 +772,42 @@
                 <div class="ruler-mark" style="left: 100%;" data-val="100">
                   <div class="ruler-tick"></div>
                   <span class="ruler-label">100 %</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. FAF Zmena výšky hlasu (Pitch Shift) -->
+          <div class="control-row-group">
+            <div class="control-label-row">
+              <div class="control-title-wrap">
+                <span class="control-icon">🎵</span>
+                <span class="control-name">FAF Posun výšky tónu (Pitch Shift):</span>
+              </div>
+              <span class="control-val-badge" id="assistantPitchVal">+2 st</span>
+            </div>
+
+            <div class="slider-track-container">
+              <div class="slider-wrap">
+                <input type="range" class="assistant-slider" id="assistantPitchSlider" min="-4" max="4" step="1" value="2">
+              </div>
+
+              <div class="slider-ruler" id="pitchRuler">
+                <div class="ruler-mark" style="left: 0%;" data-val="-4">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">-4 st</span>
+                </div>
+                <div class="ruler-mark" style="left: 50%;" data-val="0">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">0 st (Normál)</span>
+                </div>
+                <div class="ruler-mark sweet active" style="left: 75%;" data-val="2">
+                  <div class="ruler-tick sweet"></div>
+                  <span class="ruler-label sweet">⭐ +2 st (Choral Effect)</span>
+                </div>
+                <div class="ruler-mark" style="left: 100%;" data-val="4">
+                  <div class="ruler-tick"></div>
+                  <span class="ruler-label">+4 st</span>
                 </div>
               </div>
             </div>
@@ -1149,6 +1186,7 @@
       <div id="headphoneLiveIndicator" class="headphone-live-badge off" title="Klikni pre zapnutie alebo vypnutie zvuku v slúchadlách">
         <span class="hlb-icon">🎧</span>
         <span class="hlb-text" id="headphoneStatusText">DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)</span>
+        <span id="micStatus" class="hud-sub-label" style="display:none;">Mikrofón pripravený</span>
         <span class="hlb-dot"></span>
       </div>
 
@@ -1241,6 +1279,7 @@
               <span>Žlté pásmo = VRT (20% → 80% RMS)</span>
             </div>
             <canvas id="envelopeCanvas" width="600" height="90"></canvas>
+            <canvas id="rmsCanvas" style="display:none;" width="600" height="90"></canvas>
           </div>
 
           <div class="metrics-grid">
@@ -1258,7 +1297,7 @@
             </div>
             <div class="metric-row">
               <span class="metric-title">4. Vocal Rise Time (VRT)</span>
-              <span class="metric-val" id="m4">-</span>
+              <span class="metric-val" id="m4"><span id="vrtValue">-</span></span>
             </div>
             <div class="metric-row">
               <span class="metric-title">5. Kontinuita slabiky</span>
@@ -1278,6 +1317,22 @@
     </div>
 
   </section>
+
+  <!-- ==================================================================== -->
+  <!-- KALIBRAČNÝ MODAL (MERANIE ŠUMU MIESTNOSTI)                           -->
+  <!-- ==================================================================== -->
+  <div class="modal-backdrop-overlay" id="calibrationModal" style="display:none;">
+    <div class="auth-modal-card" style="text-align: center; max-width: 400px;">
+      <div class="brand-soundwave lg" style="margin-bottom: 16px;">
+        <span class="sw-col c1"></span>
+        <span class="sw-col c2"></span>
+        <span class="sw-col c3"></span>
+      </div>
+      <h2 class="auth-modal-title" style="font-size: 1.5rem;">Kalibrácia ticha</h2>
+      <p class="auth-modal-desc" style="margin-top: 8px;">Meriam hladinu hluku v miestnosti. Prosím, vydrž 1 sekundu v tichu...</p>
+      <div class="cal-spinner" style="margin: 24px auto 8px auto; width: 44px; height: 44px; border: 3px solid rgba(168, 85, 247, 0.25); border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
+  </div>
 
   <!-- ==================================================================== -->
   <!-- OSLAVNÝ MODAL (LEKCIA / DRIL DOKONČENÝ)                              -->

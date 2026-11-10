@@ -24,6 +24,7 @@
       this.isActive = false;
       this.delayMs = 70;
       this.volumePercent = 85;
+      this.pitchSemitones = 2;
 
       this.audioCtx = null;
       this.mediaStreamSource = null;
@@ -122,6 +123,26 @@
         handleVolInput();
       }
 
+      // 3.5. FAF Zmena výšky hlasu (Pitch Shift slider -4..+4 st)
+      const pitchSlider = document.getElementById('assistantPitchSlider');
+      const pitchValEl = document.getElementById('assistantPitchVal');
+      if (pitchSlider) {
+        const handlePitchInput = () => {
+          const val = parseInt(pitchSlider.value, 10);
+          this.setPitch(val);
+          if (pitchValEl) pitchValEl.textContent = `${val > 0 ? '+' : ''}${val} st`;
+          updateRulerActive('pitchRuler', val, 0);
+
+          const min = parseInt(pitchSlider.min || '-4', 10);
+          const max = parseInt(pitchSlider.max || '4', 10);
+          const pct = ((val - min) / (max - min)) * 100;
+          pitchSlider.style.background = `linear-gradient(to right, var(--duo-purple) 0%, var(--duo-purple) ${pct}%, #0b132b ${pct}%, #0b132b 100%)`;
+        };
+
+        pitchSlider.addEventListener('input', handlePitchInput);
+        handlePitchInput();
+      }
+
       // 4. Klikateľné značky stupnice
       const delayRuler = document.getElementById('delayRuler');
       if (delayRuler && delaySlider && delayRuler.querySelectorAll) {
@@ -156,6 +177,26 @@
                 volSlider.dispatchEvent(new Event('input'));
                 if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
                   duoSfx.playTone(740, 'sine', 0.04, 0.08);
+                }
+              }
+            });
+          });
+        }
+      }
+
+      const pitchRuler = document.getElementById('pitchRuler');
+      if (pitchRuler && pitchSlider && pitchRuler.querySelectorAll) {
+        const pMarks = pitchRuler.querySelectorAll('.ruler-mark');
+        if (pMarks && pMarks.forEach) {
+          pMarks.forEach(mark => {
+            mark.addEventListener('click', () => {
+              const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+              const snapVal = parseInt(rawVal, 10);
+              if (!isNaN(snapVal)) {
+                pitchSlider.value = snapVal;
+                pitchSlider.dispatchEvent(new Event('input'));
+                if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
+                  duoSfx.playTone(820, 'sine', 0.04, 0.08);
                 }
               }
             });
@@ -240,6 +281,62 @@
       }
     }
 
+    buildLfoBuffer(semitones = 2) {
+      const ctx = this.audioCtx;
+      if (!ctx) return null;
+      const sampleRate = ctx.sampleRate || 48000;
+      const bufferLength = sampleRate;
+      const numCycles = 8;
+      const baseDelaySec = 0.003;
+
+      const ratio = Math.pow(2, semitones / 12);
+      const slope = 1 - ratio;
+      const windowSec = Math.min(0.035, Math.max(0.001, Math.abs(slope) / numCycles));
+
+      const lfoBuffer = ctx.createBuffer(4, bufferLength, sampleRate);
+      const chD1 = lfoBuffer.getChannelData(0);
+      const chG1 = lfoBuffer.getChannelData(1);
+      const chD2 = lfoBuffer.getChannelData(2);
+      const chG2 = lfoBuffer.getChannelData(3);
+
+      for (let i = 0; i < bufferLength; i++) {
+        const t = i / sampleRate;
+        const phi1 = (t * numCycles) % 1.0;
+        const phi2 = (phi1 + 0.5) % 1.0;
+
+        if (slope <= 0) {
+          chD1[i] = baseDelaySec + windowSec * (1.0 - phi1);
+          chD2[i] = baseDelaySec + windowSec * (1.0 - phi2);
+        } else {
+          chD1[i] = baseDelaySec + windowSec * phi1;
+          chD2[i] = baseDelaySec + windowSec * phi2;
+        }
+
+        chG1[i] = Math.sin(Math.PI * phi1);
+        chG2[i] = Math.sin(Math.PI * phi2);
+      }
+      return lfoBuffer;
+    }
+
+    setPitch(semitones) {
+      this.pitchSemitones = semitones;
+      if (!this.audioCtx || !this.lfoSplitter) return;
+      try {
+        if (this.lfoSource) {
+          try { this.lfoSource.stop(); } catch (_) {}
+          this.lfoSource.disconnect();
+        }
+        const buf = this.buildLfoBuffer(semitones);
+        this.lfoSource = this.audioCtx.createBufferSource();
+        this.lfoSource.buffer = buf;
+        this.lfoSource.loop = true;
+        this.lfoSource.connect(this.lfoSplitter);
+        this.lfoSource.start(this.audioCtx.currentTime);
+      } catch (e) {
+        console.warn('[FAF] setPitch error:', e);
+      }
+    }
+
     /**
      * Vedecký Dual-Line Doppler Pitch Shifter (FAF):
      * Dve modulované delay linky s fázovým posunom 180° a polsínusovým crossfade oknom.
@@ -249,7 +346,6 @@
     buildDopplerPitchShifter(inputNode) {
       const ctx = this.audioCtx;
       const now = ctx.currentTime;
-      const sampleRate = ctx.sampleRate || 48000;
 
       // 1. Dve paralelné delay linky
       this.fafDelay1 = ctx.createDelay(0.1);
@@ -265,31 +361,8 @@
       this.fafGain2 = ctx.createGain();
       this.fafGain2.gain.setValueAtTime(0, now);
 
-      // 3. AudioBuffer pre presné 8.0 Hz LFO (8 plných periód za sekundu)
-      const numCycles = 8;
-      const windowSec = 0.015;
-      const baseDelaySec = 0.003;
-      const bufferLength = sampleRate;
-
-      const lfoBuffer = ctx.createBuffer(4, bufferLength, sampleRate);
-      const chD1 = lfoBuffer.getChannelData(0);
-      const chG1 = lfoBuffer.getChannelData(1);
-      const chD2 = lfoBuffer.getChannelData(2);
-      const chG2 = lfoBuffer.getChannelData(3);
-
-      for (let i = 0; i < bufferLength; i++) {
-        const t = i / sampleRate;
-        const phi1 = (t * numCycles) % 1.0;
-        const phi2 = (phi1 + 0.5) % 1.0; // 180° offset
-
-        // Sawtooth sweep (klesajúci delay = zvýšenie frekvencie F0)
-        chD1[i] = baseDelaySec + windowSec * (1.0 - phi1);
-        chD2[i] = baseDelaySec + windowSec * (1.0 - phi2);
-
-        // Pol-sínusové okno: sin(pi * phi) zabezpečuje konštantný výkon (g1^2 + g2^2 == 1.0)
-        chG1[i] = Math.sin(Math.PI * phi1);
-        chG2[i] = Math.sin(Math.PI * phi2);
-      }
+      // 3. AudioBuffer pre presné 8.0 Hz LFO
+      const lfoBuffer = this.buildLfoBuffer(this.pitchSemitones || 2);
 
       this.lfoSource = ctx.createBufferSource();
       this.lfoSource.buffer = lfoBuffer;
