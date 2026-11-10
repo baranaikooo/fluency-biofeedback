@@ -553,19 +553,19 @@
 
     // Kalibrácia DAF Asistenta
     if (evalRes.recWorldId === 4) {
-      const delaySlider = document.getElementById('dafDelaySlider');
+      const delaySlider = document.getElementById('assistantDelaySlider') || document.getElementById('dafDelaySlider');
       if (delaySlider) {
         delaySlider.value = 115;
         delaySlider.dispatchEvent(new Event('input'));
       }
     } else if (evalRes.recWorldId === 1) {
-      const delaySlider = document.getElementById('dafDelaySlider');
+      const delaySlider = document.getElementById('assistantDelaySlider') || document.getElementById('dafDelaySlider');
       if (delaySlider) {
         delaySlider.value = 85;
         delaySlider.dispatchEvent(new Event('input'));
       }
     } else if (evalRes.recWorldId === 3) {
-      const delaySlider = document.getElementById('dafDelaySlider');
+      const delaySlider = document.getElementById('assistantDelaySlider') || document.getElementById('dafDelaySlider');
       if (delaySlider) {
         delaySlider.value = 90;
         delaySlider.dispatchEvent(new Event('input'));
