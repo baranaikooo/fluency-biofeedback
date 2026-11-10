@@ -16,11 +16,14 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 @CapacitorPlugin(name = "GlideUpdates")
 public class GlideUpdatesPlugin extends Plugin {
+    private final ExecutorService network = Executors.newSingleThreadExecutor();
     private static final String RELEASE_API = "https://api.github.com/repos/baranaikooo/glide/releases/latest";
     private static final Pattern RELEASE_TAG = Pattern.compile("^v1\\.0\\.(\\d+)$");
     private static final Pattern APK_URL = Pattern.compile(
@@ -47,7 +50,7 @@ public class GlideUpdatesPlugin extends Plugin {
     @PluginMethod
     public void checkForUpdate(PluginCall call) {
         // Native networking avoids WebView CORS differences and never blocks the UI thread.
-        getBridge().execute(() -> {
+        network.execute(() -> {
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) new URL(RELEASE_API).openConnection();
@@ -122,5 +125,10 @@ public class GlideUpdatesPlugin extends Plugin {
     @Override
     protected void handleOnResume() {
         notifyListeners("resume", new JSObject());
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        network.shutdownNow();
     }
 }

@@ -25,9 +25,11 @@ interface as the deployed web application instead of stale bundled HTML.
 The interface supports both browser safe-area environment values and Capacitor
 SystemBars' injected CSS inset variables.
 
-The existing GitHub APK workflow is preserved. Commit the synchronized
-`android/app/src/main/assets/` files with each release, because that workflow
-builds the already-bundled native assets rather than running Vite itself.
+The GitHub APK workflow builds Vite and synchronizes Capacitor before building
+Android. Keep the synchronized `android/app/src/main/assets/` files committed
+for local builds as well. Each source push publishes a uniquely versioned APK
+with a permanent signing identity. See `android-updates.md` for update behavior
+and required repository signing secrets.
 
 ## ZIP backup
 
