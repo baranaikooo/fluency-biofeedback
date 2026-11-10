@@ -119,6 +119,7 @@
   const answers = {};
   const situations = new Set();
 
+  let displayedStep = -1;
   function updateQuestionnaireUI() {
     for (let i = 0; i <= 5; i++) {
       const el = document.getElementById("qStep" + i);
@@ -176,7 +177,8 @@
       calculateResults();
     }
     const modalCard = document.querySelector(".questionnaire-modal-card");
-    if (modalCard) modalCard.scrollTop = 0;
+    if (modalCard && displayedStep !== qStep) modalCard.scrollTop = 0;
+    displayedStep = qStep;
   }
 
   if (qAdultCheck) qAdultCheck.addEventListener("change", updateQuestionnaireUI);

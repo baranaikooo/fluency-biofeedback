@@ -23,7 +23,7 @@
     constructor() {
       this.isActive = false;
       this.delayMs = 70;
-      this.volumePercent = 35;
+      this.volumePercent = 70;
       this.pitchSemitones = 2;
       this.starting = false;
       this.startGeneration = 0;
@@ -296,7 +296,11 @@
         this.limiter.ratio.setValueAtTime(12, now);
         this.limiter.attack.setValueAtTime(0.002, now);
         this.limiter.release.setValueAtTime(0.05, now);
-        this.masterGain.connect(this.limiter);
+        // Boost only the headphone branch; raw DSP/calibration must stay unamplified.
+        this.monitorBoost = this.audioCtx.createGain();
+        this.monitorBoost.gain.setValueAtTime(4, now);
+        this.masterGain.connect(this.monitorBoost);
+        this.monitorBoost.connect(this.limiter);
 
         // Analyser pre vizuálny pulz v reálnom čase
         this.dafAnalyser = this.audioCtx.createAnalyser();
@@ -670,6 +674,7 @@
         "lfoSource",
         "lfoSplitter",
         "masterGain",
+        "monitorBoost",
         "limiter",
         "dafAnalyser",
       ]) {

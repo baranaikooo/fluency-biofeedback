@@ -108,6 +108,7 @@ function analyzePhonetics(word) {
       isPlosive: false,
       clusterLen: 0,
       wordCount: words.length,
+      textLength: clean.length,
       label: `Samohláska (${first.toUpperCase()}) – cieľ VRT 45–160 ms (Gentle Onset)`,
     };
   } else if (first === "ch" || VOICELESS_SINGLE.has(first)) {
@@ -116,6 +117,7 @@ function analyzePhonetics(word) {
       isPlosive,
       clusterLen,
       wordCount: words.length,
+      textLength: clean.length,
       label: `Neznelá spoluhláska (${first.toUpperCase()}, počiatočný zhluk: ${clusterLen})`,
     };
   } else {
@@ -124,6 +126,7 @@ function analyzePhonetics(word) {
       isPlosive,
       clusterLen,
       wordCount: words.length,
+      textLength: clean.length,
       label: `Znelá spoluhláska (${first.toUpperCase()}, počiatočný zhluk: ${clusterLen})`,
     };
   }
@@ -837,18 +840,17 @@ function armAmbushCall(meta) {
   }, randomDelay);
 }
 
+function getCaptureDurationMs(meta, mode = currentMode) {
+  const minimum = mode === "ambush" ? 7000 : mode === "guillotine" || meta.wordCount > 1 ? 5500 : 2800;
+  return Math.min(30000, Math.max(minimum, 2000 + (meta.textLength || 0) * 180));
+}
+
 function triggerGoSignal(meta, maxLatencyAllowedMs) {
   playBeep(580, 0.07);
   // 110 ms Guard Interval: bezpečne eliminuje doznuk pípnutia v miestnosti, aby ho nezachytil mikrofón
   scheduleDspTimeout(() => {
     // Vedecká oprava: dynamická dĺžka nahrávania podľa dĺžky textu a režimu
-    let captureMs = 2800;
-    if (meta.wordCount > 1 || currentMode === "guillotine") {
-      captureMs = 5500;
-    }
-    if (currentMode === "ambush") {
-      captureMs = 7000;
-    }
+    const captureMs = getCaptureDurationMs(meta);
 
     pacerCircle.style.transition = `transform ${captureMs / 1000}s linear, border-color 0.12s`;
     pacerCircle.style.transform = "scale(0.92)";
@@ -1122,8 +1124,8 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     // Bežný prirodzený rečový nábeh je 8–45 ms (plynulý štart).
     // Terapeutický mäkký nábeh (Easy Onset / Gentle Voicing) je 45–180 ms (🌟 PERFECT).
     if (vrt < 7) {
-      p4 = false;
-      p4Text += " (Tvrdý glotálny kŕč! Cieľ ≥ 10 ms)";
+      // A 10 ms sampling interval cannot diagnose a sub-7 ms glottal attack.
+      p4Text += " (Rýchly nábeh; skús jemnejší štart)";
     } else if (vrt > 340) {
       p4 = false;
       p4Text += " (Príliš oneskorený dychový únik > 340 ms)";
@@ -1133,8 +1135,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   } else {
     // Po spoluhláskach je rýchly nábeh hlasiviek (10–40 ms) fyziologicky normálny.
     if (vrt < 5) {
-      p4 = false;
-      p4Text += " (Kŕčovitý ráz po spoluhláske!)";
+      p4Text += " (Prirodzený rýchly prechod po spoluhláske)";
     } else if (vrt > 340) {
       p4 = false;
       p4Text += " (Zamknutý prechod do samohlásky > 340 ms)";
@@ -1147,21 +1148,6 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   // Pravidlo 5: Kontinuita prvej slabiky a ochrana pred klonickou repetíciou
   // Ak bola fonácia počiatočnej hlásky udržaná aspoň 40 ms, akýkoľvek následný pokles
   // je prirodzený prechod do ďalšej spoluhlásky (napr. 't' v 'O-tec', 'k' v 'O-ko', 'n' v 'Á-no')!
-  const nCoreEnd = Math.min(frames.length - 1, nucleus + 14);
-  let earlyDropMs = 0,
-    sustainedVoicingMs = 0;
-  for (let i = nucleus; i <= nCoreEnd; i++) {
-    const dt = i > 0 ? frames[i].t - frames[i - 1].t : 10;
-    if (frames[i].smoothFDb >= sThresh - 2.0 && frames[i].dPrime < 0.45) {
-      sustainedVoicingMs += dt;
-    } else {
-      // Ak fonácia padla v prvých 30 ms po nucleus (abortovaný / zaseknutý začiatok):
-      if (sustainedVoicingMs < 40) {
-        earlyDropMs += dt;
-      }
-    }
-  }
-
   // Detekcia klonickej repetície: patologické zopakovanie počiatočnej hlásky v krátkom okne
   // V bežných viackladných slovách (napr. 'O-tec', 'Á-no', 'Au-to', 'Ká-va') je prechod na ďalšiu slabiku úplne normálny.
   // Repetícia nastáva IBA ak bol počiatočný pokus useknutý v zárodku (< 35 ms) a reštartovaný!
@@ -1170,9 +1156,11 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   const minNormalVowelMs = meta.type === "vowel" ? 35 : 45;
   if (firstVowelDuration < minNormalVowelMs) {
     for (let i = pIdx + 2; i < Math.min(frames.length - 4, pIdx + 16); i++) {
-      if (frames[i].smoothFDb < sThresh - 6 && frames[i].dPrime > 0.4) {
+      // Require an actual sustained silence, not one unvoiced consonant frame.
+      const gap = frames.slice(i, i + 8);
+      if (gap.length === 8 && gap[7].t - gap[0].t >= 60 && gap.every((f) => f.rawDb < sThresh - 6)) {
         const hasReAttack = frames
-          .slice(i + 2, i + 10)
+          .slice(i + 8, i + 18)
           .some((f) => f.smoothFDb > sThresh + 6 && f.dPrime < 0.28);
         if (hasReAttack) {
           clonicDetected = true;
@@ -1182,12 +1170,11 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     }
   }
 
-  const p5 = earlyDropMs <= 30 && !clonicDetected;
+  // Loss of periodicity alone is normal in Slovak consonant clusters.
+  const p5 = !clonicDetected;
   let p5Text = "Plynulá (bez výpadku)";
   if (clonicDetected) {
     p5Text = 'Chyba: Klonická repetícia slabiky ("K-k-kto")';
-  } else if (!p5) {
-    p5Text = `Predčasne prerušená fonácia (${earlyDropMs} ms)`;
   }
   setRow("m5", p5Text, p5);
 

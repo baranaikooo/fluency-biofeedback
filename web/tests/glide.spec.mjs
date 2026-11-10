@@ -32,6 +32,102 @@ async function completeQuestionnaire(page) {
   await page.locator("#qFinishEnterBtn").click();
 }
 
+test("mobile questionnaire keeps the selected answer in view", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
+  await page.locator("#welcomeGuestBtn").click();
+  await page.locator("#qAdultCheck").check();
+  await page.locator("#qConsentCheck").check();
+  await page.locator("#qNextBtn").click();
+  const answer = page.locator('#qStep1 .answer-scale').last().locator('input').nth(2);
+  await answer.scrollIntoViewIfNeeded();
+  const before = await page.locator('.questionnaire-modal-card').evaluate(el => el.scrollTop);
+  expect(before).toBeGreaterThan(50);
+  await answer.check();
+  await expect(answer).toBeChecked();
+  const after = await page.locator('.questionnaire-modal-card').evaluate(el => el.scrollTop);
+  expect(Math.abs(after - before)).toBeLessThan(5);
+});
+
+test("natural consonant transitions pass all three phrase attempts; silence and clipping fail", async ({ page }) => {
+  await openApp(page);
+  await page.locator("#sidebarTabDril").click();
+  await page.locator("#wordInput").fill("Dve veľké kávy");
+  await page.locator("#launchSosDrillBtn").click();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const result = await page.evaluate(() => {
+      noiseDb = -70;
+      const frames = Array.from({ length: 550 }, (_, i) => {
+        const voiced = i >= 20 && i < 200 && !(i >= 26 && i <= 32) && i % 40 < 35;
+        const rms = i < 20 || i >= 200 ? 0.0001 : voiced ? 0.08 : 0.03;
+        return { t: i * 10, rawDb: 20 * Math.log10(rms), rawRms: rms,
+          fDb: 20 * Math.log10(rms), fRms: rms, dPrime: voiced && i >= 23 ? 0.1 : 0.8,
+          zcr: voiced ? 0.1 : 0.4, clipped: false };
+      });
+      let result;
+      window.addEventListener('dsp-evaluation-complete', e => { result = e.detail; }, { once: true });
+      runPostHocEvaluation(frames, analyzePhonetics('Dve veľké kávy'), 1600, 5500);
+      return { passed: result.passed, vrt: result.vrt, p5: result.p5 };
+    });
+    expect(result.passed).toBe(true);
+    expect(result.vrt).toBe(4); // formerly rejected solely because of the sampling floor
+    expect(result.p5).toBe(true);
+    await page.locator("#drawerContinueBtn").click();
+  }
+  await expect(page.locator("#celebrationModal")).toHaveClass(/active/);
+  const failures = await page.evaluate(() => ['silence', 'clipping'].map(kind => {
+    const frames = Array.from({ length: 100 }, (_, i) => ({ t: i * 10,
+      rawDb: -80, rawRms: 0.0001, fDb: -80, fRms: 0.0001,
+      dPrime: 1, zcr: 0, clipped: kind === 'clipping' }));
+    let result;
+    window.addEventListener('dsp-evaluation-complete', e => { result = e.detail; }, { once: true });
+    runPostHocEvaluation(frames, analyzePhonetics('Dve veľké kávy'), 1600, 1000);
+    return { passed: result.passed, reason: result.reason };
+  }));
+  expect(failures).toEqual([{ passed: false, reason: 'silent_block' }, { passed: false, reason: 'clipping' }]);
+  expect(await page.evaluate(() => getCaptureDurationMs(analyzePhonetics('Prosím si dve veľké kávy a jeden čaj so sebou')))).toBeGreaterThan(7000);
+});
+
+test("quiet microphone is amplified in headphones with an output limiter", async ({ page }) => {
+  await openApp(page);
+  const levels = await page.evaluate(async () => {
+    const originalSetup = window.setupAudio;
+    const results = [];
+    try {
+      for (const pitch of [0, 2]) {
+        const ctx = new OfflineAudioContext(1, 48000, 48000);
+        // Offline contexts begin suspended and only start during startRendering().
+        ctx.resume = async () => {};
+        const source = ctx.createOscillator();
+        source.frequency.value = 200;
+        const quiet = ctx.createGain();
+        quiet.gain.value = 0.02;
+        source.connect(quiet);
+        window.audioCtx = ctx;
+        window.mediaStreamSource = quiet;
+        window.setupAudio = async () => ctx;
+        const engine = new window.dafAssistant.constructor();
+        engine.pitchSemitones = pitch;
+        await engine.ensureAudioPipeline();
+        engine.masterGain.gain.value = engine.volumePercent / 100;
+        engine.limiter.connect(ctx.destination);
+        source.start();
+        const samples = (await ctx.startRendering()).getChannelData(0).slice(24000);
+        results.push(Math.sqrt(samples.reduce((sum, x) => sum + x * x, 0) / samples.length));
+      }
+    } finally {
+      window.setupAudio = originalSetup;
+      window.audioCtx = window.mediaStreamSource = null;
+    }
+    return results;
+  });
+  for (const rms of levels) {
+    expect(rms).toBeGreaterThan(0.018);
+    expect(rms).toBeLessThan(0.1);
+  }
+});
+
 test("first launch shows the welcome screen, then questionnaire, and only then asks for the name", async ({
   page,
 }) => {
