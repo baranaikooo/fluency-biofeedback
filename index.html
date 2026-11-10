@@ -7,7 +7,7 @@
 
   <!-- PWA & Mobile Web App Meta -->
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#0f0a1c">
+  <meta name="theme-color" content="#f8f6f0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Glide">
@@ -15,10 +15,10 @@
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
-  <!-- Google Fonts: DM Sans & Newsreader -->
+  <!-- Google Fonts: DM Sans & Newsreader (Figma Typography) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="./style.css">
 
@@ -47,65 +47,62 @@
 <body>
 
 <!-- ==================================================================== -->
-<!-- 1. PRIHLASOVACÍ MODAL (AUTENTIFIKAČNÁ BRÁNA)                        -->
+<!-- 1. FIGMA PRIHLASOVACÍ MODAL (AUTENTIFIKAČNÁ BRÁNA)                   -->
 <!-- ==================================================================== -->
 <div class="modal-backdrop-overlay" id="welcomeAuthOverlay" style="display:none;">
   <div class="auth-modal-card">
     <div class="auth-modal-hero">
-      <div class="brand-soundwave lg">
-        <span class="sw-col c1"></span>
-        <span class="sw-col c2"></span>
-        <span class="sw-col c3"></span>
+      <div class="brand-mark small" style="margin: 0 auto 12px auto;">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
-      <div class="brand-title-sub">glide</div>
       <span class="auth-overline">TVOJ BEZPEČNÝ PRIESTOR PRE REČ</span>
       <h1 class="auth-modal-title">Dýchaj voľne. Hovor s istotou.</h1>
       <p class="auth-modal-desc">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
     </div>
 
-    <div class="auth-card-body">
-      <!-- Google Sign-in -->
-      <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
-        <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-        </svg>
-        <span>Pokračovať cez Google účet</span>
-      </button>
+    <!-- Google Sign-in -->
+    <button class="google-button" id="welcomeBtnGoogle" type="button">
+      <svg viewBox="0 0 24 24" width="20" height="20">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+      </svg>
+      <span>Pokračovať cez Google účet</span>
+    </button>
 
-      <div class="auth-divider">
-        <span>ALEBO REGISTRÁCIA CEZ EMAIL</span>
+    <div class="auth-divider">
+      <span>alebo pokračuj e-mailom</span>
+    </div>
+
+    <div class="auth-form-fields" id="welcomeAuthBox">
+      <div class="auth-field-group">
+        <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
+        <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Alex" autocomplete="name" />
       </div>
 
-      <div class="auth-form-fields" id="welcomeAuthBox">
-        <div class="auth-field-group">
-          <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
-          <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Alex" autocomplete="name" />
-        </div>
-
-        <div class="auth-field-group">
-          <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
-          <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
-        </div>
-
-        <div class="auth-field-group">
-          <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
-          <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
-        </div>
-
-        <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
-
-        <button class="btn-primary full" id="welcomeSubmitBtn" type="button">
-          <span id="welcomeSubmitText">🚀 Pokračovať</span>
-        </button>
+      <div class="auth-field-group">
+        <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
+        <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
       </div>
 
-      <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
-        <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
+      <div class="auth-field-group">
+        <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
+        <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
+      </div>
+
+      <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none; color: var(--coral); font-size: 12px; margin-bottom: 12px; font-weight: 500;"></div>
+
+      <button class="btn-primary full" id="welcomeSubmitBtn" type="button">
+        <span id="welcomeSubmitText">Vstúpiť do aplikácie</span>
       </button>
     </div>
+
+    <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
+      <span>Vyskúšať bez prihlásenia (Lokálny režim)</span>
+    </button>
   </div>
 </div>
 
@@ -119,7 +116,7 @@
         <p class="eyebrow">VÝSKUMNÝ DOTAZNÍK</p>
         <h1 class="q-main-title">Tvoja skúsenosť s rečou<span>.</span></h1>
       </div>
-      <span class="questionnaire-count" id="qCountText" style="display:none;">1 / 4</span>
+      <span class="questionnaire-count" id="qCountText" style="display:none;">1 / 3</span>
     </div>
 
     <div class="questionnaire-progress" id="qProgressWrap" aria-label="Priebeh dotazníka">
@@ -130,7 +127,7 @@
     <section class="questionnaire-welcome" id="qStep0">
       <div class="research-intro">
         <span class="research-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg>
         </span>
         <span class="section-kicker">PRED ZAČIATKOM</span>
         <h2>Nejde o test plynulosti ani o diagnózu.</h2>
@@ -155,19 +152,19 @@
           </span>
           <div>
             <strong>Vedecky podložené oblasti</strong>
-            <p>Obsah vychádza z medzinárodných logopedických rámcov OASES-A, WASSP a ICF.</p>
+            <p>Obsah vychádza z logopedických rámcov OASES-A, WASSP a ICF.</p>
           </div>
         </article>
       </div>
 
-      <div class="research-consent">
-        <label class="consent-check">
+      <div class="consent-box" style="margin-top: 24px;">
+        <label class="consent-check" style="display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer;">
           <input type="checkbox" id="qAdultCheck" />
-          <span>Mám 18 rokov alebo viac.</span>
+          <span style="font-size: 13px; color: var(--ink);">Mám 18 rokov alebo viac.</span>
         </label>
-        <label class="consent-check">
+        <label class="consent-check" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
           <input type="checkbox" id="qConsentCheck" />
-          <span>Rozumiem účelu dotazníka a dobrovoľne súhlasím s vyplnením.</span>
+          <span style="font-size: 13px; color: var(--ink);">Rozumiem účelu dotazníka a dobrovoľne súhlasím s vyplnením.</span>
         </label>
       </div>
     </section>
@@ -181,38 +178,38 @@
       </header>
 
       <div class="question-list">
-        <article class="question-item">
-          <p class="question-text">Mám pocit, že nemám kontrolu nad tým, kedy sa reč zasekne.</p>
+        <fieldset class="question-item">
+          <legend class="question-text">Mal/a som pocit, že pri rozprávaní strácam kontrolu.</legend>
           <div class="answer-scale" data-qid="speech-control">
-            <label><input type="radio" name="speech-control" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="speech-control" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="speech-control" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="speech-control" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="speech-control" value="4" /><span>Takmer vždy</span></label>
+            <label><input type="radio" name="speech-control" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="speech-control" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="speech-control" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="speech-control" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="speech-control" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
 
-        <article class="question-item">
-          <p class="question-text">Hovorenie odo mňa vyžaduje výraznú fyzickú námahu alebo napätie v hrdle.</p>
+        <fieldset class="question-item">
+          <legend class="question-text">Na vyslovenie slov som musel/a vynaložiť fyzické úsilie.</legend>
           <div class="answer-scale" data-qid="speech-effort">
-            <label><input type="radio" name="speech-effort" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="speech-effort" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="speech-effort" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="speech-effort" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="speech-effort" value="4" /><span>Takmer vždy</span></label>
+            <label><input type="radio" name="speech-effort" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="speech-effort" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="speech-effort" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="speech-effort" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="speech-effort" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
 
-        <article class="question-item">
-          <p class="question-text">Zajakavosť prichádza nečakane aj pri slovách, ktoré bežne zvládam.</p>
+        <fieldset class="question-item">
+          <legend class="question-text">Neistota, kedy sa zakokcem, mi sťažovala rozprávanie.</legend>
           <div class="answer-scale" data-qid="speech-unpredictable">
-            <label><input type="radio" name="speech-unpredictable" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="speech-unpredictable" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="speech-unpredictable" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="speech-unpredictable" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="speech-unpredictable" value="4" /><span>Takmer vždy</span></label>
+            <label><input type="radio" name="speech-unpredictable" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="speech-unpredictable" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="speech-unpredictable" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="speech-unpredictable" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="speech-unpredictable" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
       </div>
     </section>
 
@@ -225,38 +222,38 @@
       </header>
 
       <div class="question-list">
-        <article class="question-item">
-          <p class="question-text">Cítim obavy alebo napätie už pred tým, ako začnem rozprávať.</p>
+        <fieldset class="question-item">
+          <legend class="question-text">Mal/a som obavy alebo úzkosť z toho, že budem musieť hovoriť.</legend>
           <div class="answer-scale" data-qid="feeling-worry">
-            <label><input type="radio" name="feeling-worry" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="feeling-worry" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="feeling-worry" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="feeling-worry" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="feeling-worry" value="4" /><span>Takmer vždy</span></label>
+            <label><input type="radio" name="feeling-worry" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="feeling-worry" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="feeling-worry" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="feeling-worry" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="feeling-worry" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
 
-        <article class="question-item">
-          <p class="question-text">Mením slová, vyhýbam sa určitým hláskam alebo radšej mlčím.</p>
+        <fieldset class="question-item">
+          <legend class="question-text">Vyhýbal/a som sa slovám alebo situáciám, kde by som mohol/mohla zakoktať.</legend>
           <div class="answer-scale" data-qid="feeling-avoid">
-            <label><input type="radio" name="feeling-avoid" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="feeling-avoid" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="feeling-avoid" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="feeling-avoid" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="feeling-avoid" value="4" /><span>Takmer vždy</span></label>
+            <label><input type="radio" name="feeling-avoid" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="feeling-avoid" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="feeling-avoid" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="feeling-avoid" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="feeling-avoid" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
 
-        <article class="question-item">
-          <p class="question-text">Po rozhovore premýšľam nad tým, ako som znel/a a čo si mysleli ostatní.</p>
+        <fieldset class="question-item">
+          <legend class="question-text">Po rozhovore som sa k nemu v myšlienkach vracal/a s pocitom nespokojnosti.</legend>
           <div class="answer-scale" data-qid="feeling-after">
-            <label><input type="radio" name="feeling-after" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="feeling-after" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="feeling-after" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="feeling-after" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="feeling-after" value="4" /><span>Takmer vždy</span></label>
+            <label><input type="radio" name="feeling-after" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="feeling-after" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="feeling-after" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="feeling-after" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="feeling-after" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
       </div>
     </section>
 
@@ -264,43 +261,43 @@
     <section class="questionnaire-form" id="qStep3" style="display:none;">
       <header>
         <span class="section-kicker">ČASŤ 3 Z 3</span>
-        <h2>Účasť v každodennom živote</h2>
-        <p>Zamysli sa nad prácou, školou, vzťahmi aj bežnými povinnosťami.</p>
+        <h2>Každodenný život</h2>
+        <p>Ako veľmi zajakavosť ovplyvňuje tvoje bežné fungovanie?</p>
       </header>
 
       <div class="question-list">
-        <article class="question-item">
-          <p class="question-text">Zajakavosť ovplyvňuje moje sebavedomie v práci, škole alebo pri prezentáciách.</p>
-          <div class="answer-scale" data-qid="impact-work">
-            <label><input type="radio" name="impact-work" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="impact-work" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="impact-work" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="impact-work" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="impact-work" value="4" /><span>Takmer vždy</span></label>
+        <fieldset class="question-item">
+          <legend class="question-text">Zajakavosť ovplyvňuje moju prácu, štúdium alebo profesijné rozhodnutia.</legend>
+          <div class="answer-scale" data-qid="life-work">
+            <label><input type="radio" name="life-work" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="life-work" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="life-work" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="life-work" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="life-work" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
 
-        <article class="question-item">
-          <p class="question-text">Odmietam alebo obmedzujem spoločenské situácie kvôli obavám z reči.</p>
-          <div class="answer-scale" data-qid="impact-social">
-            <label><input type="radio" name="impact-social" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="impact-social" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="impact-social" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="impact-social" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="impact-social" value="4" /><span>Takmer vždy</span></label>
+        <fieldset class="question-item">
+          <legend class="question-text">Zajakavosť obmedzuje moje vzťahy alebo spoločenský život.</legend>
+          <div class="answer-scale" data-qid="life-social">
+            <label><input type="radio" name="life-social" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="life-social" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="life-social" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="life-social" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="life-social" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
 
-        <article class="question-item">
-          <p class="question-text">Je pre mňa náročné vybaviť bežné veci (telefonát, objednávka, nákup).</p>
-          <div class="answer-scale" data-qid="impact-tasks">
-            <label><input type="radio" name="impact-tasks" value="0" /><span>Nikdy</span></label>
-            <label><input type="radio" name="impact-tasks" value="1" /><span>Zriedka</span></label>
-            <label><input type="radio" name="impact-tasks" value="2" /><span>Občas</span></label>
-            <label><input type="radio" name="impact-tasks" value="3" /><span>Často</span></label>
-            <label><input type="radio" name="impact-tasks" value="4" /><span>Takmer vždy</span></label>
+        <fieldset class="question-item">
+          <legend class="question-text">Je pre mňa náročné vybaviť bežné veci, napríklad telefonát alebo nákup.</legend>
+          <div class="answer-scale" data-qid="life-routine">
+            <label><input type="radio" name="life-routine" value="0" /><span><b>0</b><small>Nikdy</small></span></label>
+            <label><input type="radio" name="life-routine" value="1" /><span><b>1</b><small>Zriedka</small></span></label>
+            <label><input type="radio" name="life-routine" value="2" /><span><b>2</b><small>Občas</small></span></label>
+            <label><input type="radio" name="life-routine" value="3" /><span><b>3</b><small>Často</small></span></label>
+            <label><input type="radio" name="life-routine" value="4" /><span><b>4</b><small>Takmer vždy</small></span></label>
           </div>
-        </article>
+        </fieldset>
       </div>
     </section>
 
@@ -321,66 +318,61 @@
         <button type="button" class="situation-btn" data-sit="Neznámi ľudia"><span></span>Neznámi ľudia</button>
       </div>
 
-      <label class="questionnaire-note">
-        <span>Chceš niečo doplniť? <small>nepovinné</small></span>
-        <textarea id="qNoteInput" placeholder="Napíš vlastnými slovami, čo je pre teba dôležité…" maxlength="500"></textarea>
-        <small id="qNoteCount">0 / 500</small>
+      <label class="questionnaire-note" style="margin-top: 20px; display:block;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 6px; display:block;">Chceš niečo doplniť? <small style="color:var(--muted); font-weight:400;">nepovinné</small></span>
+        <textarea id="qNoteInput" class="auth-input" style="min-height: 90px; padding: 12px;" placeholder="Napíš vlastnými slovami, čo je pre teba dôležité…" maxlength="500"></textarea>
+        <small id="qNoteCount" style="color:var(--muted); font-size:11px; float:right; margin-top:4px;">0 / 500</small>
       </label>
     </section>
 
     <!-- KROK 5: VÝSLEDKY A ZHRNUTIE -->
-    <section class="questionnaire-results" id="qStep5" style="display:none;">
-      <div class="complete-icon">
+    <section class="questionnaire-results" id="qStep5" style="display:none; text-align:center;">
+      <div class="complete-icon" style="margin: 0 auto 16px auto;">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>
       </div>
       <span class="section-kicker">DOTAZNÍK DOKONČENÝ</span>
       <h2>Ďakujeme za tvoju otvorenosť.</h2>
-      <p>
+      <p style="color:var(--muted); font-size:13px; max-width: 520px; margin: 8px auto 24px auto;">
         Tvoje odpovede pomohli prispôsobiť citlivosť soft onset detektora a nastavenie sluchového DAF asistenta.
       </p>
 
-      <div class="result-domains">
-        <article class="domain-card">
-          <header>
-            <span class="domain-label">Skúsenosť s rozprávaním</span>
-            <span class="domain-val" id="domainRes0">stredná záťaž</span>
-          </header>
-          <div class="domain-bar"><span id="domainBar0" style="width: 50%;"></span></div>
+      <div class="domain-results" style="display:grid; gap:12px; max-width:480px; margin: 0 auto;">
+        <article style="border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; text-align:left; background: white;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <strong style="font-size:13px; color:var(--ink);">Rozprávanie</strong>
+            <span style="font-size:12px; font-weight:600; color:var(--purple);" id="domainRes0">stredná záťaž</span>
+          </div>
+          <div class="domain-bar" style="height:6px; background:#e8e4dc; border-radius:999px; overflow:hidden;"><span id="domainBar0" style="display:block; height:100%; background:var(--purple); width: 50%;"></span></div>
         </article>
 
-        <article class="domain-card">
-          <header>
-            <span class="domain-label">Myšlienky a pocity</span>
-            <span class="domain-val" id="domainRes1">stredná záťaž</span>
-          </header>
-          <div class="domain-bar"><span id="domainBar1" style="width: 50%;"></span></div>
+        <article style="border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; text-align:left; background: white;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <strong style="font-size:13px; color:var(--ink);">Pocity</strong>
+            <span style="font-size:12px; font-weight:600; color:var(--purple);" id="domainRes1">stredná záťaž</span>
+          </div>
+          <div class="domain-bar" style="height:6px; background:#e8e4dc; border-radius:999px; overflow:hidden;"><span id="domainBar1" style="display:block; height:100%; background:var(--purple); width: 50%;"></span></div>
         </article>
 
-        <article class="domain-card">
-          <header>
-            <span class="domain-label">Účasť v živote</span>
-            <span class="domain-val" id="domainRes2">stredná záťaž</span>
-          </header>
-          <div class="domain-bar"><span id="domainBar2" style="width: 50%;"></span></div>
+        <article style="border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; text-align:left; background: white;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <strong style="font-size:13px; color:var(--ink);">Každodenný život</strong>
+            <span style="font-size:12px; font-weight:600; color:var(--purple);" id="domainRes2">stredná záťaž</span>
+          </div>
+          <div class="domain-bar" style="height:6px; background:#e8e4dc; border-radius:999px; overflow:hidden;"><span id="domainBar2" style="display:block; height:100%; background:var(--purple); width: 50%;"></span></div>
         </article>
       </div>
 
-      <div class="result-context" id="qResultContext" style="display:none; margin-top: 16px;">
-        <span class="context-label">Najviac náročné situácie:</span>
-        <div class="context-chips" id="qResultSituationChips"></div>
-      </div>
-
-      <button class="btn-primary full lg" id="qFinishEnterBtn" type="button" style="margin-top: 24px;">
+      <button class="btn-primary full lg" id="qFinishEnterBtn" type="button" style="margin-top: 26px;">
         <span>Vstúpiť do aplikácie a začať tréning →</span>
       </button>
     </section>
 
     <!-- SPODNÁ NAVIGÁCIA DOTAZNÍKA -->
-    <footer class="questionnaire-actions" id="qActionsFooter">
-      <button class="btn-secondary sm" id="qBackBtn" type="button" style="visibility:hidden;">
+    <footer class="questionnaire-actions" id="qActionsFooter" style="display:flex; justify-content:space-between; margin-top:28px;">
+      <button class="btn-3d sm" id="qBackBtn" type="button" style="visibility:hidden;">
         Späť
       </button>
-      <button class="btn-primary sm" id="qNextBtn" type="button" disabled>
+      <button class="btn-primary sm" id="qNextBtn" type="button" disabled style="min-width: 140px;">
         <span id="qNextBtnText">Začať dotazník</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
       </button>
@@ -389,1363 +381,864 @@
 </div>
 
 <!-- ==================================================================== -->
-<!-- HLAVNÁ APLIKÁCIA (APP SHELL S DESKTOP SIDEBAROM)                    -->
+<!-- HLAVNÁ APLIKÁCIA (FIGMA APP SHELL S DESKTOP SIDEBAROM)               -->
 <!-- ==================================================================== -->
-<div class="app-shell-container">
+<div class="app-shell" id="appShell">
 
-  <!-- DESKTOP SIDEBAR (Viditeľný iba na obrazovkách > 768px, BEZ DOTAZNÍKA) -->
-  <aside class="desktop-sidebar" id="desktopSidebar">
-    <div class="sidebar-brand" id="sidebarBrandBtn">
-      <div class="brand-soundwave">
-        <span class="sw-col c1"></span>
-        <span class="sw-col c2"></span>
-        <span class="sw-col c3"></span>
-      </div>
-      <span class="sidebar-brand-name">glide</span>
-    </div>
+  <!-- DESKTOP SIDEBAR (BEZ DOTAZNÍKA V MENU) -->
+  <aside class="sidebar" id="appSidebar">
+    <a class="brand" href="#" id="sidebarBrandBtn" aria-label="Domovská stránka Glide">
+      <span class="brand-mark">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span>glide</span>
+    </a>
 
-    <nav class="sidebar-nav">
-      <button class="sidebar-nav-item active" data-tab="tabCesta" id="sidebarTabCesta">
-        <span class="sn-icon">🗺️</span>
-        <span class="sn-label">Dnes</span>
+    <nav class="main-nav" aria-label="Hlavná navigácia">
+      <button class="nav-item active" data-tab="tabCesta" id="sidebarTabCesta">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-6h6v6"/></svg>
+        <span>Dnes</span>
       </button>
-      <button class="sidebar-nav-item" data-tab="tabDril" id="sidebarTabDril">
-        <span class="sn-icon">⚡</span>
-        <span class="sn-label">Cvičenia</span>
+      <button class="nav-item" data-tab="tabDril" id="sidebarTabDril">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16"/><path d="M9 8v8M15 8v8M2 12h20"/></svg>
+        <span>Cvičenia</span>
       </button>
-      <button class="sidebar-nav-item" data-tab="tabAsistent" id="sidebarTabAsistent">
-        <span class="sn-icon">🎧</span>
-        <span class="sn-label">Asistent</span>
+      <button class="nav-item" data-tab="tabAsistent" id="sidebarTabAsistent">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h4v7H6a2 2 0 0 1-2-2v-5ZM20 14h-4v7h2a2 2 0 0 0 2-2v-5Z"/></svg>
+        <span>Asistent</span>
       </button>
-      <button class="sidebar-nav-item" data-tab="tabTelemetria" id="sidebarTabTelemetria">
-        <span class="sn-icon">📊</span>
-        <span class="sn-label">Môj pokrok</span>
-      </button>
-      <button class="sidebar-nav-item" id="sidebarScienceBtn">
-        <span class="sn-icon">🔬</span>
-        <span class="sn-label">Veda & Modely</span>
+      <button class="nav-item" data-tab="tabTelemetria" id="sidebarTabTelemetria">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        <span>Môj pokrok</span>
       </button>
     </nav>
 
-    <div class="sidebar-footer">
-      <button class="sidebar-profile-card" id="sidebarProfileBtn" type="button">
-        <div class="sidebar-avatar" id="sidebarAvatarCircle">AB</div>
-        <div class="sidebar-user-info">
-          <span class="sidebar-user-name" id="sidebarUserName">Môj profil</span>
-          <span class="sidebar-user-status">Klinický trenažér</span>
-        </div>
-        <span class="sidebar-settings-icon">⚙️</span>
+    <div class="sidebar-bottom">
+      <button class="nav-item" id="sidebarSettingsBtn">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06-2.83 2.83-.06-.06A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1 .6 1.8 1.8 0 0 0-.4 1v.1h-4V21a1.8 1.8 0 0 0-1.2-1.7 1.8 1.8 0 0 0-2 .4l-.06.07-2.83-2.83.06-.06a1.8 1.8 0 0 0 .4-2A1.8 1.8 0 0 0 2.2 14H2v-4h.1a1.8 1.8 0 0 0 1.7-1.2 1.8 1.8 0 0 0-.4-2l-.07-.06L6.16 3.9l.06.06a1.8 1.8 0 0 0 2 .4A1.8 1.8 0 0 0 9.2 2.6V2h4v.1a1.8 1.8 0 0 0 1.2 1.7 1.8 1.8 0 0 0 2-.4l.06-.07 2.83 2.83-.06.06a1.8 1.8 0 0 0-.4 2A1.8 1.8 0 0 0 20.6 9h.4v4h-.1a1.8 1.8 0 0 0-1.5 2Z"/></svg>
+        <span>Veda & Modely</span>
+      </button>
+      <button class="profile-chip" id="sidebarProfileChip" aria-label="Otvoriť profil">
+        <span class="avatar" id="sidebarAvatarCircle">AM</span>
+        <span>
+          <strong id="sidebarUserName">Alex Morgan</strong>
+          <small>Osobný plán</small>
+        </span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
       </button>
     </div>
   </aside>
 
-  <!-- HLAVNÉ TELO OBSAHU -->
-  <div class="app-layout" id="appLayout">
-
-    <!-- HORNÝ HUD (Viditeľný na mobile aj na desktope v záhlaví) -->
-    <header class="duo-header" id="mainHeader">
-      <div class="header-inner">
-        <div class="brand-badge" id="brandLogoBtn" title="Glide Biofeedback">
-          <div class="brand-soundwave">
-            <span class="sw-col c1"></span>
-            <span class="sw-col c2"></span>
-            <span class="sw-col c3"></span>
-          </div>
-          <span class="brand-name">glide</span>
+  <!-- HLAVNÉ TELO -->
+  <main>
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="mobile-brand" id="brandLogoBtn">
+        <span class="brand-mark small">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        glide
+      </div>
+      <div class="date-pill">
+        <span id="topbarDayName">Štvrtok</span>
+        <strong id="topbarDateStr">22. mája</strong>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="streak-card" style="padding: 6px 14px; margin: 0; min-height: unset; border-radius: 999px; gap:8px;">
+          <span class="streak-icon" style="width: 22px; height: 22px; border-radius: 50%;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z"/></svg>
+          </span>
+          <strong style="font-size: 12px;"><span id="streakVal">6</span> dní</strong>
         </div>
-
-        <div class="hud-metrics">
-          <!-- Streak -->
-          <div class="hud-pill fire" id="hudStreakPill" title="Denná séria tréningu">
-            <span class="hud-icon">🔥</span>
-            <span class="hud-val" id="streakVal">1</span>
-          </div>
-
-          <!-- XP -->
-          <div class="hud-pill xp" id="hudXpPill" title="Celkové body XP">
-            <span class="hud-icon">⚡</span>
-            <span class="hud-val" id="xpVal">0</span>
-          </div>
-
-          <!-- Srdiečka / Životy -->
-          <div class="hud-pill hearts" id="hudHeartsPill" title="Životy na lekciu">
-            <span class="hud-icon">❤️</span>
-            <span class="hud-val" id="heartsVal">5</span>
-          </div>
-
-          <!-- Rank Odznak -->
-          <div class="rank-badge" id="hudRankBadge" title="Tvoja aktuálna úroveň plynulosti">
-            <span class="rank-icon">👑</span>
-            <span class="rank-title-short" id="rankTitle">Začiatočník</span>
-          </div>
-
-          <!-- Profil Tlačidlo -->
-          <button class="header-profile-btn" id="headerProfileBtn" type="button" title="Používateľský profil & Cloud synchronizácia">
-            <div class="header-avatar-circle" id="headerAvatarCircle">AB</div>
-            <span class="profile-name-short" id="headerProfileName">Profil</span>
-          </button>
-        </div>
+        <button class="avatar mobile-avatar" id="headerProfileBtn" aria-label="Otvoriť profil">
+          <span id="headerAvatarCircle">AM</span>
+        </button>
       </div>
     </header>
 
-    <!-- HLAVNÝ OBSAH (4 ZÁLOŽKY) -->
-    <main class="main-content-viewport">
-
-      <!-- ---------------------------------------------------------------- -->
-      <!-- ZÁLOŽKA 1: 🗺️ CESTA (KAMPAŇ / HLAVNÁ HRA)                        -->
-      <!-- ---------------------------------------------------------------- -->
-      <section class="tab-pane active" id="tabCesta">
+    <!-- ================================================================ -->
+    <!-- ZÁLOŽKA 1: DNES (HLAVNÝ DASHBOARD & 5 SVETOV)                     -->
+    <!-- ================================================================ -->
+    <section class="tab-pane active" id="tabCesta">
+      <div class="dashboard">
         
-        <!-- HERO KARTA (Figma Vela: YOUR DAILY SPACE) -->
-        <div class="daily-space-hero">
-          <span class="hero-overline">TVOJ KAŽDODENNÝ PRIESTOR</span>
-          <h1 class="hero-greeting" id="dailyGreetingHeading">Dobré ráno, Alex.</h1>
-          <p class="hero-subline">Nadýchni sa. Žiadny zhon, žiadne hodnotenie.</p>
-        </div>
+        <!-- WELCOME ROW -->
+        <section class="welcome-row">
+          <div>
+            <p class="eyebrow">TVOJ KAŽDODENNÝ PRIESTOR</p>
+            <h1 id="dailyGreetingHeading">Dobrý deň, Alex<span>.</span></h1>
+            <p class="subtitle">Nadýchni sa. Tu sa nemusíš ponáhľať.</p>
+          </div>
+          <div class="streak-card">
+            <span class="streak-icon">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z"/></svg>
+            </span>
+            <div>
+              <strong>Séria <span id="streakDaysCount">6</span> dní</strong>
+              <small>Buduješ si pravidelný rytmus</small>
+            </div>
+          </div>
+        </section>
 
-        <!-- KARTA DNEŠNÉHO ZAMERANIA (Figma Vela: TODAY'S FOCUS) -->
-        <div class="todays-focus-card">
-          <div class="focus-card-left">
-            <div class="focus-eyebrow">✦ DNEŠNÉ ZAMERANIE</div>
-            <h2 class="focus-title">Rozohrej svoj hlas jemne.</h2>
-            <p class="focus-description" id="dailyQuestText">Tri krátke cvičenia, ktoré ti pomôžu cítiť sa pokojne a pripraviť sa na deň.</p>
-            <button class="focus-cta-btn" id="continuePathBtn" type="button">
-              <span>Spustiť tréning</span>
-              <span class="cta-arrow">→</span>
+        <!-- HERO CARD (DNEŠNÉ ZAMERANIE) -->
+        <section class="hero-card">
+          <div class="hero-copy">
+            <span class="mini-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 2 1.4 5.1L18 9.5l-4.6 2.4L12 17l-1.4-5.1L6 9.5l4.6-2.4L12 2ZM19 16l.6 2.2L22 19.5l-2.4 1.3L19 23l-.6-2.2-2.4-1.3 2.4-1.3L19 16Z"/></svg>
+              DNEŠNÉ ZAMERANIE
+            </span>
+            <h2>Rozohrej svoj hlas<br />jemne.</h2>
+            <p id="dailyQuestText">Tri krátke cvičenia, ktoré ti pomôžu cítiť sa pokojne a pripraviť sa na deň.</p>
+            <button class="primary-button" id="continuePathBtn" type="button">
+              <span>Začať rozcvičku</span>
+              <span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+              </span>
             </button>
           </div>
-          <div class="focus-card-visual">
-            <div class="breathing-capsule-widget">
-              <div class="breathing-ring-pulse"></div>
-              <div class="breathing-circle-core">
-                <span class="bc-label" id="stageBreathLabel">Nádych</span>
-                <span class="bc-num" id="stageBreathNum">4</span>
-                <span class="bc-unit">sekundy</span>
+          <div class="hero-visual" aria-hidden="true">
+            <span class="orb orb-one"></span>
+            <span class="orb orb-two"></span>
+            <div class="breath-ring">
+              <div>
+                <span id="stageBreathLabel">Nádych</span>
+                <strong id="stageBreathNum">4</strong>
+                <small>sekundy</small>
                 <span id="wbBreathLabel" style="display:none;"></span>
                 <span id="wbBreathNum" style="display:none;"></span>
               </div>
             </div>
+            <span class="wave wave-one"></span>
+            <span class="wave wave-two"></span>
+            <span class="wave wave-three"></span>
           </div>
-        </div>
+        </section>
 
-        <!-- SEKCIA REČOVÉHO PLÁNU (5 SVETOV) -->
-        <div class="curriculum-section-header">
-          <div class="curriculum-badge">TVOJ REČOVÝ PLÁN</div>
-          <h3 class="curriculum-title">5 Svetov neuro-tréningu plynulosti</h3>
-        </div>
-
-        <!-- 5 Svetov s lineárnym stromom úrovní (GAMIFIKÁCIA) -->
-        <div class="worlds-wrapper" id="worldsWrapper">
-          <!-- Dynamicky vygenerované z gamification-engine.js -->
-        </div>
-
-        <div class="tab-bottom-spacer"></div>
-      </section>
-
-<section class="tab-pane" id="tabDril">
-      <div class="sandbox-container">
-        
-        <!-- Hero karta SOS Drilu -->
-        <div class="sandbox-hero-card">
-          <div class="sandbox-badge">⚡ SOS SANDBOX</div>
-          <h2 class="sandbox-title">Rýchly Dril v Teréne</h2>
-          <p class="sandbox-sub">Čaká ťa pokladňa, telefonát alebo objednávka? Zadaj cieľové slovo a uvoľni sánku v 3 rýchlych pokusoch.</p>
-        </div>
-
-        <!-- Vstup na vlastné slovo / meno -->
-        <div class="sandbox-input-card">
-          <label class="sandbox-label" for="wordInput">Cieľové slovo alebo veta:</label>
-          <div class="sandbox-input-wrap">
-            <input type="text" id="wordInput" class="custom-word-input" value="Peter Novák" placeholder="Zadaj slovo, meno alebo celú vetu..." />
-            <button class="btn-3d blue sm" id="clearWordBtn" title="Vyčistiť text">✕</button>
-          </div>
-
-          <!-- Rýchle SOS čipy -->
-          <div class="sos-chips-label">Rýchly výber SOS fráz:</div>
-          <div class="preset-chips">
-            <span class="chip" data-word="Peter Novák">Peter Novák</span>
-            <span class="chip" data-word="Kartou, prosím">Kartou, prosím</span>
-            <span class="chip" data-word="Dobrý deň, pri telefóne">Dobrý deň, pri telefóne</span>
-            <span class="chip" data-word="Káva s mliekom">Káva s mliekom</span>
-            <span class="chip" data-word="Chlieb">Chlieb (CH)</span>
-            <span class="chip" data-word="Štvrtok o tretej">Štvrtok o tretej</span>
-            <span class="chip" data-word="Isto, ďakujem">Isto, ďakujem</span>
-          </div>
-        </div>
-
-        <!-- Voľba režimu drilu -->
-        <div class="sandbox-mode-card">
-          <div class="sandbox-label">Zvoľ režim tréningu:</div>
-          <div class="mode-select-grid">
-            <label class="mode-card-radio">
-              <input type="radio" name="sandboxMode" value="standard" checked>
-              <div class="mode-card-inner">
-                <span class="mode-card-icon">🧘</span>
-                <span class="mode-card-title">Pacer (Technika)</span>
-                <span class="mode-card-desc">Dychový kruh, pomalý plynulý nábeh VRT</span>
+        <!-- CONTENT GRID: 5 SVETOV & RYTMUS -->
+        <div class="content-grid">
+          
+          <!-- SEKCIA REČOVÉHO PLÁNU (5 SVETOV) -->
+          <section class="plan-section">
+            <div class="section-heading">
+              <div>
+                <span class="section-kicker">TVOJ PLÁN</span>
+                <h3>5 Svetov neuro-tréningu plynulosti</h3>
               </div>
-            </label>
+              <span class="plan-count" id="planProgressCount">0 z 25 dokončené</span>
+            </div>
 
-            <label class="mode-card-radio">
-              <input type="radio" name="sandboxMode" value="guillotine">
-              <div class="mode-card-inner">
-                <span class="mode-card-icon">⚡</span>
-                <span class="mode-card-title">Časový tlak</span>
-                <span class="mode-card-desc">Limit 550 ms na odpoveď bez kŕča</span>
+            <!-- 5 Svetov Gamifikácie (Renderuje gamification-engine.js) -->
+            <div class="worlds-wrapper" id="worldsWrapper">
+              <!-- Dynamicky generované z gamification-engine.js -->
+            </div>
+          </section>
+
+          <!-- TENTO TÝŽDEŇ & RYTMUS -->
+          <aside class="insights-column">
+            <div class="section-heading compact">
+              <div>
+                <span class="section-kicker">TENTO TÝŽDEŇ</span>
+                <h3>Tvoj rytmus</h3>
               </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Veľké tlačidlo na spustenie drilu -->
-        <div class="sandbox-action-wrap">
-          <button class="btn-3d green full lg" id="launchSosDrillBtn">
-            <span>SPUSTIŤ SOS DRIL (3 pokusy)</span>
-          </button>
-        </div>
-
-        <!-- ============================================================== -->
-        <!-- TREZOR OBÁVANÝCH SLOV (FEARED WORDS VAULT)                     -->
-        <!-- ============================================================== -->
-        <div class="telemetry-card feared-words-card" id="fearedWordsCard">
-          <div class="card-header-row">
-            <div>
-              <div class="card-subtitle orange">DESENZIBILIZAČNÝ MODUL</div>
-              <h3 class="card-title">🔐 Trezor Obávaných Slov</h3>
+              <button class="text-button" id="goToProgressBtn" type="button">Zobraziť pokrok</button>
             </div>
-            <span class="vault-status-badge" id="vaultMasteryBadge">0 / 0 Odblokované 🏆</span>
-          </div>
 
-          <p class="vault-lead">
-            Ulož si slová, mená či objednávky, ktoré v tebe vyvolávajú anticipačný kŕč. Trénuj ich v SOS drilu až do ich plného odblokovania (3 úspešné nábehy = trofej 🏆).
-          </p>
-
-          <!-- Pridanie nového slova do trezoru -->
-          <div class="vault-add-form">
-            <div class="vault-input-row">
-              <input type="text" id="vaultWordInput" class="vault-input" placeholder="Nové obávané slovo, meno alebo objednávka..." />
-              <select id="vaultCategorySelect" class="vault-select" title="Kategória slova">
-                <option value="Meno">👤 Meno</option>
-                <option value="Kaviareň">☕ Kaviareň</option>
-                <option value="Cestovanie">📍 Mesto</option>
-                <option value="Číslo">🔢 Číslo</option>
-                <option value="Práca">💼 Práca</option>
-                <option value="Iné">⚡ Iné</option>
-              </select>
-              <button class="btn-3d amber sm" id="vaultAddBtn">
-                <span>+ Pridať</span>
-              </button>
+            <div class="rhythm-card">
+              <div class="week-bars" id="weeklyBarsContainer">
+                <div class="day"><span class="bar complete" style="height: 72px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 12 4 4 8-9"/></svg></span><small>P</small></div>
+                <div class="day"><span class="bar complete" style="height: 88px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 12 4 4 8-9"/></svg></span><small>U</small></div>
+                <div class="day"><span class="bar complete" style="height: 58px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 12 4 4 8-9"/></svg></span><small>S</small></div>
+                <div class="day"><span class="bar complete" style="height: 100px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 12 4 4 8-9"/></svg></span><small>Š</small></div>
+                <div class="day"><span class="bar" style="height: 42px;"></span><small>P</small></div>
+                <div class="day"><span class="bar" style="height: 15px;"></span><small>S</small></div>
+                <div class="day"><span class="bar" style="height: 15px;"></span><small>N</small></div>
+              </div>
+              <div class="weekly-note">
+                <strong><span id="weeklyCountVal">4</span> cvičenia</strong>
+                <span>O jedno viac ako minulý týždeň</span>
+              </div>
             </div>
-          </div>
 
-          <!-- Filtre a akcie trezoru -->
-          <div class="vault-toolbar">
-            <button class="btn-3d purple sm" id="vaultRandomChallengeBtn" title="Vyberie náhodné obávané slovo a spustí dril">
-              <span>🎲 Náhodná výzva</span>
-            </button>
-            <div class="vault-filter-pills" id="vaultFilterPills">
-              <button class="vault-pill active" data-filter="all" id="vFilterAll">Všetky (<span id="vCountAll">0</span>)</button>
-              <button class="vault-pill" data-filter="unmastered" id="vFilterTraining">V tréningu (<span id="vCountTraining">0</span>)</button>
-              <button class="vault-pill" data-filter="mastered" id="vFilterMastered">🏆 (<span id="vCountMastered">0</span>)</button>
+            <blockquote>
+              <span class="quote-mark">“</span>
+              <p>Tvoj hlas stojí za vypočutie presne taký, aký je.</p>
+              <footer>Dnešná pripomienka</footer>
+            </blockquote>
+
+            <div style="border: 1px solid var(--line); border-radius: 17px; background: rgba(255, 254, 253, 0.76); padding: 18px 20px; margin-top: 16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Stav plynulosti</span>
+                <span id="rankTitle" style="font-size:12px; font-weight:700; color:var(--purple);">Začiatočník</span>
+              </div>
+              <div style="display:flex; gap:20px;">
+                <div><small style="color:var(--muted); font-size:11px; display:block;">Body XP</small><div style="font-size:18px; font-weight:700; color:var(--ink);" id="xpVal">0</div></div>
+                <div><small style="color:var(--muted); font-size:11px; display:block;">Životy</small><div style="font-size:18px; font-weight:700; color:var(--coral);" id="heartsVal">5</div></div>
+              </div>
             </div>
-          </div>
-
-          <!-- Zoznam kariet slov v trezore -->
-          <div class="vault-list" id="vaultList">
-            <!-- Dynamicky generované z gamification-engine.js -->
-          </div>
+          </aside>
         </div>
-
-        <div class="tab-bottom-spacer"></div>
       </div>
     </section>
 
-    <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 3: 🎧 ASISTENT (ŽIVÝ DAF ODPOSLUCH V REÁLNOM ČASE)         -->
-    <!-- ------------------------------------------------------------------ -->
+    <!-- ================================================================ -->
+    <!-- ZÁLOŽKA 2: CVIČENIA (SOS DRILL & TREZOR OBÁVANÝCH SLOV)          -->
+    <!-- ================================================================ -->
+    <section class="tab-pane" id="tabDril">
+      <div class="dashboard inner-page">
+        
+        <div class="page-intro" style="margin-bottom: 24px;">
+          <p class="eyebrow">TERÉNNY REŽIM</p>
+          <h1>Cvičenia & SOS Dril<span>.</span></h1>
+          <p class="subtitle">Uvoľni sánku, zredukuj anticipačný kŕč a natrénuj si obávané slová.</p>
+        </div>
+
+        <div class="sandbox-container">
+          <!-- Hero karta SOS Drilu -->
+          <div class="sandbox-hero-card">
+            <div class="sandbox-badge">⚡ SOS SANDBOX</div>
+            <h2 class="sandbox-title">Rýchly Dril v Teréne</h2>
+            <p class="sandbox-sub">Čaká ťa pokladňa, telefonát alebo objednávka? Zadaj cieľové slovo a uvoľni sánku v 3 rýchlych pokusoch.</p>
+          </div>
+
+          <!-- Vstup na vlastné slovo / meno -->
+          <div class="sandbox-input-card">
+            <label class="sandbox-label" for="wordInput" style="font-weight:600; font-size:13px; color:var(--ink); display:block; margin-bottom:8px;">Cieľové slovo alebo veta:</label>
+            <div style="display:flex; gap:10px;">
+              <input type="text" id="wordInput" class="auth-input" value="Peter Novák" placeholder="Zadaj slovo, meno alebo celú vetu..." />
+              <button class="btn-3d sm" id="clearWordBtn" title="Vyčistiť text">✕</button>
+            </div>
+
+            <!-- Rýchle SOS čipy -->
+            <div style="font-size:11px; font-weight:600; color:var(--muted); margin-top:14px; text-transform:uppercase;">Rýchly výber SOS fráz:</div>
+            <div class="preset-chips">
+              <span class="chip" data-word="Peter Novák">Peter Novák</span>
+              <span class="chip" data-word="Kartou, prosím">Kartou, prosím</span>
+              <span class="chip" data-word="Dobrý deň, pri telefóne">Dobrý deň, pri telefóne</span>
+              <span class="chip" data-word="Káva s mliekom">Káva s mliekom</span>
+              <span class="chip" data-word="Chlieb">Chlieb (CH)</span>
+              <span class="chip" data-word="Štvrtok o tretej">Štvrtok o tretej</span>
+              <span class="chip" data-word="Isto, ďakujem">Isto, ďakujem</span>
+            </div>
+          </div>
+
+          <!-- Voľba režimu drilu -->
+          <div class="sandbox-mode-card">
+            <div style="font-weight:600; font-size:13px; color:var(--ink); margin-bottom:12px;">Zvoľ režim tréningu:</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <label style="display:flex; align-items:flex-start; gap:10px; border:1px solid var(--line); border-radius:12px; padding:14px; background:white; cursor:pointer;">
+                <input type="radio" name="sandboxMode" value="standard" checked style="margin-top:4px;">
+                <div>
+                  <strong style="font-size:13px; color:var(--ink); display:block;">Pacer (Technika)</strong>
+                  <small style="font-size:11px; color:var(--muted);">Dychový kruh, pomalý plynulý nábeh VRT</small>
+                </div>
+              </label>
+
+              <label style="display:flex; align-items:flex-start; gap:10px; border:1px solid var(--line); border-radius:12px; padding:14px; background:white; cursor:pointer;">
+                <input type="radio" name="sandboxMode" value="guillotine" style="margin-top:4px;">
+                <div>
+                  <strong style="font-size:13px; color:var(--ink); display:block;">Časový tlak</strong>
+                  <small style="font-size:11px; color:var(--muted);">Limit 550 ms na odpoveď bez kŕča</small>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Veľké tlačidlo na spustenie drilu -->
+          <div style="margin-bottom: 24px;">
+            <button class="btn-primary full lg" id="launchSosDrillBtn" type="button">
+              <span>SPUSTIŤ SOS DRIL (3 pokusy)</span>
+            </button>
+          </div>
+
+          <!-- TREZOR OBÁVANÝCH SLOV -->
+          <div class="telemetry-card feared-words-card" id="fearedWordsCard">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+              <div>
+                <span class="section-kicker">DESENZIBILIZAČNÝ MODUL</span>
+                <h3 style="font-family:var(--font-serif); font-size:22px; font-weight:600; color:var(--ink);">Trezor Obávaných Slov</h3>
+              </div>
+              <span class="vault-status-badge" id="vaultMasteryBadge" style="background:#ebe7fb; color:var(--purple-dark); padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700;">0 / 0 Odblokované 🏆</span>
+            </div>
+
+            <p style="font-size:13px; color:var(--muted); line-height:1.45; margin-bottom:16px;">
+              Ulož si slová, mená či objednávky, ktoré v tebe vyvolávajú anticipačný kŕč. Trénuj ich v SOS drile až do ich plného odblokovania (3 úspešné nábehy = trofej 🏆).
+            </p>
+
+            <div style="display:flex; gap:10px; margin-bottom:14px;">
+              <input type="text" id="vaultWordInput" class="auth-input" placeholder="Nové obávané slovo, meno alebo objednávka..." />
+              <select id="vaultCategorySelect" class="auth-input" style="width:140px;" title="Kategória slova">
+                <option value="Meno">Meno</option>
+                <option value="Kaviareň">Kaviareň</option>
+                <option value="Cestovanie">Mesto</option>
+                <option value="Číslo">Číslo</option>
+                <option value="Práca">Práca</option>
+                <option value="Iné">Iné</option>
+              </select>
+              <button class="btn-3d amber sm" id="vaultAddBtn" type="button">+ Pridať</button>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <button class="btn-3d sm" id="vaultRandomChallengeBtn" type="button">🎲 Náhodná výzva</button>
+              <div style="display:flex; gap:6px;">
+                <button class="btn-3d sm" id="vFilterAll" data-filter="all">Všetky (<span id="vCountAll">0</span>)</button>
+                <button class="btn-3d sm" id="vFilterTraining" data-filter="unmastered">V tréningu (<span id="vCountTraining">0</span>)</button>
+                <button class="btn-3d sm" id="vFilterMastered" data-filter="mastered">🏆 (<span id="vCountMastered">0</span>)</button>
+              </div>
+            </div>
+
+            <div class="vault-list" id="vaultList">
+              <!-- Dynamicky generované z gamification-engine.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- ZÁLOŽKA 3: ASISTENT (ŽIVÝ DAF & FAF ODPOSLUCH)                    -->
+    <!-- ================================================================ -->
     <section class="tab-pane" id="tabAsistent">
-      <div class="assistant-container">
-
-        <!-- Hero karta Asistenta -->
-        <div class="assistant-hero-card">
-          <div class="assistant-badge">🎧 ŽIVÝ REČOVÝ ASISTENT</div>
-          <h2 class="assistant-title">Osobný Rečový Asistent</h2>
-          <p class="assistant-sub">Živý zborový odposluch vlastného hlasu s jemným časovým oneskorením (DAF 70 ms) a skutočným zvýšením výšky tónu hlasu (FAF +2 poltóny) do slúchadla v reálnom čase. Mozog vníma reč ako hovorenie s partnerom (Choral Speech Effect), čo reflexívne uvoľňuje kŕč hlasiviek pri prezentáciách, hovoroch či v teréne.</p>
-
-          <div class="assistant-headphone-alert">
-            <span class="alert-icon">🎧</span>
-            <span class="alert-text">Používaj so slúchadlami, aby nevznikla spätná väzba do mikrofónu.</span>
-          </div>
+      <div class="dashboard inner-page">
+        
+        <div class="page-intro" style="margin-bottom: 24px;">
+          <p class="eyebrow">SLUCHOVÝ ASISTENT</p>
+          <h1>Živý DAF & FAF Odposluch<span>.</span></h1>
+          <p class="subtitle">Zborový efekt (Choral Speech) pre okamžité uvoľnenie kŕča hlasiviek.</p>
         </div>
 
-        <!-- Vizuálny feedback (pulzujúci indikátor v reálnom čase) -->
-        <div class="assistant-visual-card">
-          <div class="pulse-wrapper">
-            <div class="assistant-pulse-circle" id="assistantPulseIndicator">
-              <div class="pulse-ring pulse-ring-1"></div>
-              <div class="pulse-ring pulse-ring-2"></div>
-              <div class="pulse-inner-core">
-                <span class="pulse-icon" id="assistantPulseIcon">🎧</span>
-              </div>
+        <div class="assistant-container">
+          <div class="assistant-hero-card">
+            <div class="assistant-badge">🎧 ŽIVÝ REČOVÝ ASISTENT</div>
+            <h2 class="assistant-title">Osobný Rečový Asistent</h2>
+            <p class="assistant-sub">Živý zborový odposluch vlastného hlasu s jemným časovým oneskorením (DAF 70 ms) a skutočným zvýšením výšky tónu hlasu (FAF +2 poltóny) do slúchadla v reálnom čase. Mozog vníma reč ako hovorenie s partnerom (Choral Speech Effect), čo reflexívne uvoľňuje kŕč hlasiviek pri prezentáciách, hovoroch či v teréne.</p>
+
+            <div style="display:flex; align-items:center; gap:10px; background:#fff7ed; border:1px solid #ffedd5; border-radius:12px; padding:10px 14px; margin-top:14px; color:#c2410c; font-size:12px; font-weight:500;">
+              <span>🎧</span>
+              <span>Používaj so slúchadlami, aby nevznikala spätná väzba do mikrofónu.</span>
             </div>
-            <div class="pulse-status-text" id="assistantPulseStatus">Asistent je pripravený</div>
           </div>
-        </div>
 
-        <!-- Dominantný Master Switch -->
-        <div class="assistant-toggle-card">
-          <button class="btn-3d green full lg assistant-main-btn" id="assistantToggle">
-            <span class="btn-main-label">▶ Aktivovať asistenta</span>
-          </button>
-        </div>
-
-        <!-- Iba dva intuitívne ovládacie prvky -->
-        <div class="assistant-controls-card">
-          
-          <!-- 1. Rýchlosť odozvy (Delay) -->
-          <div class="control-row-group">
-            <div class="control-label-row">
-              <div class="control-title-wrap">
-                <span class="control-icon">⏱️</span>
-                <span class="control-name">Rýchlosť odozvy (Delay):</span>
-              </div>
-              <span class="control-val-badge" id="assistantDelayVal">70 ms</span>
+          <!-- Vizuálny feedback (pulzujúci indikátor) -->
+          <div style="border: 1px solid var(--line); border-radius: 20px; background: rgba(255, 254, 253, 0.76); padding: 28px; text-align:center; margin-bottom:20px;">
+            <div class="assistant-pulse-circle" id="assistantPulseIndicator" style="width:90px; height:90px; border-radius:50%; background:#f2eefd; border:3px solid var(--purple); display:flex; align-items:center; justify-content:center; margin:0 auto 12px auto; font-size:32px; color:var(--purple);">
+              🎧
             </div>
+            <div id="assistantPulseStatus" style="font-size:13px; font-weight:600; color:var(--ink);">Asistent je pripravený</div>
+          </div>
 
-            <div class="slider-track-container">
-              <div class="slider-wrap">
-                <input type="range" class="assistant-slider" id="assistantDelaySlider" min="40" max="140" step="5" value="70">
-                <input type="hidden" id="dafDelaySlider" value="70">
+          <!-- Dominantný Master Switch -->
+          <div style="margin-bottom: 20px;">
+            <button class="btn-primary full lg" id="assistantToggle" type="button">
+              <span>▶ Aktivovať asistenta</span>
+            </button>
+          </div>
+
+          <!-- Ovládacie posuvníky -->
+          <div class="assistant-controls-card">
+            
+            <!-- 1. Delay Slider -->
+            <div class="control-row-group">
+              <div class="control-label-row">
+                <div class="control-title-wrap">
+                  <span>⏱️</span>
+                  <span>Rýchlosť odozvy (Delay):</span>
+                </div>
+                <span class="control-val-badge" id="assistantDelayVal">70 ms</span>
               </div>
 
-              <!-- Presná matematicky zarovnaná stupnica (40..140 ms, 70 ms leží na presne 30%) -->
+              <input type="range" class="assistant-slider" id="assistantDelaySlider" min="40" max="140" step="5" value="70">
+              <input type="hidden" id="dafDelaySlider" value="70">
+
               <div class="slider-ruler" id="delayRuler">
-                <div class="ruler-mark" style="left: 0%;" data-val="40">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">40 ms</span>
-                </div>
-                <div class="ruler-mark sweet active" style="left: 30%;" data-val="70">
-                  <div class="ruler-tick sweet"></div>
-                  <span class="ruler-label sweet">⭐ Optimálny (70 ms)</span>
-                </div>
-                <div class="ruler-mark" style="left: 60%;" data-val="100">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">100 ms</span>
-                </div>
-                <div class="ruler-mark" style="left: 100%;" data-val="140">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">140 ms</span>
-                </div>
+                <div class="ruler-mark" style="left: 0%;" data-val="40"><div class="ruler-tick"></div><span class="ruler-label">40 ms</span></div>
+                <div class="ruler-mark active" style="left: 30%;" data-val="70"><div class="ruler-tick"></div><span class="ruler-label sweet">★ Optimálny (70 ms)</span></div>
+                <div class="ruler-mark" style="left: 60%;" data-val="100"><div class="ruler-tick"></div><span class="ruler-label">100 ms</span></div>
+                <div class="ruler-mark" style="left: 100%;" data-val="140"><div class="ruler-tick"></div><span class="ruler-label">140 ms</span></div>
               </div>
             </div>
-          </div>
 
-          <!-- 2. Hlasitosť v uchu (Volume) -->
-          <div class="control-row-group">
-            <div class="control-label-row">
-              <div class="control-title-wrap">
-                <span class="control-icon">🔊</span>
-                <span class="control-name">Hlasitosť v uchu:</span>
-              </div>
-              <span class="control-val-badge" id="assistantVolVal">85 %</span>
-            </div>
-
-            <div class="slider-track-container">
-              <div class="slider-wrap">
-                <input type="range" class="assistant-slider" id="assistantVolSlider" min="0" max="100" step="1" value="85">
+            <!-- 2. Volume Slider -->
+            <div class="control-row-group">
+              <div class="control-label-row">
+                <div class="control-title-wrap">
+                  <span>🔊</span>
+                  <span>Hlasitosť v uchu:</span>
+                </div>
+                <span class="control-val-badge" id="assistantVolVal">85 %</span>
               </div>
 
-              <!-- Presná matematicky zarovnaná stupnica (0..100%, 85% leží na presne 85%) -->
+              <input type="range" class="assistant-slider" id="assistantVolSlider" min="0" max="100" step="1" value="85">
+
               <div class="slider-ruler" id="volRuler">
-                <div class="ruler-mark" style="left: 0%;" data-val="0">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">0 % (Ticho)</span>
-                </div>
-                <div class="ruler-mark" style="left: 50%;" data-val="50">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">50 %</span>
-                </div>
-                <div class="ruler-mark sweet active" style="left: 85%;" data-val="85">
-                  <div class="ruler-tick sweet"></div>
-                  <span class="ruler-label sweet">⭐ Odporúčaná (85 %)</span>
-                </div>
-                <div class="ruler-mark" style="left: 100%;" data-val="100">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">100 %</span>
-                </div>
+                <div class="ruler-mark" style="left: 0%;" data-val="0"><div class="ruler-tick"></div><span class="ruler-label">0%</span></div>
+                <div class="ruler-mark" style="left: 50%;" data-val="50"><div class="ruler-tick"></div><span class="ruler-label">50%</span></div>
+                <div class="ruler-mark active" style="left: 85%;" data-val="85"><div class="ruler-tick"></div><span class="ruler-label sweet">★ 85%</span></div>
+                <div class="ruler-mark" style="left: 100%;" data-val="100"><div class="ruler-tick"></div><span class="ruler-label">100%</span></div>
               </div>
             </div>
-          </div>
 
-          <!-- 3. FAF Zmena výšky hlasu (Pitch Shift) -->
-          <div class="control-row-group">
-            <div class="control-label-row">
-              <div class="control-title-wrap">
-                <span class="control-icon">🎵</span>
-                <span class="control-name">FAF Posun výšky tónu (Pitch Shift):</span>
+            <!-- 3. FAF Pitch Shift Slider -->
+            <div class="control-row-group" style="margin-bottom:0;">
+              <div class="control-label-row">
+                <div class="control-title-wrap">
+                  <span>🎵</span>
+                  <span>FAF Posun výšky tónu:</span>
+                </div>
+                <span class="control-val-badge" id="assistantPitchVal">+2 st</span>
               </div>
-              <span class="control-val-badge" id="assistantPitchVal">+2 st</span>
-            </div>
 
-            <div class="slider-track-container">
-              <div class="slider-wrap">
-                <input type="range" class="assistant-slider" id="assistantPitchSlider" min="-4" max="4" step="1" value="2">
-              </div>
+              <input type="range" class="assistant-slider" id="assistantPitchSlider" min="-4" max="4" step="1" value="2">
 
               <div class="slider-ruler" id="pitchRuler">
-                <div class="ruler-mark" style="left: 0%;" data-val="-4">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">-4 st</span>
-                </div>
-                <div class="ruler-mark" style="left: 50%;" data-val="0">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">0 st (Normál)</span>
-                </div>
-                <div class="ruler-mark sweet active" style="left: 75%;" data-val="2">
-                  <div class="ruler-tick sweet"></div>
-                  <span class="ruler-label sweet">⭐ +2 st (Choral Effect)</span>
-                </div>
-                <div class="ruler-mark" style="left: 100%;" data-val="4">
-                  <div class="ruler-tick"></div>
-                  <span class="ruler-label">+4 st</span>
-                </div>
+                <div class="ruler-mark" style="left: 0%;" data-val="-4"><div class="ruler-tick"></div><span class="ruler-label">-4 st</span></div>
+                <div class="ruler-mark" style="left: 50%;" data-val="0"><div class="ruler-tick"></div><span class="ruler-label">0 st</span></div>
+                <div class="ruler-mark active" style="left: 75%;" data-val="2"><div class="ruler-tick"></div><span class="ruler-label sweet">★ +2 st</span></div>
+                <div class="ruler-mark" style="left: 100%;" data-val="4"><div class="ruler-tick"></div><span class="ruler-label">+4 st</span></div>
               </div>
             </div>
-          </div>
 
-          <!-- Integrovaná automatická modulácia tónu -->
-          <div class="assistant-feature-badge">
-            <span class="afb-icon">✨</span>
-            <span class="afb-text">
-              <strong>Real-Time FAF (+2 poltóny):</strong> Asistent v reálnom čase zvyšuje základnú frekvenciu ($F_0$) druhého hlasu o +2 poltóny prostredníctvom dvojitej Dopplerovej modulácie bez flangeru. Táto kombinácia DAF + FAF vyvoláva v mozgu autentický efekt zborovej reči (Choral Speech Effect) a zabraňuje habituácii sluchovej kôry.
-            </span>
           </div>
-
         </div>
-
-        <div class="tab-bottom-spacer"></div>
       </div>
     </section>
 
-    <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 4: 📊 TELEMETRIA (PROFIL & ŠTATISTIKY)                      -->
-    <!-- ------------------------------------------------------------------ -->
+    <!-- ================================================================ -->
+    <!-- ZÁLOŽKA 4: MÔJ POKROK (TELEMETRIA, VRT & PROFIL)                  -->
+    <!-- ================================================================ -->
     <section class="tab-pane" id="tabTelemetria">
-      <div class="telemetry-container">
-
-        <!-- Hero profil hráča -->
-        <div class="telemetry-hero-card">
-          <div class="profile-hero-top">
-            <div class="profile-avatar-circle">🎙️</div>
-            <div class="profile-info-block">
-              <div class="profile-editable-name">
-                <input type="text" id="telemetryNameInput" value="Peter Novák" placeholder="Tvoje celé meno..." />
-                <button class="btn-3d blue sm" id="saveTelemetryNameBtn">Uložiť</button>
-              </div>
-              <div class="profile-rank-tag" id="telemetryRankTitle">Rank 1: Resonator</div>
-            </div>
-          </div>
-
-          <div class="profile-hero-stats">
-            <div class="ph-stat">
-              <span class="ph-label">XP BODY</span>
-              <span class="ph-val gold" id="telemetryXpVal">0</span>
-            </div>
-            <div class="ph-stat">
-              <span class="ph-label">DENNÁ SÉRIA</span>
-              <span class="ph-val orange" id="telemetryStreakVal">1 deň 🔥</span>
-            </div>
-            <div class="ph-stat">
-              <span class="ph-label">SVETY</span>
-              <span class="ph-val green" id="telemetryWorldsVal">1 / 5</span>
-            </div>
-          </div>
+      <div class="dashboard inner-page">
+        
+        <div class="page-intro" style="margin-bottom: 24px;">
+          <p class="eyebrow">ŠTATISTIKY & BIOFEEDBACK</p>
+          <h1>Môj pokrok<span>.</span></h1>
+          <p class="subtitle">Objektívne akustické merania mäkkého nábehu a synchronizácia profilu.</p>
         </div>
 
-        <!-- Klinický telemetrický panel VRT -->
-        <div class="telemetry-card">
-          <div class="card-header-row">
-            <div>
-              <div class="card-subtitle">KLINICKÁ BIO-METRIKA</div>
-              <h3 class="card-title">Vocal Rise Time (VRT)</h3>
-            </div>
-            <span class="vrt-badge-status" id="vrtStatusBadge">Klinický Sweet-Spot</span>
-          </div>
-
-          <div class="vrt-gauge-box">
-            <div class="vrt-big-number">
-              <span id="avgVrtVal">74.2</span>
-              <span class="vrt-unit">ms</span>
-            </div>
-            <div class="vrt-scale-bar">
-              <div class="vrt-zone hard" title="Tvrdý glotálny úder (< 45 ms)">Tvrdý (< 45 ms)</div>
-              <div class="vrt-zone sweet active" title="Klinický sweet-spot (60–140 ms)">Mäkký nábeh (60–140 ms)</div>
-              <div class="vrt-zone breathy" title="Dychový únik (> 240 ms)">Únik (> 240 ms)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Vedecký základ & Klinické modely (Entry Karta) -->
-        <div class="telemetry-card science-entry-card" id="scienceEntryCard">
-          <div class="card-header-row">
-            <div>
-              <div class="card-subtitle cyan">EVIDENCE-BASED VÝSKUM & NEUROAKUSTIKA</div>
-              <h3 class="card-title">Vedecký Základ & Klinické Modely</h3>
-            </div>
-            <span class="science-tag-pill">5 Pilierov</span>
-          </div>
-
-          <p class="science-card-lead">
-            Glide nie je len gamifikovaný trenažér – je to klinický systém postavený na 5 recenzovaných neurobiologických pilieroch (DIVA/GODIVA, VRT akustika, DAF Choral Speech, Valsalva dekompresia a hierarchická stresová inokulácia).
-          </p>
-
-          <div class="science-mini-pillars">
-            <span class="s-pillar-chip">🧠 1. DIVA / GODIVA</span>
-            <span class="s-pillar-chip">📈 2. Akustika VRT</span>
-            <span class="s-pillar-chip">🎧 3. DAF Modulácia</span>
-            <span class="s-pillar-chip">🫁 4. Valsalva Reflex</span>
-            <span class="s-pillar-chip">⚡ 5. Stresová Inokulácia</span>
-          </div>
-
-          <div class="science-card-action">
-            <button class="btn-3d cyan full" id="openScienceModalBtn">
-              <span>🔬 OTVORIŤ VEDECKÉ CITÁCIE & MODELY</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Štatistický prehľad pokusov -->
-        <div class="telemetry-card">
-          <div class="card-subtitle">CELKOVÝ PREHĽAD REČI</div>
-          <h3 class="card-title">Štatistika Pokusov</h3>
-
-          <div class="telemetry-stats-grid">
-            <div class="tstat-box">
-              <span class="tstat-num" id="tStatTotalAttempts">0</span>
-              <span class="tstat-name">Celkovo pokusov</span>
-            </div>
-            <div class="tstat-box">
-              <span class="tstat-num green" id="tStatSuccessRate">100%</span>
-              <span class="tstat-name">Úspešnosť bez kŕča</span>
-            </div>
-            <div class="tstat-box">
-              <span class="tstat-num gold" id="tStatCompletedLessons">0 / 25</span>
-              <span class="tstat-name">Dokončené lekcie</span>
-            </div>
-            <div class="tstat-box">
-              <span class="tstat-num blue" id="tStatAvgLatency">410 ms</span>
-              <span class="tstat-name">Priemerná reakcia</span>
-            </div>
-            <div class="tstat-box">
-              <span class="tstat-num orange" id="tStatVaultMastered">0 / 3 🏆</span>
-              <span class="tstat-name">Odblokované v trezore</span>
-            </div>
-            <div class="tstat-box">
-              <span class="tstat-num purple" id="tStatDafMode">Auto ✨</span>
-              <span class="tstat-name">Zborový asistent</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Používateľský Profil & Cloud Synchronizácia -->
-        <div class="telemetry-card profile-card" id="telemetryProfileCard">
-          <div class="card-subtitle-row">
-            <span class="card-subtitle">CLOUD PROFIL & AUTENTIFIKÁCIA</span>
-            <span class="auth-status-badge offline" id="authStatusBadge">Hosť (Lokálne)</span>
-          </div>
-          <h3 class="card-title">Používateľský Profil</h3>
-
-          <!-- Odhlásený stav -->
-          <div class="auth-view-box" id="authLoggedOutView">
-            <p class="auth-card-desc">Prihlás sa svojím emailom alebo Google účtom a zálohuj si rečový tréning, históriu mäkkých nábehov a Trezor slov do cloudu.</p>
-
-            <button class="btn-3d green full" id="openAuthModalFromTelemetryBtn" type="button" style="margin-bottom: 14px;">
-              <span>🚀 Otvoriť prihlasovaciu obrazovku</span>
-            </button>
-
-            <!-- Primárne prihlásenie cez Email -->
-            <div class="email-auth-form">
-              <input type="email" class="auth-input" id="authEmailInput" placeholder="Tvoj email (napr. meno@gmail.com)" autocomplete="email" />
-              <input type="password" class="auth-input" id="authPasswordInput" placeholder="Heslo (min. 6 znakov)" autocomplete="current-password" />
-              
-              <div class="email-buttons-row">
-                <button class="btn-3d green full" id="btnEmailLogin" type="button">
-                  <span>🔑 Prihlásiť sa / Vytvoriť účet</span>
-                </button>
-                <button class="btn-3d slate full sm" id="btnMagicLink" type="button" title="Bezheslové prihlásenie cez odkaz do emailu">
-                  <span>✨ Poslať prihlasovací link do mailu (bez hesla)</span>
-                </button>
-              </div>
-              <div class="auth-feedback-msg" id="authFeedbackMsg" style="display:none;"></div>
-            </div>
-
-            <div class="auth-divider">
-              <span>ALEBO CEZ GOOGLE ÚČET</span>
-            </div>
-
-            <!-- Google prihlásenie (1-klik) -->
-            <button class="social-login-btn google" id="btnGoogleLogin" type="button">
-              <svg class="social-btn-icon" viewBox="0 0 24 24" width="20" height="20">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-              </svg>
-              <span>Pokračovať cez Google</span>
-            </button>
-          </div>
-
-          <!-- Prihlásený stav -->
-          <div class="auth-view-box" id="authLoggedInView" style="display:none;">
-            <div class="user-profile-header">
-              <img src="" alt="Avatar" class="user-avatar-img" id="userAvatarEl" style="display:none;" />
-              <div class="user-info-wrap">
-                <div class="user-fullname" id="userNameEl">Meno Používateľa</div>
-                <div class="user-email" id="userEmailEl">email@example.com</div>
-              </div>
-            </div>
-            <div class="profile-sync-badge">
-              <span class="sync-icon">☁️</span>
-              <span class="sync-text" id="profileSyncText">Cloud synchronizácia aktívna (Postgres)</span>
-            </div>
-            <button class="btn-3d red full sm" id="btnLogout" type="button">Odhlásiť sa</button>
-          </div>
-        </div>
-
-        <!-- Osobný Rečový Neuro-profil (Balbutologická diagnostika) -->
-        <div class="telemetry-card" id="telemetryDiagnosticCard">
-          <div class="card-subtitle-row">
-            <span class="card-subtitle cyan">VEDECKÝ NEURO-PROFIL REČI</span>
-            <span class="science-tag-pill" id="diagProfileStatusPill">Personalizované</span>
-          </div>
-          <h3 class="card-title">Tvoja Rečová Diagnostika</h3>
+        <div class="telemetry-container">
           
-          <div class="diag-summary-cards" style="margin-bottom: 14px;">
-            <div class="dsc-item">
-              <span class="dsc-label">PRIMÁRNY BLOK & TENZIA</span>
-              <div class="dsc-val" id="telemetryDiagTension">Glotálno-laryngeálny kŕč (Hlasivky)</div>
+          <!-- Klinický panel VRT -->
+          <div class="telemetry-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span class="section-kicker">KLINICKÁ BIO-METRIKA</span>
+                <h3 style="font-family:var(--font-serif); font-size:22px; font-weight:600; color:var(--ink);">Vocal Rise Time (VRT)</h3>
+              </div>
+              <span id="vrtStatusBadge" style="background:#e6f9f0; color:#10b981; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700;">Klinický Sweet-Spot</span>
             </div>
-            <div class="dsc-item">
-              <span class="dsc-label">ODPORÚČANÝ ŠTARTOVACÍ SVET</span>
-              <div class="dsc-val highlight" id="telemetryDiagWorld">Svet 1: Samohlásky & Easy Onset</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">STRESOVÁ SOCIÁLNA SITUÁCIA</span>
-              <div class="dsc-val" id="telemetryDiagSituation">Telefonovanie & Nečakané hovory</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">ODPORÚČANÁ STRATÉGIA</span>
-              <div class="dsc-val" id="telemetryDiagGoal">Jemný mäkký nábeh + DAF spomalenie</div>
+
+            <div class="vrt-gauge-box">
+              <div class="vrt-big-number">
+                <span id="avgVrtVal">74.2</span>
+                <span class="vrt-unit">ms</span>
+              </div>
+              <div class="vrt-scale-bar">
+                <div class="vrt-zone hard">Tvrdý (&lt; 45 ms)</div>
+                <div class="vrt-zone sweet">Mäkký nábeh (60–140 ms)</div>
+                <div class="vrt-zone breathy">Únik (&gt; 240 ms)</div>
+              </div>
             </div>
           </div>
 
-          <button class="btn-3d slate full sm" id="reopenDiagnosticBtn" type="button">
-            <span>📝 Prehodnotiť dotazník balbutizmu</span>
-          </button>
-        </div>
+          <!-- Prehľad pokusov -->
+          <div class="telemetry-card">
+            <span class="section-kicker">CELKOVÝ PREHĽAD REČI</span>
+            <h3 style="font-family:var(--font-serif); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:16px;">Štatistika Pokusov</h3>
 
-        <!-- História posledných pokusov -->
-        <div class="telemetry-card">
-          <div class="card-subtitle">POSLEDNÉ ZÁZNAMY</div>
-          <h3 class="card-title">História Tréningu</h3>
-
-          <div class="history-list" id="telemetryHistoryList">
-            <div class="history-empty">Zatiaľ žiadne záznamy. Spusti prvú lekciu alebo SOS dril!</div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px;">
+              <div style="border:1px solid var(--line); border-radius:14px; padding:14px; background:white;">
+                <span style="font-size:22px; font-weight:700; color:var(--ink); display:block;" id="tStatTotalAttempts">0</span>
+                <span style="font-size:11px; color:var(--muted);">Celkovo pokusov</span>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:14px; padding:14px; background:white;">
+                <span style="font-size:22px; font-weight:700; color:#10b981; display:block;" id="tStatSuccessRate">100%</span>
+                <span style="font-size:11px; color:var(--muted);">Úspešnosť bez kŕča</span>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:14px; padding:14px; background:white;">
+                <span style="font-size:22px; font-weight:700; color:var(--purple); display:block;" id="tStatCompletedLessons">0 / 25</span>
+                <span style="font-size:11px; color:var(--muted);">Dokončené lekcie</span>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:14px; padding:14px; background:white;">
+                <span style="font-size:22px; font-weight:700; color:var(--ink); display:block;" id="tStatAvgLatency">410 ms</span>
+                <span style="font-size:11px; color:var(--muted);">Priemerná reakcia</span>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:14px; padding:14px; background:white;">
+                <span style="font-size:22px; font-weight:700; color:#f59e0b; display:block;" id="tStatVaultMastered">0 / 3 🏆</span>
+                <span style="font-size:11px; color:var(--muted);">Odblokované v trezore</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Správa systému -->
-        <div class="telemetry-card">
-          <div class="card-subtitle">SPRÁVA MIKROFÓNU & SYSTÉMU</div>
-          <h3 class="card-title">Nastavenia a Kalibrácia</h3>
+          <!-- Cloud Profil & Supabase -->
+          <div class="telemetry-card profile-card" id="telemetryProfileCard">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span class="section-kicker">CLOUD PROFIL & SYNCHRONIZÁCIA</span>
+              <span id="authStatusBadge" style="background:#f2efe9; color:var(--muted); font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;">Hosť (Lokálne)</span>
+            </div>
+            <h3 style="font-family:var(--font-serif); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:14px;">Používateľský Profil</h3>
 
-          <div class="telemetry-actions">
-            <button class="btn-3d green full sm" id="pwaInstallBtn" style="display:none;">📲 Inštalovať aplikáciu na plochu (PWA)</button>
-            <a href="https://github.com/baranaikooo/glide/releases/download/v1.0.0/glide-native.apk" download="glide-native.apk" class="btn-3d blue full sm" id="apkDownloadBtn" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;">
-              <span>🤖</span>
-              <span>Stiahnuť Natívnu Android Aplikáciu (.APK)</span>
-            </a>
-            <button class="btn-3d amber full" id="calibrateFromTelemetryBtn">Kalibrovať šum mikrofónu</button>
-            <button class="btn-3d red full sm" id="resetTelemetryProgressBtn">Resetovať celý herný postup</button>
+            <div class="auth-view-box" id="authLoggedOutView">
+              <p style="font-size:13px; color:var(--muted); line-height:1.45; margin-bottom:16px;">Prihlás sa svojím emailom alebo Google účtom a zálohuj si rečový tréning, históriu mäkkých nábehov a Trezor slov do cloudu.</p>
+
+              <button class="btn-3d sm full" id="openAuthModalFromTelemetryBtn" type="button" style="margin-bottom: 14px;">
+                <span>🚀 Otvoriť prihlasovaciu obrazovku</span>
+              </button>
+
+              <div style="display:grid; gap:10px; margin-bottom:14px;">
+                <input type="email" class="auth-input" id="authEmailInput" placeholder="Tvoj email (napr. meno@gmail.com)" autocomplete="email" />
+                <input type="password" class="auth-input" id="authPasswordInput" placeholder="Heslo (min. 6 znakov)" autocomplete="current-password" />
+                
+                <div style="display:flex; gap:10px;">
+                  <button class="btn-primary full sm" id="btnEmailLogin" type="button">
+                    <span>Prihlásiť sa / Vytvoriť účet</span>
+                  </button>
+                  <button class="btn-3d sm full" id="btnMagicLink" type="button" title="Bezheslové prihlásenie cez odkaz do emailu">
+                    <span>Odkaz do mailu</span>
+                  </button>
+                </div>
+                <div class="auth-feedback-msg" id="authFeedbackMsg" style="display:none; color:var(--coral); font-size:12px; font-weight:500;"></div>
+              </div>
+
+              <div class="auth-divider">
+                <span>alebo cez Google účet</span>
+              </div>
+
+              <button class="google-button" id="btnGoogleLogin" type="button">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Pokračovať cez Google</span>
+              </button>
+            </div>
+
+            <div class="auth-view-box" id="authLoggedInView" style="display:none;">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                <img src="" alt="Avatar" class="user-avatar-img" id="userAvatarEl" style="display:none; width:44px; height:44px; border-radius:50%;" />
+                <div>
+                  <div id="userNameEl" style="font-weight:700; color:var(--ink);">Meno Používateľa</div>
+                  <div id="userEmailEl" style="font-size:12px; color:var(--muted);">email@example.com</div>
+                </div>
+              </div>
+              <div style="font-size:12px; color:#10b981; font-weight:600; margin-bottom:14px;" id="profileSyncText">☁️ Cloud synchronizácia aktívna</div>
+              <button class="btn-3d sm full" id="btnLogout" type="button" style="color:var(--coral);">Odhlásiť sa</button>
+            </div>
           </div>
-        </div>
 
-        <div class="tab-bottom-spacer"></div>
+          <!-- Diagnostika Balbutizmu -->
+          <div class="telemetry-card" id="telemetryDiagnosticCard">
+            <span class="section-kicker">VEDECKÝ NEURO-PROFIL REČI</span>
+            <h3 style="font-family:var(--font-serif); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:14px;">Tvoja Rečová Diagnostika</h3>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+              <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+                <span style="font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:700;">Primárny blok</span>
+                <div id="telemetryDiagTension" style="font-size:13px; font-weight:600; color:var(--ink); margin-top:4px;">Glotálny kŕč (Hlasivky)</div>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+                <span style="font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:700;">Odporúčaný svet</span>
+                <div id="telemetryDiagWorld" style="font-size:13px; font-weight:600; color:var(--purple); margin-top:4px;">Svet 1: Samohlásky</div>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+                <span style="font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:700;">Záťažová situácia</span>
+                <div id="telemetryDiagSituation" style="font-size:13px; font-weight:600; color:var(--ink); margin-top:4px;">Telefonovanie</div>
+              </div>
+              <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+                <span style="font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:700;">Cieľ</span>
+                <div id="telemetryDiagGoal" style="font-size:13px; font-weight:600; color:var(--ink); margin-top:4px;">Mäkký nábeh + DAF</div>
+              </div>
+            </div>
+
+            <button class="btn-3d sm full" id="reopenDiagnosticBtn" type="button">
+              <span>📋 Otvoriť dotazník balbutizmu</span>
+            </button>
+          </div>
+
+          <!-- Systém a kalibrácia -->
+          <div class="telemetry-card">
+            <span class="section-kicker">SPRÁVA MIKROFÓNU & SYSTÉMU</span>
+            <h3 style="font-family:var(--font-serif); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:14px;">Nastavenia a Kalibrácia</h3>
+
+            <div style="display:grid; gap:10px;">
+              <button class="btn-3d sm full" id="openScienceModalBtn" type="button">🔬 Otvoriť Vedecký Základ & Modely</button>
+              <button class="btn-3d amber sm full" id="calibrateFromTelemetryBtn" type="button">Kalibrovať šum mikrofónu</button>
+              <a href="https://github.com/baranaikooo/glide/releases/download/v1.0.0/glide-native.apk" download="glide-native.apk" class="btn-3d blue sm full" id="apkDownloadBtn" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <span>🤖 Stiahnuť Natívnu Android Aplikáciu (.APK)</span>
+              </a>
+              <button class="btn-3d sm full" id="resetTelemetryProgressBtn" type="button" style="color:var(--coral);">Resetovať celý herný postup</button>
+            </div>
+          </div>
+
+          <!-- Histórie tréningu pre gamification-engine.js -->
+          <div id="telemetryHistoryList" style="display:none;"></div>
+        </div>
       </div>
     </section>
 
   </main>
 
   <!-- ==================================================================== -->
-  <!-- M3 COMPACT BIOFEEDBACK BAR (Zrkadlenie z Figma Material 3 Dizajnu)   -->
+  <!-- SPODNÁ MOBILNÁ NAVIGÁCIA (BEZ DOTAZNÍKA V MENU)                      -->
   <!-- ==================================================================== -->
-  <div class="m3-compact-player" id="m3CompactPlayer">
-    <div class="m3-progress-indicator">
-      <div class="m3-progress-track" id="m3PlayerProgress"></div>
-    </div>
-    <div class="m3-player-inner">
-      <div class="m3-player-avatar" id="m3PlayerAvatar">🎙️</div>
-      <div class="m3-player-text">
-        <div class="m3-player-title" id="m3PlayerTitle">Tréning Plynulosti</div>
-        <div class="m3-player-sub" id="m3PlayerSub">Glide Biofeedback Engine • Pripravený</div>
-      </div>
-      <div class="m3-player-actions">
-        <button class="m3-btn-icon play" id="m3PlayerActionBtn" type="button" title="Spustiť tréning">
-          <span id="m3PlayerActionIcon">▶</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================================================================== -->
-  <!-- SPODNÁ NAVIGAČNÁ LIŠTA (Presne 3 záložky, skryje sa v lekcii)        -->
-  <!-- ==================================================================== -->
-  <nav class="bottom-nav" id="bottomNav">
-    <button class="nav-tab active" data-tab="tabCesta" id="navTabCesta">
-      <span class="nav-icon">🗺️</span>
-      <span class="nav-label">Cesta</span>
+  <nav class="mobile-nav" id="bottomNav" aria-label="Mobilná navigácia">
+    <button class="active" data-tab="tabCesta" id="navTabCesta">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-6h6v6"/></svg>
+      <span>Dnes</span>
     </button>
-    <button class="nav-tab" data-tab="tabDril" id="navTabDril">
-      <span class="nav-icon">⚡</span>
-      <span class="nav-label">Rýchly Dril</span>
+    <button data-tab="tabDril" id="navTabDril">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16"/><path d="M9 8v8M15 8v8M2 12h20"/></svg>
+      <span>Cvičenia</span>
     </button>
-    <button class="nav-tab" data-tab="tabAsistent" id="navTabAsistent">
-      <span class="nav-icon">🎧</span>
-      <span class="nav-label">Asistent</span>
+    <button data-tab="tabAsistent" id="navTabAsistent">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h4v7H6a2 2 0 0 1-2-2v-5ZM20 14h-4v7h2a2 2 0 0 0 2-2v-5Z"/></svg>
+      <span>Asistent</span>
     </button>
-    <button class="nav-tab" data-tab="tabTelemetria" id="navTabTelemetria">
-      <span class="nav-icon">📊</span>
-      <span class="nav-label">Telemetria</span>
+    <button data-tab="tabTelemetria" id="navTabTelemetria">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+      <span>Pokrok</span>
     </button>
   </nav>
 
-  <!-- ==================================================================== -->
-  <!-- POPUP OKNO PRE LEVEL (POPOVER CARD NA MAPE)                          -->
-  <!-- ==================================================================== -->
-  <div class="node-popover-backdrop" id="nodePopoverBackdrop">
-    <div class="node-popover-card" id="nodePopover">
-      <button class="popover-close" id="popoverCloseBtn">✕</button>
-      <div class="popover-world-tag" id="popoverWorldTag">SVET 1 • SAMOHLÁSKY</div>
-      <h3 class="popover-title" id="popoverTitle">Lekcia 1.1: Úvod do A a O</h3>
-      <p class="popover-desc" id="popoverDesc">Tréning mäkkého nábehu hlasiviek (VRT 45–160 ms). Žiadny tvrdý glotálny úder v hrtane.</p>
-      
-      <div class="popover-meta">
-        <span class="popover-xp">⚡ +30 XP</span>
-        <span class="popover-count" id="popoverWordCount">4 cvičenia</span>
-      </div>
+</div><!-- /.app-shell -->
 
-      <button class="btn-3d green full" id="startLessonBtn">
-        <span>SPUSTIŤ TRÉNING</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ==================================================================== -->
-  <!-- STAV 2: AKTÍVNA LEKCIA / POKUS (CELOOBRAZOVKOVÝ FULL-SCREEN REŽIM)   -->
-  <!-- ==================================================================== -->
-  <section class="lesson-screen" id="lessonScreen">
+<!-- ==================================================================== -->
+<!-- POPUP OKNO PRE LEVEL (POPOVER CARD NA MAPE)                          -->
+<!-- ==================================================================== -->
+<div class="node-popover-backdrop" id="nodePopoverBackdrop">
+  <div class="node-popover-card" id="nodePopover">
+    <button class="popover-close" id="popoverCloseBtn">✕</button>
+    <div class="popover-world-tag" id="popoverWorldTag">SVET 1 • SAMOHLÁSKY</div>
+    <h3 class="popover-title" id="popoverTitle">Lekcia 1.1: Úvod do A a O</h3>
+    <p class="popover-desc" id="popoverDesc">Tréning mäkkého nábehu hlasiviek (VRT 45–160 ms). Žiadny tvrdý glotálny úder v hrtane.</p>
     
-    <!-- Horná lišta lekcie -->
-    <div class="lesson-topbar">
-      <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu">✕</button>
-      
-      <div class="lesson-progress-track">
-        <div class="lesson-progress-fill" id="lessonProgressFill" style="width: 0%;"></div>
-      </div>
-
-      <div class="lesson-hearts" id="lessonHearts">
-        <span>❤️</span>
-        <span id="lessonHeartsVal">5</span>
-      </div>
+    <div class="popover-meta">
+      <span class="popover-xp">⚡ +30 XP</span>
+      <span class="popover-count" id="popoverWordCount">4 cvičenia</span>
     </div>
 
-    <!-- Minimalistické tréningové javisko počas reči -->
-    <div class="lesson-stage">
-      
-      <!-- Video zrkadlo kamery (pre Boss fighty a očný kontakt) -->
-      <video id="cameraFeed" autoplay playsinline muted></video>
-      <div class="eye-contact-prompt" id="interlocutorPrompt">👀 Udrž očný kontakt s kamerou!</div>
+    <button class="btn-primary full" id="startLessonBtn" type="button">
+      <span>SPUSTIŤ TRÉNING</span>
+    </button>
+  </div>
+</div>
 
-      <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->
-      <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none;">
-        <div class="ld-speaker-badge">
-          <span class="ld-avatar" id="ldAvatar">👩‍💼</span>
-          <span class="ld-name" id="ldSpeaker">Pokladníčka Zuzana</span>
-          <span class="ld-speaking-icon" id="ldSpeakingIcon">🔊</span>
-        </div>
-        <div class="ld-bubble">
-          <span class="ld-quote">“</span>
-          <span class="ld-text" id="ldText">Dobrý deň, budete platiť v hotovosti alebo kartou?</span>
-        </div>
-      </div>
-
-      <!-- Kontext lekcie -->
-      <div class="lesson-context-badge" id="lessonContextBadge">Svet 1 • Cvičenie 1 z 4</div>
-
-      <!-- Živý indikátor slúchadiel DAF + FAF -->
-      <div id="headphoneLiveIndicator" class="headphone-live-badge off" title="Klikni pre zapnutie alebo vypnutie zvuku v slúchadlách">
-        <span class="hlb-icon">🎧</span>
-        <span class="hlb-text" id="headphoneStatusText">DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)</span>
-        <span id="micStatus" class="hud-sub-label" style="display:none;">Mikrofón pripravený</span>
-        <span class="hlb-dot"></span>
-      </div>
-
-      <!-- Veľký dominantný terč slova -->
-      <div class="target-word-container">
-        <h1 class="target-word" id="targetWord">AUTO</h1>
-        <div class="target-meta" id="targetMeta">Klasifikácia: Samohláska (A) – cieľ VRT 45–160 ms</div>
-      </div>
-
-      <!-- Zen Dýchací Kruh (Pacer) -->
-      <div class="pacer-wrapper">
-        <div class="pacer-circle" id="pacerCircle" title="Klikni sem pre okamžité predčasné vyhodnotenie!">
-          <span class="pacer-text" id="pacerText">Priprav sa</span>
-        </div>
-      </div>
-
-      <!-- Stavové hlásenie pod kruhom -->
-      <div class="status-alert" id="statusAlert">Stlač tlačidlo Štart pre začiatok dychového cyklu.</div>
-
-      <!-- Ovládacie tlačidlá lekcie -->
-      <div class="lesson-controls" id="lessonControls">
-        <button id="calibrateBtn" class="btn-3d amber sm">1. Kalibrovať ticho</button>
-        <button id="startBtn" class="btn-3d green md">▶ Spustiť slovo (Pacer)</button>
-      </div>
-
-      <!-- Prepínače stresorov -->
-      <div class="lesson-toggles">
-        <label class="toggle-pill" title="Zapne webkameru do pozadia pre nácvik očného kontaktu">
-          <input type="checkbox" id="camToggle">
-          <span>📷 Očný kontakt</span>
-        </label>
-        <label class="toggle-pill" title="Použiť reálne MP3 hlasy zo štúdia (/audio)">
-          <input type="checkbox" id="voicePromptToggle" checked>
-          <span>🔊 Reálny hlas (/audio)</span>
-        </label>
-        <button id="cardioBtn" class="btn-3d purple sm" style="padding: 6px 12px; font-size: 0.78rem;">⚡ Tepový šok (30s)</button>
-      </div>
-
-      <!-- Kompatibilita pre dsp-core.js -->
-      <div style="display: none;">
-        <div id="xpNextLabel"></div>
-        <div id="xpFillBar"></div>
-        <span id="comboVal">1x</span>
-      </div>
-
+<!-- ==================================================================== -->
+<!-- CELOOBRAZOVKOVÁ LEKCIA (FULL-SCREEN BIOFEEDBACK & PRACTICE OVERLAY)  -->
+<!-- ==================================================================== -->
+<section class="lesson-screen" id="lessonScreen">
+  <div class="lesson-topbar">
+    <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu">✕</button>
+    
+    <div class="lesson-progress-track">
+      <div class="lesson-progress-fill" id="lessonProgressFill" style="width: 0%;"></div>
     </div>
 
-    <!-- Prepadový hovor Overlay (pre Boss Fighty) -->
-    <div class="call-overlay" id="callOverlay">
-      <div class="call-box">
-        <div class="caller-avatar-circle">📞</div>
-        <h2 class="caller-name" id="callerName">Kuriér (Balík)</h2>
-        <p class="caller-sub" id="callerSub">Prichádzajúci hovor... Vypočuj si otázku a odpovedz bez bloku!</p>
-        
-        <div class="call-actions">
-          <button class="btn-3d red" id="declineCallBtn">Zrušiť</button>
-          <button class="btn-3d green" id="answerCallBtn">Prijať hovor</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Spodný Feedback Drawer (Duolingo Sheet po pokuse) -->
-    <div class="feedback-drawer" id="feedbackDrawer">
-      <div class="drawer-inner">
-        
-        <div class="drawer-header">
-          <div class="drawer-status-icon" id="drawerStatusIcon">✓</div>
-          <div class="drawer-text-wrap">
-            <h3 class="drawer-headline" id="drawerHeadline">Úžasné! Dokonalý nábeh!</h3>
-            <p class="drawer-subtext" id="drawerSubtext">Hlasivky naskočili mäkko a bez kŕča v sweet-spote.</p>
-          </div>
-          <div class="drawer-xp-badge" id="drawerXpBadge">+30 XP</div>
-        </div>
-
-        <!-- Akustická miniatúra a toggle tlačidlo -->
-        <div class="drawer-details-toggle">
-          <button class="toggle-matrix-btn" id="toggleMatrixBtn">
-            <span>Zobraziť akustickú analýzu (VRT & graf)</span>
-            <span class="chevron">▼</span>
-          </button>
-        </div>
-
-        <!-- Matica akustických pravidiel pre dsp-core.js -->
-        <div class="matrix-panel" id="matrixPanel">
-          <div class="badge-banner" id="verdictBanner"></div>
-
-          <div class="canvas-wrap">
-            <div class="canvas-label">
-              <span>Akustická obálka formantov (FFT 2048)</span>
-              <span>Žlté pásmo = VRT (20% → 80% RMS)</span>
-            </div>
-            <canvas id="envelopeCanvas" width="600" height="90"></canvas>
-            <canvas id="rmsCanvas" style="display:none;" width="600" height="90"></canvas>
-          </div>
-
-          <div class="metrics-grid">
-            <div class="metric-row">
-              <span class="metric-title" id="m1Title">1. Reakčný čas (Štart)</span>
-              <span class="metric-val" id="m1">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">2. Čistota štartu (Anticheat)</span>
-              <span class="metric-val" id="m2">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">3. Trvanie spoluhlásky / Diera</span>
-              <span class="metric-val" id="m3">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">4. Vocal Rise Time (VRT)</span>
-              <span class="metric-val" id="m4"><span id="vrtValue">-</span></span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">5. Kontinuita slabiky</span>
-              <span class="metric-val" id="m5">-</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tlačidlo Pokračovať -->
-        <div class="drawer-action-row">
-          <button class="btn-3d full" id="drawerContinueBtn">
-            <span>POKRAČOVAŤ (Enter)</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-  </section>
-
-  <!-- ==================================================================== -->
-  <!-- KALIBRAČNÝ MODAL (MERANIE ŠUMU MIESTNOSTI)                           -->
-  <!-- ==================================================================== -->
-  <div class="modal-backdrop-overlay" id="calibrationModal" style="display:none;">
-    <div class="auth-modal-card" style="text-align: center; max-width: 400px;">
-      <div class="brand-soundwave lg" style="margin-bottom: 16px;">
-        <span class="sw-col c1"></span>
-        <span class="sw-col c2"></span>
-        <span class="sw-col c3"></span>
-      </div>
-      <h2 class="auth-modal-title" style="font-size: 1.5rem;">Kalibrácia ticha</h2>
-      <p class="auth-modal-desc" style="margin-top: 8px;">Meriam hladinu hluku v miestnosti. Prosím, vydrž 1 sekundu v tichu...</p>
-      <div class="cal-spinner" style="margin: 24px auto 8px auto; width: 44px; height: 44px; border: 3px solid rgba(168, 85, 247, 0.25); border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div class="lesson-hearts" id="lessonHearts">
+      <span>❤️</span>
+      <span id="lessonHeartsVal">5</span>
     </div>
   </div>
 
-  <!-- ==================================================================== -->
-  <!-- OSLAVNÝ MODAL (LEKCIA / DRIL DOKONČENÝ)                              -->
-  <!-- ==================================================================== -->
-  <div class="celebration-overlay" id="celebrationModal">
-    <div class="celebration-card">
-      <div class="trophy-bounce">🏆</div>
-      <h2 class="celebration-title" id="celebrationTitle">Lekcia dokončená!</h2>
-      <p class="celebration-sub" id="celebrationSub">Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.</p>
+  <div class="lesson-stage">
+    <!-- Video zrkadlo kamery (pre Boss fighty) -->
+    <video id="cameraFeed" autoplay playsinline muted style="display:none; width:120px; height:120px; border-radius:50%; object-fit:cover; margin-bottom:12px; border:3px solid var(--purple);"></video>
+    <div class="eye-contact-prompt" id="interlocutorPrompt" style="display:none; font-size:12px; font-weight:700; color:var(--purple); margin-bottom:12px;">👀 Udrž očný kontakt s kamerou!</div>
 
-      <div class="stats-recap-grid">
-        <div class="recap-card">
-          <div class="recap-label">CELKOVÝ ZISK</div>
-          <div class="recap-val xp" id="recapXpVal">+120 XP</div>
-        </div>
-        <div class="recap-card">
-          <div class="recap-label">ÚSPEŠNOSŤ</div>
-          <div class="recap-val green" id="recapAccuracyVal">100%</div>
-        </div>
-        <div class="recap-card">
-          <div class="recap-label">DENNÁ SÉRIA</div>
-          <div class="recap-val fire" id="recapStreakVal">🔥 1 deň</div>
-        </div>
+    <!-- Interaktívna bublina oponenta -->
+    <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display:none; border:1px solid var(--line); border-radius:16px; padding:14px 18px; background:white; margin-bottom:16px; max-width:440px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <span id="ldAvatar" style="font-size:18px;">👩‍💼</span>
+        <strong id="ldSpeaker" style="font-size:13px; color:var(--ink);">Pokladníčka Zuzana</strong>
       </div>
+      <p id="ldText" style="font-size:13px; color:var(--muted); font-style:italic;">Dobrý deň, budete platiť v hotovosti alebo kartou?</p>
+    </div>
 
-      <button class="btn-3d green full lg" id="celebrationBackBtn">
-        <span>POKRAČOVAŤ</span>
-      </button>
+    <!-- Slúchadlový indikátor DAF & FAF -->
+    <div id="headphoneLiveIndicator" class="headphone-live-badge off" title="Klikni pre zapnutie alebo vypnutie zvuku v slúchadlách">
+      <span>🎧</span>
+      <span id="headphoneStatusText">DAF & FAF: Vypnuté (Klikni pre zapnutie)</span>
+      <span id="micStatus" style="display:none;">Mikrofón pripravený</span>
+    </div>
+
+    <!-- Cieľové slovo -->
+    <div class="target-word-container">
+      <h1 class="target-word" id="targetWord">AUTO</h1>
+      <div class="target-meta" id="targetMeta">Klasifikácia: Samohláska (A) – cieľ VRT 45–160 ms</div>
+    </div>
+
+    <!-- Pacer Circle -->
+    <div class="pacer-wrapper">
+      <div class="pacer-circle" id="pacerCircle" title="Klikni sem pre okamžité predčasné vyhodnotenie!">
+        <span class="pacer-text" id="pacerText">Priprav sa</span>
+      </div>
+    </div>
+
+    <div class="status-alert" id="statusAlert">Stlač tlačidlo Štart pre začiatok dychového cyklu.</div>
+
+    <!-- Ovládanie lekcie -->
+    <div class="lesson-controls" id="lessonControls">
+      <button id="calibrateBtn" class="btn-3d amber sm" type="button">Kalibrovať ticho</button>
+      <button id="startBtn" class="btn-primary" type="button">▶ Spustiť slovo (Pacer)</button>
+    </div>
+
+    <!-- Toggles -->
+    <div style="display:flex; gap:12px; margin-top:14px; font-size:12px;">
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+        <input type="checkbox" id="camToggle">
+        <span>Kamera</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+        <input type="checkbox" id="voicePromptToggle" checked>
+        <span>Reálny hlas (/audio)</span>
+      </label>
+    </div>
+
+    <!-- Hidden compatibility elements for dsp-core.js -->
+    <div style="display:none;">
+      <div id="lessonContextBadge"></div>
+      <div id="xpNextLabel"></div>
+      <div id="xpFillBar"></div>
+      <span id="comboVal">1x</span>
+      <button id="cardioBtn"></button>
     </div>
   </div>
 
-  <!-- ==================================================================== -->
-  <!-- VEDECKÝ ZÁKLAD & KLINICKÉ MODELY (SCIENTIFIC FOUNDATION MODAL)       -->
-  <!-- ==================================================================== -->
-  <div class="science-modal-backdrop" id="scienceModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="scienceModalTitle">
-    <div class="science-modal-card">
-      
-      <!-- Hlavička modálu -->
-      <div class="science-modal-header">
-        <div class="smh-left">
-          <div class="smh-badge">EVIDENCE-BASED NEUROAKUSTIKA</div>
-          <h2 class="smh-title" id="scienceModalTitle">Vedecký Základ & Klinické Modely</h2>
-          <p class="smh-sub">Klinická architektúra, neurobiologické mechanizmy a recenzované citácie aplikácie Glide</p>
+  <!-- Prepadový hovor Overlay -->
+  <div class="call-overlay" id="callOverlay" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(37,35,65,0.85); backdrop-filter:blur(10px); align-items:center; justify-content:center;">
+    <div style="background:var(--paper); border-radius:24px; padding:32px 28px; max-width:360px; width:100%; text-align:center;">
+      <div style="font-size:42px; margin-bottom:12px;">📞</div>
+      <h2 class="caller-name" id="callerName" style="font-family:var(--font-serif); font-size:24px; color:var(--ink); margin-bottom:6px;">Kuriér (Balík)</h2>
+      <p id="callerSub" style="font-size:13px; color:var(--muted); margin-bottom:20px;">Prichádzajúci hovor... Vypočuj si otázku a odpovedz bez bloku!</p>
+      <div style="display:flex; gap:12px;">
+        <button class="btn-3d sm full" id="declineCallBtn" type="button" style="color:var(--coral);">Zrušiť</button>
+        <button class="btn-primary full" id="answerCallBtn" type="button">Prijať hovor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spodný Feedback Drawer -->
+  <div class="feedback-drawer" id="feedbackDrawer">
+    <div class="drawer-inner">
+      <div class="drawer-header">
+        <div class="drawer-status-icon" id="drawerStatusIcon">✓</div>
+        <div>
+          <h3 class="drawer-headline" id="drawerHeadline">Úžasné! Dokonalý nábeh!</h3>
+          <p class="drawer-subtext" id="drawerSubtext">Hlasivky naskočili mäkko a bez kŕča v sweet-spote.</p>
         </div>
-        <button class="science-close-btn" id="scienceModalCloseBtn" title="Zavrieť dialóg">✕</button>
+        <div class="drawer-xp-badge" id="drawerXpBadge">+30 XP</div>
       </div>
 
-      <!-- Úvodný banner -->
-      <div class="science-intro-banner">
-        <div class="sib-icon">🔬</div>
-        <div class="sib-text">
-          Glide Biofeedback vychádza z prísnych empirických výskumov v oblasti motorického riadenia reči, neuroakustiky a kognitívno-behaviorálnej terapie balbuties. Kliknutím na jednotlivé piliere zobrazíš detailný fyziologický mechanizmus a formálne APA citácie.
-        </div>
-      </div>
-
-      <!-- Akordeón 5 pilierov -->
-      <div class="science-accordion" id="scienceAccordion">
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 1: DIVA & GODIVA MODEL                                  -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="1">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">🧠</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 1 • NEUROVÝPOČTOVÝ MODEL</div>
-                <h3 class="sc-title">DIVA & GODIVA Model (Neurónové riadenie reči)</h3>
-                <p class="sc-summary">Kompenzácia zlyhávajúcej doprednej motorickej väzby vizuálnym biofeedbackom v reálnom čase</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">Feedforward Bypass</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">DIVA Architecture</span>
-              <span class="sc-tag">GODIVA Sequencing</span>
-              <span class="sc-tag">Kortiko-striatálne slučky</span>
-              <span class="sc-tag">Latencia &lt; 50 ms</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Neurobiologický a výpočtový mechanizmus</h4>
-              <p>
-                Výpočtový model <strong>DIVA (Directions into Velocities of Articulators)</strong> a jeho sekvenčná nadstavba <strong>GODIVA (Gradient Order DIVA)</strong> opisujú reč ako súhru dvoch paralelných systémov:
-              </p>
-              <ul class="sc-list">
-                <li><strong>Dopredný podsystém (Feedforward Control):</strong> Rýchly riadiaci okruh lokalizovaný v suplementárnej motorickej oblasti (SMA) a primárnej motorickej kôre (M1). Zodpovedá za okamžité, automatizované spúšťanie fonácie bez čakania na zmyslovú odozvu.</li>
-                <li><strong>Spätnoväzbový podsystém (Feedback Control):</strong> Pomalší okruh v sluchovej a somatosenzorickej kôre, ktorý porovnáva reálny akustický výstup s očakávaným zmyslovým vzorcom.</li>
-              </ul>
-              <p>
-                Pri balbuties dochádza k štrukturálnej a funkčnej dysfunkcii v kortiko-striato-talamo-kortikálnych dráhach bazálnych ganglií. Interný dopredný prediktívny model zlyháva v časovaní a generuje falošný somatosenzorický chybový signál. Mozog situáciu vyhodnotí ako kolíziu, okamžite preruší motorický príkaz a pokúsi sa o reštart slabiky – čo sa klinicky prejavuje ako <strong>tonický blok</strong> alebo <strong>klonické opakovanie</strong>.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Aplikácia nahrádza zlyhávajúcu vnútornú somatosenzorickú väzbu <strong>okamžitým externým vizuálnym biofeedbackom v reálnom čase</strong> (vizuálny pacer, okamžitá amplitúdová obálka RMS a spektrálny audit). Vizuálna slučka obchádza poškodené senzorimotorické okruhy, poskytuje kortexu alternatívny stabilizačný signál v latencii do 50 ms a umožňuje vedomú rekalibráciu artikulačného traktu.
-              </p>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Guenther, F. H., Ghosh, S. S., & Tourville, J. A. (2006). Neural modeling and imaging of the cortical interactions underlying syllable production. <em>Brain and Language</em>, 96(3), 280–301.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1016/j.bandl.2005.06.001" target="_blank" rel="noopener">doi:10.1016/j.bandl.2005.06.001</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Bohland, J. W., Bullock, D., & Guenther, F. H. (2010). Neural representations and mechanisms for the performance of action sequences: The GODIVA model. <em>Cerebral Cortex</em>, 20(4), 844–867.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1093/cercor/bhp152" target="_blank" rel="noopener">doi:10.1093/cercor/bhp152</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Tourville, J. A., & Guenther, F. H. (2011). The DIVA model: A neural theory of speech acquisition and production. <em>Language and Cognitive Processes</em>, 26(7), 952–981.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1080/01690960903498424" target="_blank" rel="noopener">doi:10.1080/01690960903498424</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 2: GENTLE VOICE ONSET & AKUSTIKA VRT                    -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="2">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">📈</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 2 • AKUSTICKÁ BIOMETRIKA</div>
-                <h3 class="sc-title">Gentle Voice Onset & Akustika VRT (Mäkký nábeh)</h3>
-                <p class="sc-summary">Eliminácia tvrdého glotálneho rázu a hyperaddukcie hlasiviek riadeným predĺžením nábehu akustického tlaku</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">VRT 60–140 ms</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Vocal Rise Time</span>
-              <span class="sc-tag">Hollins Fluency System</span>
-              <span class="sc-tag">Laryngálna addukcia</span>
-              <span class="sc-tag">M. thyroarytenoideus</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Fyziologický a akustický mechanizmus</h4>
-              <p>
-                Primárnym mechanickým spúšťačom laryngálneho bloku pri iniciácii samohlások a plozív je <strong>tvrdý glotálny ráz (hard glottal attack)</strong>. Ešte pred začiatkom fonácie dochádza k nadmernej hyperaddukcii a stiahnutiu vnútorných hlasivkových svalov (najmä <em>m. thyroarytenoideus</em> a <em>m. cricoarytenoideus lateralis</em>). Pľúcny exspiračný tlak narastá za pevne uzavretou glotis, až kým nedôjde k explozívnemu akustickému tresku (VRT &lt; 45 ms) alebo k úplnému laryngálnemu spazmu.
-              </p>
-              <p>
-                Klinická metodika <strong>Gentle Voice Onset (GVO)</strong>, vyvinutá v rámci Hollins Fluency System (Dr. Ronald Webster), trénuje plynulý, kontrolovaný prechod od subfonatórneho laminárneho prúdenia vzduchu k postupnému rozkmitaniu slizničného krytu hlasiviek. Akustickým indexom tejto mäkkosti je <strong>Vocal Rise Time (VRT)</strong> – časový interval potrebný na vzostup amplitúdy zvukovej obálky z 20 % na 80 % saturovaného RMS signálu.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Modul <code>dsp-core.js</code> vykonáva sub-milisekundový výpočet obálky signálu metódou kĺzavého RMS okna. Systém kalibruje tri diagnostické zóny:
-              </p>
-              <ul class="sc-list">
-                <li><span class="sc-stat-pill red">&lt; 45 ms (Tvrdý glotálny ráz):</span> Prudký úder v hrtane, riziko spazmu. Aplikácia neakceptuje pokus ako Perfect a navrhne jemnejší začiatok s výdychom.</li>
-                <li><span class="sc-stat-pill green">60–140 ms (Klinický Sweet-Spot):</span> Optimálny fyziologický nábeh sliznice, uvoľnené suprahyoidné svalstvo, zlatý štandard plynulosti.</li>
-                <li><span class="sc-stat-pill purple">&gt; 240 ms (Dychový únik / Aspiration):</span> Nadmerný únik vzduchu bez včasného kontaktu hlasiviek (hypoaddukcia).</li>
-              </ul>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Webster, R. L. (1974). A behavioral analysis of stuttering: Presentation of a rationale with speech improvement targets. In K. S. Calhoun, H. E. Adams, & K. M. Mitchell (Eds.), <em>Innovative treatment methods in psychopathology</em> (pp. 73–96). John Wiley & Sons.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Mallard, A. R., & Westbrook, J. B. (1983). Vowel duration in stutterers and nonstutterers: A study of gentle onset. <em>Journal of Fluency Disorders</em>, 8(3), 279–285.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1016/0094-730X(83)90010-8" target="_blank" rel="noopener">doi:10.1016/0094-730X(83)90010-8</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Peters, H. F. M., & Boves, L. (1988). Coordination of aerodynamic and phonatory processes in stuttering and normal speech. <em>Journal of Speech and Hearing Research</em>, 31(3), 352–361.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1044/jshr.3103.352" target="_blank" rel="noopener">doi:10.1044/jshr.3103.352</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 3: CHORAL SPEECH EFFECT & DAF MODULÁCIA                 -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="3">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">🎧</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 3 • AUDITÍVNA NEUROSTIMULÁCIA</div>
-                <h3 class="sc-title">Choral Speech Effect & Sluchová modulácia (DAF)</h3>
-                <p class="sc-summary">Oneskorená sluchová spätná väzba (40–140 ms) obchádzajúca časovú dysfunkciu bazálnych ganglií</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">DAF 70 ms</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Delayed Auditory Feedback</span>
-              <span class="sc-tag">Choral Effect</span>
-              <span class="sc-tag">Reaktivácia STG</span>
-              <span class="sc-tag">DAF Architektúra</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Neurobiologický mechanizmus efektu zborovej reči</h4>
-              <p>
-                Jedným z najvýraznejších a najlepšie preskúmaných fenoménov v rečovej patológii je <strong>efekt zborovej reči (choral speech effect)</strong>: ak osoba so zajakavosťou číta alebo hovorí súčasne v synchronizácii s iným rečníkom, prejavy zajakavosti okamžite klesajú o 80 až 90 % bez nutnosti vedomej techniky.
-              </p>
-              <p>
-                Neurozobrazovacie fMRI štúdie (Foundas et al., 2004) odhalili, že u osôb s balbuties je počas vlastnej reči ľavá sluchová kôra (najmä <em>gyrus temporalis superior</em> – STG a <em>planum temporale</em>) hypoaktívna, zatiaľ čo pravá hemisféra vykazuje neefektívnu kompenzačnú hyperaktivitu. <strong>Oneskorená sluchová spätná väzba (Delayed Auditory Feedback – DAF)</strong> v rozsahu 50–100 ms simuluje prítomnosť druhého hovoriaceho hlasu priamo v uchu. Tento signál vyvoláva masívnu bilaterálnu reaktiváciu STG a poskytuje kortikálnym okruhom externý rytmický kľúč (<em>external pacing cue</em>), ktorý nahrádza porušené biologické hodiny v bazálnych gangliách.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Záložka <strong>"🎧 Asistent"</strong> prináša klinický ekvivalent prenosných DAF zariadení priamo do webového rozhrania. Cez Web Audio API je vytvorená paralelná, nízko-latenčná zvuková vetva (<code>mediaStreamSource → DelayNode → GainNode → destination</code>), ktorá neovplyvňuje analytický DSP motor. Používateľ má k dispozícii kalibrovaný rozsah 40–140 ms s optimálnym klinickým stredom <strong>70 ms</strong> a vizuálnym pulzným indikátorom prenosu hlasu do ucha.
-              </p>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Kalinowski, J., Stuart, A., Sark, S., & Armson, J. (1996). Stuttering amelioration at various auditory delays and speech rates. <em>European Journal of Disorders of Communication</em>, 31(3), 259–269.</span>
-                  <a class="cit-doi" href="https://doi.org/10.3109/13682829609033157" target="_blank" rel="noopener">doi:10.3109/13682829609033157</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Foundas, A. L., Bollich, A. M., Feldman, J., Corey, D. M., Hurley, M., Lemen, L. C., & Heilman, K. M. (2004). Aberrant auditory-motor processing in developmental stuttering: An fMRI study. <em>Cognitive and Behavioral Neurology</em>, 17(2), 77–85.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1097/00146965-200406000-00004" target="_blank" rel="noopener">doi:10.1097/00146965-200406000-00004</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Stuart, A., Kalinowski, J., Rastatter, M. P., & Saltuklaroglu, T. (2004). Investigations of the impact of altered auditory feedback in-the-ear devices on the speech of people who stutter: One-year follow-up. <em>Disability and Rehabilitation</em>, 26(14–15), 830–841.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1080/09638280410001699419" target="_blank" rel="noopener">doi:10.1080/09638280410001699419</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 4: VALSALVOV REFLEX A DEKOMPRESIA MANDIBULY             -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="4">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">&#129729;</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 4 • BIOMECHANICKÁ DEKOMPRESIA</div>
-                <h3 class="sc-title">Valsalvov reflex a dekompresia mandibuly (SOS Dril)</h3>
-                <p class="sc-summary">Rozpojenie nevedomého zovretia hrtanových zvieračov mechanickým uvoľnením sánky o 2–3 mm</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">Valsalva Bypass</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Valsalva Mechanism</span>
-              <span class="sc-tag">Mandibulárna dekompresia</span>
-              <span class="sc-tag">Suprahyoidné svalstvo</span>
-              <span class="sc-tag">Laryngálny spazmus</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Biomechanický a fyziologický mechanizmus</h4>
-              <p>
-                Výskum klinického neurológa a rečového teoretika Dr. Williama D. Parryho formuloval hypotézu <strong>Valsalvovho mechanizmu (Valsalva Hypothesis)</strong>. Podľa tohto modelu nevzniká rečový blok v primárnych jazykových centrách, ale spustením primitívneho reflexu tlaku v hrtane. Valsalvov reflex je evolučne starý obranný program: slúži na nepriedušné uzatvorenie dýchacích ciest pri ťažkej fyzickej námahe (dvíhanie bremien, tlačenie, defekácia) prostredníctvom pevných laryngeálnych zvieračov.
-              </p>
-              <p>
-                Keď rečník anticipuje náročnú hlásku alebo sociálne ohrozenie, mozog situáciu chybne interpretuje ako potrebu "vynaložiť viac sily na pretlačenie slova". Tento impulz zapne Valsalvov reflex: suprahyoidné svaly (<em>m. mylohyoideus</em>, <em>m. geniohyoideus</em>) vytiahnu jazylku a sánku smerom hore a hrtanové zvierače sa reflexne hermeticky zovrú. Čím viac sa človek snaží slovo silou vytlačiť, tým silnejšie sa zvierače zovrú.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Záložka <strong>"⚡ Rýchly Dril" (SOS Sandbox)</strong> poskytuje rýchlu terénnu rekalibráciu pred reálnym sociálnym vstupom (napr. pred nákupom, hovorom či poradou). Pacer aplikácie vedie rečníka k cielenej <strong>dekompresii mandibuly</strong>: mechanickému uvoľneniu spodnej sánky o 2 až 3 milimetre (zubné oblúky sa nesmú dotýkať, pery len jemne priľnú). Tento jednoduchý pohyb mechanicky neutralizuje ťah suprahyoidných svalov, čo fyziologicky znemožňuje zopnutie zvieračov hrtana a rozbíja patologický Valsalvov reflex ešte pred prvou fonáciou.
-              </p>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Parry, W. D. (1985/2013). <em>Understanding & controlling stuttering: A comprehensive new approach based on the Valsalva mechanism</em> (3rd ed.). National Stuttering Association.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Smith, A., & Denny, M. (1990). High-frequency oscillations in human speech muscle activity. <em>Brain Research</em>, 534(1–2), 269–274.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1016/0006-8993(90)90141-8" target="_blank" rel="noopener">doi:10.1016/0006-8993(90)90141-8</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Loucks, T. M., & De Nil, L. F. (2006). Anomalous sensorimotor integration in developmental stuttering: A review. <em>International Journal of Orofacial Myology</em>, 32, 22–37.</span>
-                  <a class="cit-doi" href="https://doi.org/10.52010/ijom.2006.32.1.3" target="_blank" rel="noopener">doi:10.52010/ijom.2006.32.1.3</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 5: HIERARCHICKÁ DESENZIBILIZÁCIA A STRESOVÁ INOKULÁCIA  -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="5">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">⚡</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 5 • BEHAVIORÁLNA INOKULÁCIA</div>
-                <h3 class="sc-title">Hierarchická desenzibilizácia a stresová inokulácia (5 Svetov)</h3>
-                <p class="sc-summary">Postupné vrstvenie psychofyziologickej záťaže od samohlások po prepadové hovory s kamerou</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">Stress Inoculation</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Stress Inoculation Training</span>
-              <span class="sc-tag">Van Riper Therapy</span>
-              <span class="sc-tag">Reakčný limit 550 ms</span>
-              <span class="sc-tag">Kamerový očný kontakt</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Psychofyziologický mechanizmus a sympatiková regulácia</h4>
-              <p>
-                Plynulosť reči je mimoriadne zraniteľná voči aktivácii sympatikového nervového systému. V reálnych sociálnych interakciách vyvoláva hrozba zlyhania okamžitú autonómnu sympatikovú reakciu – vyplavenie katecholamínov, zrýchlenie srdcovej frekvencie a motorickú reakciu typu <em>freeze</em> v orofaciálnej oblasti. Ak je tréning obmedzený len na bezpečné, tiché laboratórne podmienky, dochádza k nulovému transferu zručností do reálneho života.
-              </p>
-              <p>
-                Koncept <strong>stresovej inokulácie (Stress Inoculation Training – SIT, Donald Meichenbaum, 1985)</strong> v kombinácii s klasickou <strong>desenzibilizačnou terapiou Charlesa Van Ripera (1973)</strong> a kognitívno-behaviorálnymi protokolmi (Menzies et al., 2008) buduje trvalú odolnosť voči blokom riadeným, postupným dávkovaním záťaže priamo počas nácviku motorického vzorca.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v 5 Svetoch Glide Biofeedback</h4>
-              <p>
-                Cesta 5 Svetov je presne odstupňovaná podľa náročnosti autonómnej nervovej záťaže:
-              </p>
-              <ul class="sc-list">
-                <li><strong>Svet 1: Samohlásky (A, O, E, U, I):</strong> Bezpečné prostredie bez časového limitu; izolovaný nábehový tréning sliznice (VRT).</li>
-                <li><strong>Svet 2: Znelé spoluhlásky (M, N, V, L):</strong> Udržanie nepretržitého kmitania hlasiviek cez artikulačné prechody.</li>
-                <li><strong>Svet 3: Plozívy a zhluky (P, T, K, CH, Štv-):</strong> Tlmenie aerodynamických rázov v artikulačných bodoch bez barličiek.</li>
-                <li><strong>Svet 4: Pokladňa & Rýchlosť:</strong> Reakčný limit <strong>550 ms</strong> (zvukový prompt pokladne) – eliminuje priestor na anticipačnú paniku a trénuje okamžitú automatickú dekompresiu sánky.</li>
-                <li><strong>Svet 5: Boss Fights (Prepadové hovory & Sociálna expozícia):</strong> Telefonáty s nepredvídateľnými reakciami oponenta (kuriér, lekár, automechanik) v kombinácii s voliteľným zrkadlom prednej webkamery pre nácvik stabilného očného kontaktu pri reči.</li>
-              </ul>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Van Riper, C. (1973). <em>The treatment of stuttering</em>. Prentice-Hall.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Meichenbaum, D. (1985). <em>Stress inoculation training</em>. Pergamon Press.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Menzies, R. G., Onslow, M., Packman, A., & O’Brian, S. (2008). Cognitive behavior therapy for adults who stutter: A tutorial for speech-language pathologists. <em>Journal of Speech, Language, and Hearing Research</em>, 51(6), 1451–1464.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1044/1092-4388(2008/07-0259)" target="_blank" rel="noopener">doi:10.1044/1092-4388(2008/07-0259)</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-      </div>
-
-      <!-- Pätička modálu -->
-      <div class="science-modal-footer">
-        <div class="smf-disclaimer">
-          ⚠️ <strong>Upozornenie:</strong> Glide Biofeedback je neuro-tréningový biofeedback systém zameraný na motorické učenie reči. Nenahrádza individuálnu diagnostiku a intervenciu certifikovaného klinického logopéda.
-        </div>
-        <button class="btn-3d slate full" id="closeScienceModalBtn">
-          <span>← SPÄŤ NA TELEMETRIU</span>
+      <div class="drawer-details-toggle" style="margin-bottom:10px;">
+        <button class="btn-3d sm full" id="toggleMatrixBtn" type="button">
+          <span>Akustická analýza (VRT & graf)</span>
         </button>
       </div>
 
+      <div class="matrix-panel" id="matrixPanel" style="display:none;">
+        <div class="canvas-wrap">
+          <div class="canvas-label">
+            <span>Akustická obálka formantov (FFT 2048)</span>
+            <span>Žlté pásmo = VRT</span>
+          </div>
+          <canvas id="envelopeCanvas" width="600" height="80"></canvas>
+          <canvas id="rmsCanvas" style="display:none;" width="600" height="80"></canvas>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-row"><span class="metric-title" id="m1Title">1. Štart</span><span class="metric-val" id="m1">-</span></div>
+          <div class="metric-row"><span class="metric-title">2. Čistota</span><span class="metric-val" id="m2">-</span></div>
+          <div class="metric-row"><span class="metric-title">3. Trvanie</span><span class="metric-val" id="m3">-</span></div>
+          <div class="metric-row"><span class="metric-title">4. VRT</span><span class="metric-val" id="m4"><span id="vrtValue">-</span></span></div>
+          <div class="metric-row"><span class="metric-title">5. Kontinuita</span><span class="metric-val" id="m5">-</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <button class="btn-primary full lg" id="drawerContinueBtn" type="button">
+          <span>POKRAČOVAŤ (Enter)</span>
+        </button>
+      </div>
     </div>
   </div>
+</section>
 
+<!-- ==================================================================== -->
+<!-- KALIBRAČNÝ MODAL (MERANIE ŠUMU MIESTNOSTI)                           -->
+<!-- ==================================================================== -->
+<div class="modal-backdrop-overlay" id="calibrationModal" style="display:none;">
+  <div class="auth-modal-card" style="text-align: center; max-width: 380px;">
+    <div class="brand-mark small" style="margin: 0 auto 16px auto;">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <h2 class="auth-modal-title" style="font-size: 22px;">Kalibrácia ticha</h2>
+    <p class="auth-modal-desc">Meriam hladinu hluku v miestnosti. Prosím, vydrž 1 sekundu v tichu...</p>
+    <div style="margin: 24px auto 8px auto; width: 36px; height: 36px; border: 3px solid rgba(109, 91, 208, 0.2); border-top-color: var(--purple); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+  </div>
 </div>
 
-<!-- Skripty -->
+<!-- ==================================================================== -->
+<!-- OSLAVNÝ MODAL (LEKCIA DOKONČENÁ)                                     -->
+<!-- ==================================================================== -->
+<div class="modal-backdrop-overlay" id="celebrationModal" style="display:none;">
+  <div class="auth-modal-card" style="text-align: center; max-width: 420px;">
+    <div style="font-size: 48px; margin-bottom: 8px;">🏆</div>
+    <h2 class="celebration-title" id="celebrationTitle" style="font-family:var(--font-serif); font-size:26px; color:var(--ink); margin-bottom:6px;">Lekcia dokončená!</h2>
+    <p class="celebration-sub" id="celebrationSub" style="font-size:13px; color:var(--muted); margin-bottom:20px;">Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.</p>
 
-  </div><!-- /#appLayout -->
-</div><!-- /.app-shell-container -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:24px;">
+      <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+        <span style="font-size:10px; color:var(--muted); display:block; font-weight:700;">ZÍSKANÉ XP</span>
+        <span style="font-size:16px; font-weight:700; color:var(--purple);" id="recapXpVal">+30 XP</span>
+      </div>
+      <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+        <span style="font-size:10px; color:var(--muted); display:block; font-weight:700;">ÚSPEŠNOSŤ</span>
+        <span style="font-size:16px; font-weight:700; color:#10b981;" id="recapAccuracyVal">100%</span>
+      </div>
+      <div style="border:1px solid var(--line); border-radius:12px; padding:12px; background:white;">
+        <span style="font-size:10px; color:var(--muted); display:block; font-weight:700;">SÉRIA</span>
+        <span style="font-size:16px; font-weight:700; color:#f59e0b;" id="recapStreakVal">6 dní</span>
+      </div>
+    </div>
 
-<!-- Skripty enginov -->
+    <button class="btn-primary full lg" id="celebrationBackBtn" type="button">
+      <span>POKRAČOVAŤ</span>
+    </button>
+  </div>
+</div>
+
+<!-- ==================================================================== -->
+<!-- VEDECKÝ ZÁKLAD & MODELY MODAL                                        -->
+<!-- ==================================================================== -->
+<div class="science-modal-backdrop" id="scienceModalBackdrop">
+  <div class="science-modal-card">
+    <div class="science-modal-header">
+      <div>
+        <span class="section-kicker">EVIDENCE-BASED NEUROAKUSTIKA</span>
+        <h2 style="font-family:var(--font-serif); font-size:24px; color:var(--ink); margin-top:4px;">Vedecký Základ & Klinické Modely</h2>
+      </div>
+      <button class="science-close-btn" id="scienceModalCloseBtn" type="button">✕</button>
+    </div>
+
+    <div style="font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:20px;">
+      Glide Biofeedback vychádza z neurobiologických princípov: DIVA/GODIVA sensorimotorický model, Vocal Rise Time (VRT), DAF zborový efekt a Valsalvova dekompresia.
+    </div>
+
+    <button class="btn-3d sm full" id="closeScienceModalBtn" type="button">
+      <span>← Späť do aplikácie</span>
+    </button>
+  </div>
+</div>
+
+<!-- ==================================================================== -->
+<!-- SKRIPTY                                                              -->
+<!-- ==================================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./questions-and-voices.js"></script>
 <script src="./dsp-core.js"></script>
@@ -1753,309 +1246,226 @@
 <script src="./daf-assistant.js"></script>
 <script src="./supabase-auth.js"></script>
 
-<!-- PWA Service Worker & Install Manager -->
 <script>
+  // Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
         .then(reg => console.log('[PWA] Service Worker aktívny:', reg.scope))
-        .catch(err => console.warn('[PWA] Service Worker registrácia zlyhala:', err));
+        .catch(err => console.warn('[PWA] SW chyba:', err));
     });
   }
 
-  // Material 3 Compact Player Wire-up
-  (function initM3CompactPlayer() {
-    var playerBtn = document.getElementById('m3PlayerActionBtn');
-    var playerTitle = document.getElementById('m3PlayerTitle');
-    var playerSub = document.getElementById('m3PlayerSub');
-    var playerAvatar = document.getElementById('m3PlayerAvatar');
-
-    if (playerBtn) {
-      playerBtn.addEventListener('click', function() {
-        var continueBtn = document.getElementById('continuePathBtn');
-        var startLessonBtn = document.getElementById('startLessonBtn');
-        if (continueBtn && continueBtn.offsetParent !== null) {
-          continueBtn.click();
-        } else if (startLessonBtn && startLessonBtn.offsetParent !== null) {
-          startLessonBtn.click();
+  // Prepojenie záložiek (Tabs Controller)
+  (function initTabNavigation() {
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => {
+        if (el.id === tabId) {
+          el.classList.add('active');
         } else {
-          var navCesta = document.getElementById('navTabCesta');
-          if (navCesta) navCesta.click();
+          el.classList.remove('active');
         }
       });
-    }
 
-    var assistantBtn = document.getElementById('assistantToggle');
-    if (assistantBtn) {
-      assistantBtn.addEventListener('click', function() {
-        setTimeout(function() {
-          var isRunning = assistantBtn.classList.contains('active') || assistantBtn.textContent.indexOf('Zastaviť') !== -1;
-          if (isRunning) {
-            if (playerTitle) playerTitle.textContent = 'DAF Asistent Beží';
-            if (playerSub) playerSub.textContent = 'Choral Speech Effect • Slúchadlá pripojené';
-            if (playerAvatar) playerAvatar.textContent = '🎧';
-          } else {
-            if (playerTitle) playerTitle.textContent = 'Tréning Plynulosti';
-            if (playerSub) playerSub.textContent = 'Glide Biofeedback Engine • Pripravený';
-            if (playerAvatar) playerAvatar.textContent = '🎙️';
-          }
-        }, 100);
-      });
-    }
-  })();
-
-  // Synchronizácia Desktop Sidebaru s Mobilným Bottom Nav
-  (function initDesktopSidebarSync() {
-    const sCesta = document.getElementById('sidebarTabCesta');
-    const sDril = document.getElementById('sidebarTabDril');
-    const sAsistent = document.getElementById('sidebarTabAsistent');
-    const sTelemetria = document.getElementById('sidebarTabTelemetria');
-    const sScience = document.getElementById('sidebarScienceBtn');
-    const sProfile = document.getElementById('sidebarProfileBtn');
-
-    const nCesta = document.getElementById('navTabCesta');
-    const nDril = document.getElementById('navTabDril');
-    const nAsistent = document.getElementById('navTabAsistent');
-    const nTelemetria = document.getElementById('navTabTelemetria');
-    const openScienceBtn = document.getElementById('openScienceModalBtn');
-    const headerProfileBtn = document.getElementById('headerProfileBtn');
-
-    if (sCesta && nCesta) sCesta.addEventListener('click', () => nCesta.click());
-    if (sDril && nDril) sDril.addEventListener('click', () => nDril.click());
-    if (sAsistent && nAsistent) sAsistent.addEventListener('click', () => nAsistent.click());
-    if (sTelemetria && nTelemetria) sTelemetria.addEventListener('click', () => nTelemetria.click());
-    if (sScience && openScienceBtn) sScience.addEventListener('click', () => openScienceBtn.click());
-    if (sProfile && headerProfileBtn) sProfile.addEventListener('click', () => headerProfileBtn.click());
-
-    const navItems = [
-      { tab: 'tabCesta', side: sCesta },
-      { tab: 'tabDril', side: sDril },
-      { tab: 'tabAsistent', side: sAsistent },
-      { tab: 'tabTelemetria', side: sTelemetria }
-    ];
-
-    function updateSidebarActive() {
-      navItems.forEach(item => {
-        const pane = document.getElementById(item.tab);
-        if (pane && pane.classList.contains('active')) {
-          if (item.side) item.side.classList.add('active');
+      // Synchronizácia desktop sidebaru a mobilnej navigácie
+      document.querySelectorAll('#appSidebar .nav-item[data-tab], #bottomNav button[data-tab]').forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('active');
         } else {
-          if (item.side) item.side.classList.remove('active');
+          btn.classList.remove('active');
         }
       });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    document.querySelectorAll('.nav-tab').forEach(btn => {
-      btn.addEventListener('click', () => setTimeout(updateSidebarActive, 50));
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        if (tabId) switchTab(tabId);
+      });
     });
 
-    setInterval(() => {
-      const hAvatar = document.getElementById('headerAvatarCircle');
-      const sAvatar = document.getElementById('sidebarAvatarCircle');
-      const hName = document.getElementById('headerProfileName');
-      const sName = document.getElementById('sidebarUserName');
-      if (hAvatar && sAvatar && hAvatar.textContent) sAvatar.textContent = hAvatar.textContent;
-      if (hName && sName && hName.textContent && hName.textContent !== 'Profil') sName.textContent = hName.textContent;
-    }, 1000);
+    // Rýchle tlačidlá
+    const brandBtn = document.getElementById('sidebarBrandBtn');
+    if (brandBtn) brandBtn.addEventListener('click', (e) => { e.preventDefault(); switchTab('tabCesta'); });
+
+    const goToProgressBtn = document.getElementById('goToProgressBtn');
+    if (goToProgressBtn) goToProgressBtn.addEventListener('click', () => switchTab('tabTelemetria'));
+
+    const profileChip = document.getElementById('sidebarProfileChip');
+    if (profileChip) profileChip.addEventListener('click', () => switchTab('tabTelemetria'));
+
+    const headerProfileBtn = document.getElementById('headerProfileBtn');
+    if (headerProfileBtn) headerProfileBtn.addEventListener('click', () => switchTab('tabTelemetria'));
+
+    const settingsBtn = document.getElementById('sidebarSettingsBtn');
+    const scienceModal = document.getElementById('scienceModalBackdrop');
+    if (settingsBtn && scienceModal) {
+      settingsBtn.addEventListener('click', () => { scienceModal.style.display = 'flex'; });
+    }
   })();
 
-  // ==========================================================================
-  // OVLÁDANIE FIGMA VÝSKUMNÉHO DOTAZNÍKA (KROKY 0 AŽ 5)
-  // ==========================================================================
-  (function initFigmaQuestionnaireStepper() {
-    let qStep = 0;
-    const qModal = document.getElementById('figmaQuestionnaireModal');
-    const qAdultCheck = document.getElementById('qAdultCheck');
-    const qConsentCheck = document.getElementById('qConsentCheck');
-    const qNextBtn = document.getElementById('qNextBtn');
-    const qBackBtn = document.getElementById('qBackBtn');
-    const qNextBtnText = document.getElementById('qNextBtnText');
-    const qCountText = document.getElementById('qCountText');
-    const qProgressBar = document.getElementById('qProgressBar');
-    const qNoteInput = document.getElementById('qNoteInput');
-    const qNoteCount = document.getElementById('qNoteCount');
-    const qActionsFooter = document.getElementById('qActionsFooter');
-    const qFinishEnterBtn = document.getElementById('qFinishEnterBtn');
+  // Figma Dotazník Stepper Logic
+  (function initQuestionnaire() {
+    let currentStep = 0;
+    const modal = document.getElementById('figmaQuestionnaireModal');
+    const adultCheck = document.getElementById('qAdultCheck');
+    const consentCheck = document.getElementById('qConsentCheck');
+    const nextBtn = document.getElementById('qNextBtn');
+    const backBtn = document.getElementById('qBackBtn');
+    const nextText = document.getElementById('qNextBtnText');
+    const countText = document.getElementById('qCountText');
+    const progressBar = document.getElementById('qProgressBar');
+    const finishBtn = document.getElementById('qFinishEnterBtn');
+    const reopenBtn = document.getElementById('reopenDiagnosticBtn');
+    const actionsFooter = document.getElementById('qActionsFooter');
 
     const answers = {};
-    const situations = new Set();
 
-    function updateQuestionnaireUI() {
+    function updateStepUI() {
       for (let i = 0; i <= 5; i++) {
-        const el = document.getElementById('qStep' + i);
-        if (el) el.style.display = (i === qStep) ? 'block' : 'none';
+        const s = document.getElementById('qStep' + i);
+        if (s) s.style.display = (i === currentStep) ? 'block' : 'none';
       }
 
-      if (qStep === 0) {
-        if (qCountText) qCountText.style.display = 'none';
-        if (qProgressBar) qProgressBar.style.width = '0%';
-        if (qBackBtn) qBackBtn.style.visibility = 'hidden';
-        if (qNextBtnText) qNextBtnText.textContent = 'Začať dotazník';
-        if (qNextBtn) qNextBtn.disabled = !(qAdultCheck && qAdultCheck.checked && qConsentCheck && qConsentCheck.checked);
-        if (qActionsFooter) qActionsFooter.style.display = 'flex';
-      } else if (qStep >= 1 && qStep <= 3) {
-        if (qCountText) {
-          qCountText.style.display = 'block';
-          qCountText.textContent = qStep + ' / 3';
+      if (currentStep === 0) {
+        if (countText) countText.style.display = 'none';
+        if (progressBar) progressBar.style.width = '0%';
+        if (backBtn) backBtn.style.visibility = 'hidden';
+        if (nextText) nextText.textContent = 'Začať dotazník';
+        if (nextBtn) nextBtn.disabled = !(adultCheck && adultCheck.checked && consentCheck && consentCheck.checked);
+        if (actionsFooter) actionsFooter.style.display = 'flex';
+      } else if (currentStep >= 1 && currentStep <= 3) {
+        if (countText) {
+          countText.style.display = 'block';
+          countText.textContent = currentStep + ' / 3';
         }
-        if (qProgressBar) qProgressBar.style.width = ((qStep / 4) * 100) + '%';
-        if (qBackBtn) qBackBtn.style.visibility = 'visible';
-        if (qNextBtnText) qNextBtnText.textContent = 'Pokračovať';
-        if (qActionsFooter) qActionsFooter.style.display = 'flex';
-
-        // Overenie, či sú zodpovedané otázky
-        let secAnswers = 0;
-        const currentStepEl = document.getElementById('qStep' + qStep);
-        if (currentStepEl) {
-          const scales = currentStepEl.querySelectorAll('.answer-scale');
-          scales.forEach(scale => {
-            const qid = scale.dataset.qid;
-            if (answers[qid] !== undefined) secAnswers++;
-          });
-          if (qNextBtn) qNextBtn.disabled = (secAnswers < scales.length);
+        if (progressBar) progressBar.style.width = Math.round((currentStep / 4) * 100) + '%';
+        if (backBtn) backBtn.style.visibility = 'visible';
+        if (nextText) nextText.textContent = (currentStep === 3) ? 'K situáciám →' : 'Ďalej →';
+        if (actionsFooter) actionsFooter.style.display = 'flex';
+        checkStepComplete();
+      } else if (currentStep === 4) {
+        if (countText) {
+          countText.style.display = 'block';
+          countText.textContent = 'Kontext';
         }
-      } else if (qStep === 4) {
-        if (qCountText) {
-          qCountText.style.display = 'block';
-          qCountText.textContent = 'Kontext';
-        }
-        if (qProgressBar) qProgressBar.style.width = '90%';
-        if (qBackBtn) qBackBtn.style.visibility = 'visible';
-        if (qNextBtnText) qNextBtnText.textContent = 'Zobraziť zhrnutie';
-        if (qNextBtn) qNextBtn.disabled = false;
-        if (qActionsFooter) qActionsFooter.style.display = 'flex';
-      } else if (qStep === 5) {
-        if (qCountText) qCountText.style.display = 'none';
-        if (qProgressBar) qProgressBar.style.width = '100%';
-        if (qActionsFooter) qActionsFooter.style.display = 'none';
-        calculateResults();
+        if (progressBar) progressBar.style.width = '90%';
+        if (backBtn) backBtn.style.visibility = 'visible';
+        if (nextText) nextText.textContent = 'Vyhodnotiť profil →';
+        if (nextBtn) nextBtn.disabled = false;
+        if (actionsFooter) actionsFooter.style.display = 'flex';
+      } else if (currentStep === 5) {
+        if (countText) countText.style.display = 'none';
+        if (progressBar) progressBar.style.width = '100%';
+        if (actionsFooter) actionsFooter.style.display = 'none';
       }
-      const modalCard = document.querySelector('.questionnaire-modal-card');
-      if (modalCard) modalCard.scrollTop = 0;
     }
 
-    if (qAdultCheck) qAdultCheck.addEventListener('change', updateQuestionnaireUI);
-    if (qConsentCheck) qConsentCheck.addEventListener('change', updateQuestionnaireUI);
+    function checkStepComplete() {
+      if (currentStep === 0) {
+        if (nextBtn) nextBtn.disabled = !(adultCheck && adultCheck.checked && consentCheck && consentCheck.checked);
+        return;
+      }
+      if (currentStep >= 1 && currentStep <= 3) {
+        const stepEl = document.getElementById('qStep' + currentStep);
+        if (!stepEl) return;
+        const scales = stepEl.querySelectorAll('.answer-scale');
+        let allAnswered = true;
+        scales.forEach(scale => {
+          const qid = scale.getAttribute('data-qid');
+          if (answers[qid] === undefined) allAnswered = false;
+        });
+        if (nextBtn) nextBtn.disabled = !allAnswered;
+      }
+    }
 
-    document.querySelectorAll('.answer-scale input[type="radio"]').forEach(r => {
-      r.addEventListener('change', () => {
-        answers[r.name] = parseInt(r.value, 10);
-        updateQuestionnaireUI();
-      });
-    });
+    if (adultCheck) adultCheck.addEventListener('change', checkStepComplete);
+    if (consentCheck) consentCheck.addEventListener('change', checkStepComplete);
 
-    document.querySelectorAll('#qSituationGrid .situation-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const sit = btn.dataset.sit;
-        if (situations.has(sit)) {
-          situations.delete(sit);
-          btn.classList.remove('selected');
-          const iconSpan = btn.querySelector('span');
-          if (iconSpan) iconSpan.innerHTML = '';
-        } else {
-          situations.add(sit);
-          btn.classList.add('selected');
-          const iconSpan = btn.querySelector('span');
-          if (iconSpan) iconSpan.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>';
+    document.querySelectorAll('.answer-scale input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const scale = radio.closest('.answer-scale');
+        if (scale) {
+          const qid = scale.getAttribute('data-qid');
+          answers[qid] = parseInt(radio.value, 10);
+          checkStepComplete();
         }
       });
     });
 
-    if (qNoteInput && qNoteCount) {
-      qNoteInput.addEventListener('input', () => {
-        qNoteCount.textContent = qNoteInput.value.length + ' / 500';
-      });
-    }
+    document.querySelectorAll('.situation-btn').forEach(btn => {
+      btn.addEventListener('click', () => btn.classList.toggle('active'));
+    });
 
-    if (qNextBtn) {
-      qNextBtn.addEventListener('click', () => {
-        if (qStep < 5) {
-          qStep++;
-          updateQuestionnaireUI();
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (currentStep < 5) {
+          currentStep++;
+          updateStepUI();
         }
       });
     }
 
-    if (qBackBtn) {
-      qBackBtn.addEventListener('click', () => {
-        if (qStep > 0) {
-          qStep--;
-          updateQuestionnaireUI();
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+          currentStep--;
+          updateStepUI();
         }
       });
     }
 
-    function getDesc(avg) {
-      if (avg < 1.35) return 'nižšia záťaž';
-      if (avg < 2.7) return 'stredná záťaž';
-      return 'vyššia záťaž';
-    }
-
-    function calculateResults() {
-      const q1 = [answers['speech-control'] || 0, answers['speech-effort'] || 0, answers['speech-unpredictable'] || 0];
-      const q2 = [answers['feeling-worry'] || 0, answers['feeling-avoid'] || 0, answers['feeling-after'] || 0];
-      const q3 = [answers['impact-work'] || 0, answers['impact-social'] || 0, answers['impact-tasks'] || 0];
-
-      const avg1 = (q1[0] + q1[1] + q1[2]) / 3;
-      const avg2 = (q2[0] + q2[1] + q2[2]) / 3;
-      const avg3 = (q3[0] + q3[1] + q3[2]) / 3;
-
-      const res0 = document.getElementById('domainRes0');
-      const res1 = document.getElementById('domainRes1');
-      const res2 = document.getElementById('domainRes2');
-      const bar0 = document.getElementById('domainBar0');
-      const bar1 = document.getElementById('domainBar1');
-      const bar2 = document.getElementById('domainBar2');
-
-      if (res0) res0.textContent = getDesc(avg1);
-      if (res1) res1.textContent = getDesc(avg2);
-      if (res2) res2.textContent = getDesc(avg3);
-
-      if (bar0) bar0.style.width = Math.round((avg1 / 4) * 100) + '%';
-      if (bar1) bar1.style.width = Math.round((avg2 / 4) * 100) + '%';
-      if (bar2) bar2.style.width = Math.round((avg3 / 4) * 100) + '%';
-
-      const sitWrap = document.getElementById('qResultContext');
-      const sitChips = document.getElementById('qResultSituationChips');
-      if (sitWrap && sitChips) {
-        if (situations.size > 0) {
-          sitWrap.style.display = 'block';
-          sitChips.innerHTML = '';
-          situations.forEach(s => {
-            const sp = document.createElement('span');
-            sp.className = 'sit-pill';
-            sp.textContent = s;
-            sitChips.appendChild(sp);
-          });
-        } else {
-          sitWrap.style.display = 'none';
-        }
-      }
-    }
-
-    // Dokončenie dotazníka a vstup do aplikácie
-    if (qFinishEnterBtn) {
-      qFinishEnterBtn.addEventListener('click', () => {
+    if (finishBtn) {
+      finishBtn.addEventListener('click', () => {
         localStorage.setItem('fl_onboarding_completed', '1');
-        localStorage.setItem('fl_figma_answers', JSON.stringify({ answers, situations: Array.from(situations) }));
-        if (qModal) qModal.style.display = 'none';
-        if (typeof duoSfx !== 'undefined' && duoSfx.playLevelComplete) {
-          duoSfx.playLevelComplete();
-        }
+        localStorage.setItem('glide_questionnaire_completed', 'true');
+        localStorage.setItem('glide_intro_completed', 'true');
+        if (modal) modal.style.display = 'none';
       });
     }
 
-    // Export globálnej funkcie na otvorenie dotazníka
-    window.openFigmaQuestionnaire = function(reset = false) {
-      if (reset) {
-        qStep = 0;
-        updateQuestionnaireUI();
+    if (reopenBtn && modal) {
+      reopenBtn.addEventListener('click', () => {
+        currentStep = 0;
+        updateStepUI();
+        modal.style.display = 'flex';
+      });
+    }
+
+    window.openFigmaQuestionnaire = function(reset) {
+      if (modal) {
+        if (reset) {
+          currentStep = 0;
+          updateStepUI();
+        }
+        modal.style.display = 'flex';
       }
-      if (qModal) qModal.style.display = 'flex';
     };
 
-    updateQuestionnaireUI();
+    // Inicializácia: ak používateľ ešte nevidel dotazník a prihlásil sa / vstúpil
+    window.openQuestionnaireIfPending = function() {
+      const done = localStorage.getItem('glide_questionnaire_completed') || localStorage.getItem('fl_onboarding_completed');
+      if (!done && modal) {
+        currentStep = 0;
+        updateStepUI();
+        modal.style.display = 'flex';
+      }
+    };
+  })();
+
+  // Dátum v Topbare
+  (function initTopbarDate() {
+    const days = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
+    const months = ['januára', 'februára', 'marca', 'apríla', 'mája', 'júna', 'júla', 'augusta', 'septembra', 'októbra', 'novembra', 'decembra'];
+    const now = new Date();
+    const dayEl = document.getElementById('topbarDayName');
+    const dateEl = document.getElementById('topbarDateStr');
+    if (dayEl) dayEl.textContent = days[now.getDay()];
+    if (dateEl) dateEl.textContent = now.getDate() + '. ' + months[now.getMonth()];
   })();
 </script>
+
 </body>
 </html>
