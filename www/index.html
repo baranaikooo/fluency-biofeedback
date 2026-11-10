@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Glide — Hlasový biofeedback, rečový asistent DAF a neuro-tréning mäkkého hlasivkového nábehu.">
+  <meta name="description" content="Glide — Hlasový biofeedback a jemné cvičenie plynulosti reči.">
   <meta name="theme-color" content="#f8f6f0">
-  <title>Glide — Hlasový biofeedback</title>
+  <title>Glide</title>
 
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
   <link rel="manifest" href="./manifest.json">
@@ -13,380 +13,54 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="welcome-auth-overlay" id="welcomeAuthOverlay" style="display:none;">
-  <div class="welcome-auth-modal">
-
-    <!-- KROK 1: VELA SERENE ONBOARDING & VSTUP DO APLIKÁCIE -->
-    <div id="welcomeAuthBox">
-      <!-- Brand & Hero Welcome -->
-      <div class="vela-welcome-hero">
-        <div class="vela-soundwave-logo welcome-sw-lg">
-          <span class="sw-col c1"></span>
-          <span class="sw-col c2"></span>
-          <span class="sw-col c3"></span>
-        </div>
-        <div class="welcome-brand-name">glide</div>
-        <span class="welcome-overline">TVOJ BEZPEČNÝ PRIESTOR PRE REČ</span>
-        <h1 class="welcome-hero-headline">Dýchaj voľne. Hovor s istotou.</h1>
-        <p class="welcome-hero-sub">Vedecký rečový biofeedback, upokojujúci sluchový asistent DAF a neuro-tréning mäkkého nábehu hlasu. Žiadny zhon, hodnotenie ani stres.</p>
-      </div>
-
-      <!-- Concentric Breathing Stage (Ilustrácia z Figmy) -->
-      <div class="welcome-breathing-stage" id="welcomeBreathingStage">
-        <div class="wb-circle green"></div>
-        <div class="wb-circle peach"></div>
-        <div class="wb-rings">
-          <svg viewBox="0 0 200 120" class="wb-rings-svg">
-            <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(109, 84, 181, 0.15)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <circle cx="100" cy="100" r="65" fill="none" stroke="rgba(109, 84, 181, 0.12)" stroke-width="1.2"/>
-            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(109, 84, 181, 0.08)" stroke-width="1"/>
-          </svg>
-        </div>
-        <div class="wb-capsule">
-          <span class="wb-capsule-sub" id="wbBreathLabel">Nádych</span>
-          <span class="wb-capsule-num" id="wbBreathNum">4</span>
-          <span class="wb-capsule-unit">sekundy</span>
-        </div>
-      </div>
-
-      <!-- 3 Piliere plynulosti (Vela Piliere) -->
-      <div class="welcome-pillars-list">
-        <div class="pillar-card">
-          <span class="pillar-icon">🫁</span>
-          <div class="pillar-content">
-            <div class="pillar-title">Mäkký hlasivkový nábeh</div>
-            <div class="pillar-desc">Okamžitý biofeedback ťa naučí uvoľniť hlasivkový kŕč a začať reč jemným výdychovým prúdom.</div>
-          </div>
-        </div>
-
-        <div class="pillar-card">
-          <span class="pillar-icon">🎧</span>
-          <div class="pillar-content">
-            <div class="pillar-title">Sluchový asistent DAF & FAF</div>
-            <div class="pillar-desc">Akustická spätná väzba s oneskorením a posunom tónu preukázateľne redukuje bloky a spomaľuje tempo.</div>
-          </div>
-        </div>
-
-        <div class="pillar-card">
-          <span class="pillar-icon">🗺️</span>
-          <div class="pillar-content">
-            <div class="pillar-title">5 Svetov & Neuro-profil</div>
-            <div class="pillar-desc">Personalizovaná cesta od jednotlivých hlások cez bežné nákupy až po reálne telefonáty.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Akcie pre používateľa -->
-      <div class="welcome-actions-container">
-        <!-- Hlavné CTA tlačidlo: Spustiť diagnostiku -->
-        <button class="vela-cta-pill welcome-main-btn" id="welcomeStartDiagBtn" type="button">
-          <span>Začať osobnú diagnostiku</span>
-          <span class="cta-arrow-circle">→</span>
-        </button>
-
-        <!-- Sekundárna akcia: Prepnutie prihlásenia -->
-        <button class="welcome-toggle-auth-btn" id="welcomeToggleAuthBtn" type="button">
-          <span>🔑 Už máš účet? Prihlásiť sa</span>
-        </button>
-
-        <!-- Hosťovský vstup priamo do aplikácie -->
-        <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
-          <span>👤 Vstúpiť bez prihlásenia (Lokálny režim)</span>
-        </button>
-      </div>
-
-      <!-- Zbaliteľná prihlasovacia / registračná karta -->
-      <div class="welcome-auth-card" id="welcomeAuthCardCollapse" style="display:none; margin-top: 14px;">
-        <div class="welcome-auth-header">
-          <h2 class="welcome-auth-heading">Prihlásenie & Cloud synchronizácia</h2>
-          <p class="welcome-auth-sub">Ukladaj si svoje série, XP body a históriu na všetkých svojich zariadeniach.</p>
-        </div>
-
-        <!-- Google Sign-in 1-Click -->
-        <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
-          <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Pokračovať cez Google účet</span>
-        </button>
-        <p class="auth-sub-hint">💡 Pre prihlásenie priamo v appke bez otvárania prehliadača zadaj Email a Heslo nižšie.</p>
-
-        <div class="auth-divider">
-          <span>ALEBO REGISTRÁCIA CEZ EMAIL</span>
-        </div>
-
-        <!-- Form -->
-        <div class="welcome-auth-form">
-          <div class="auth-field-group">
-            <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
-            <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Alain Baraňai" autocomplete="name" />
-          </div>
-
-          <div class="auth-field-group">
-            <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
-            <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
-          </div>
-
-          <div class="auth-field-group">
-            <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
-            <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
-          </div>
-
-          <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
-
-          <button class="vela-cta-pill full-width" id="welcomeSubmitBtn" type="button" style="width:100%; justify-content:center; margin-top:8px;">
-            <span id="welcomeSubmitText">🚀 Prihlásiť / Zaregistrovať</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-        <!-- KROK 2: VEDECKÝ DOTAZNÍK BALBUTIZMU S LIKERTOVOU ŠKÁLOU (1-5) -->
-    <div id="welcomeDiagnosticBox" style="display:none;">
-      <div class="diagnostic-card">
-        <!-- Progress Bar -->
-        <div class="diag-progress-header">
-          <div class="diag-badge-pill">🔬 VEDECKÁ DIAGNOSTIKA BALBUTIZMU</div>
-          <span class="diag-step-counter" id="diagStepCounter">Krok 1 z 3: Motorika</span>
-        </div>
-        <div class="diag-progress-track">
-          <div class="diag-progress-bar" id="diagProgressBar" style="width: 33%;"></div>
-        </div>
-
-        <!-- Krok 1: Motorické kŕče a zárazy (Otázky 1–4, škála 1–5) -->
-        <div class="diag-step-view active" id="diagStep1">
-          <h2 class="diag-step-title">Kde a ako silno vnímaš rečové kŕče?</h2>
-          <p class="diag-step-desc">Ohodnoť na logopedickej škále (1 = Vôbec až 5 = Silne), akou intenzitou zažívaš jednotlivé prejavy.</p>
-
-          <div class="diag-scale-container">
-            <!-- Otázka 1: Hlasivky (Samohlásky) -->
-            <div class="diag-scale-card" id="cardLaryngeal" data-domain="laryngeal">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">🫁</span>
-                <span class="diag-scale-title">1. Hlasivky & Hrdlo (Glotálny kŕč)</span>
-              </div>
-              <div class="diag-scale-desc">Zaseknutie v hrdle a tvrdý úder na začiatku samohlások (Auto, Otec, Áno, Oko), pocit stiahnutých hlasiviek.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-
-            <!-- Otázka 2: Plozívy (Pery & Jazyk) -->
-            <div class="diag-scale-card" id="cardPlosives" data-domain="plosives">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">👄</span>
-                <span class="diag-scale-title">2. Pery & Jazyk (Plozívny artikulačný pretlak)</span>
-              </div>
-              <div class="diag-scale-desc">Silné tlačenie pier alebo jazyka pri tvrdých spoluhláskach (P, B, T, D, K, G), kým slovo s námahou nevystrelí.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-
-            <!-- Otázka 3: Prolungácie (Znelé spoluhlásky) -->
-            <div class="diag-scale-card" id="cardProlongation" data-domain="prolongation">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">⏳</span>
-                <span class="diag-scale-title">3. Predlžovanie hlások (Prolungácie & Ťahanie)</span>
-              </div>
-              <div class="diag-scale-desc">Dlhé ťahanie zvukov (Mmm, Sss, Zzz, Vvv) s ťažkosťou uvoľniť tón a prejsť do nasledujúcej hlásky.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-
-            <!-- Otázka 4: Klonické opakovania & Rýchle tempo -->
-            <div class="diag-scale-card" id="cardClonic" data-domain="clonic">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">⚡</span>
-                <span class="diag-scale-title">4. Klonické opakovania & Rýchle tempo</span>
-              </div>
-              <div class="diag-scale-desc">Nekontrolované zrýchlenie reči, strata dychu a rýchle opakovanie slabík (K-k-kto) pri hovorení viet.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-          </div>
-
-          <button class="btn-3d green full sm" id="diagNext1" type="button" disabled style="margin-top: 16px;">
-            <span>Pokračovať na sociálny stres ➔</span>
-          </button>
-        </div>
-
-        <!-- Krok 2: Sociálny stres a cieľ -->
-        <div class="diag-step-view" id="diagStep2" style="display:none;">
-          <h2 class="diag-step-title">Sociálny stres & Prioritný cieľ</h2>
-          <p class="diag-step-desc">Zaradíme ti najstresujúcejšiu situáciu do SOS Drilu a prispôsobíme akustický DAF asistent.</p>
-
-          <!-- Otázka 5: Sociálna úzkosť na škále 1-5 -->
-          <div class="diag-scale-card" id="cardSocial" data-domain="social" style="margin-bottom: 14px;">
-            <div class="diag-scale-header">
-              <span class="diag-scale-icon">👥</span>
-              <span class="diag-scale-title">5. Sociálna úzkosť a obavy z hodnotenia</span>
-            </div>
-            <div class="diag-scale-desc">Intenzita stresu, paniky a vyhýbania sa slovám pri telefonovaní, predstavovaní sa menom či v práci.</div>
-            <div class="diag-scale-rating-row">
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-            </div>
-          </div>
-
-          <h3 style="font-size:0.90rem; font-weight:800; color:#f1f5f9; margin: 12px 0 8px 0;">Ktorá konkrétna situácia ťa trápi najviac?</h3>
-          <div class="diag-options-grid" id="diagSituationGrid">
-            <div class="diag-option-card selected" data-val="phone">
-              <span class="doc-icon">📱</span>
-              <div class="doc-body">
-                <div class="doc-title">Telefonovanie & Nečakané hovory</div>
-                <div class="doc-desc">Kuriér, lekár, úradník – absencia vizuálneho kontaktu stupňuje tlak.</div>
-              </div>
-            </div>
-
-            <div class="diag-option-card" data-val="name">
-              <span class="doc-icon">🙋‍♂️</span>
-              <div class="doc-body">
-                <div class="doc-title">Vyslovenie svojho mena</div>
-                <div class="doc-desc">Predstavenie sa – najčastejší blok, kde sa slovo nedá nahradiť synonymom.</div>
-              </div>
-            </div>
-
-            <div class="diag-option-card" data-val="ordering">
-              <span class="doc-icon">☕</span>
-              <div class="doc-body">
-                <div class="doc-title">Objednávanie v kaviarni a pri pokladni</div>
-                <div class="doc-desc">Časový tlak čakajúceho radu ľudí za tebou.</div>
-              </div>
-            </div>
-
-            <div class="diag-option-card" data-val="authorities">
-              <span class="doc-icon">👔</span>
-              <div class="doc-body">
-                <div class="doc-title">Pracovné porady & Prezentácie</div>
-                <div class="doc-desc">Strach z hodnotenia autoritou alebo kolegami.</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="diag-nav-row" style="margin-top: 16px;">
-            <button class="btn-3d slate sm" id="diagBack2" type="button"><span>⬅ Späť</span></button>
-            <button class="btn-3d green sm" id="diagFinishBtn" type="button" disabled style="flex: 1;"><span>Vyhodnotiť a odporučiť štart 🚀</span></button>
-          </div>
-        </div>
-
-        <!-- Krok 3: Výsledok analýzy (Personalizovaný Neuro-profil) -->
-        <div class="diag-step-view" id="diagStepResult" style="display:none;">
-          <div class="diag-result-hero">
-            <div class="diag-result-check">✨</div>
-            <h2 class="diag-result-title">Tvoj Neuro-profil reči je pripravený!</h2>
-            <p class="diag-result-sub" id="diagResultSub">Na základe tvojho skóre sme prispôsobili celú vzdelávaciu cestu.</p>
-          </div>
-
-          <div class="diag-summary-cards">
-            <div class="dsc-item">
-              <span class="dsc-label">DOMINANTNÝ PREJAV BALBUTIZMU</span>
-              <div class="dsc-val" id="diagSummaryTension">Plozívny artikulačný pretlak</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">ODPORÚČANÝ ŠTARTOVACÍ SVET</span>
-              <div class="dsc-val highlight" id="diagSummaryWorld">Svet 3: Plozívy a zhluky</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">CELKOVÉ SKÓRE ZÁVAŽNOSTI</span>
-              <div class="dsc-val" id="diagSummarySeverity">17 / 25 bodov</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">PRIORITNÁ SOCIÁLNA SITUÁCIA</span>
-              <div class="dsc-val" id="diagSummarySituation">Telefonovanie & Hovory</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">DAF ASISTENT NASTAVENIE</span>
-              <div class="dsc-val" id="diagSummaryDaf">Delay 90 ms • Pitch Shift +1.5 st</div>
-            </div>
-          </div>
-
-          <div class="diag-nav-row" style="margin-top: 18px;">
-            <button class="btn-3d slate sm" id="diagBack3" type="button"><span>⬅ Upraviť</span></button>
-            <button class="btn-3d green full" id="diagEnterAppBtn" type="button" style="flex: 1;">
-              <span>🚀 Začať odporúčaným Svetom 3</span>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div class="app-shell" id="appLayout">
+<div class="app-shell" id="appShell">
 
   <!-- ==================================================================== -->
-  <!-- BOČNÝ PANEL (DESKTOP SIDEBAR)                                        -->
+  <!-- SIDEBAR (ZOBRAZENÝ IBA NA DESKTOPE > 700PX)                           -->
   <!-- ==================================================================== -->
   <aside class="sidebar">
-    <a class="brand" href="#" aria-label="Domovská stránka Glide" id="desktopBrandLogo">
+    <a class="brand" href="#" aria-label="Domovská stránka Glide" id="desktopBrandLink">
       <span class="brand-mark"><span style="height:8px;"></span><span style="height:15px;"></span><span style="height:11px;"></span></span>
       <span>glide</span>
     </a>
 
     <nav class="main-nav" aria-label="Hlavná navigácia">
-      <button class="nav-item nav-tab active" data-tab="tabCesta" type="button">
+      <button class="nav-item active" data-nav="Dnes" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7" /><path d="M5 9v11h14V9M9 20v-6h6v6" /></svg>
         <span>Dnes</span>
       </button>
-      <button class="nav-item nav-tab" data-tab="tabDril" type="button">
+      <button class="nav-item" data-nav="Cvičenia" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16" /><path d="M9 8v8M15 8v8M2 12h20" /></svg>
         <span>Cvičenia</span>
       </button>
-      <button class="nav-item nav-tab" data-tab="tabDotaznik" type="button">
+      <button class="nav-item" data-nav="Dotazník" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg>
         <span>Dotazník</span>
       </button>
-      <button class="nav-item nav-tab" data-tab="tabTelemetria" type="button">
+      <button class="nav-item" data-nav="Môj pokrok" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></svg>
         <span>Môj pokrok</span>
       </button>
-      <button class="nav-item nav-tab" data-tab="tabAsistent" type="button">
+      <button class="nav-item" data-nav="Knižnica" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z" /><path d="M7 8h1M17 8h1" /></svg>
         <span>Knižnica</span>
       </button>
     </nav>
 
     <div class="sidebar-bottom">
-      <button class="nav-item" id="sidebarSettingsBtn" type="button">
+      <button class="nav-item" data-nav="Nastavenia" type="button">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06-2.83 2.83-.06-.06A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1 .6 1.8 1.8 0 0 0-.4 1v.1h-4V21a1.8 1.8 0 0 0-1.2-1.7 1.8 1.8 0 0 0-2 .4l-.06.07-2.83-2.83.06-.06a1.8 1.8 0 0 0 .4-2A1.8 1.8 0 0 0 2.2 14H2v-4h.1a1.8 1.8 0 0 0 1.7-1.2 1.8 1.8 0 0 0-.4-2l-.07-.06L6.16 3.9l.06.06a1.8 1.8 0 0 0 2 .4A1.8 1.8 0 0 0 9.2 2.6V2h4v.1a1.8 1.8 0 0 0 1.2 1.7 1.8 1.8 0 0 0 2-.4l.06-.07 2.83 2.83-.06.06a1.8 1.8 0 0 0-.4 2A1.8 1.8 0 0 0 20.6 9h.4v4h-.1a1.8 1.8 0 0 0-1.5 2Z" /></svg>
         <span>Nastavenia</span>
       </button>
-      <button class="profile-chip header-profile-btn" id="sidebarProfileChip" type="button" aria-label="Otvoriť profil">
-        <span class="avatar" id="desktopAvatar">AM</span>
+      <button class="profile-chip" data-nav="Nastavenia" type="button" aria-label="Otvoriť profil">
+        <span class="avatar">AM</span>
         <span>
-          <strong id="desktopProfileName">Alex Morgan</strong>
-          <small>Osobný rečový plán</small>
+          <strong>Alex Morgan</strong>
+          <small>Osobný plán</small>
         </span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6" /></svg>
       </button>
@@ -394,91 +68,73 @@
   </aside>
 
   <!-- ==================================================================== -->
-  <!-- HLAVNÝ OBSAH S HORNÝM STICKY TOPBAROM                                -->
+  <!-- HLAVNÝ OBSAH (MAIN)                                                 -->
   <!-- ==================================================================== -->
-  <main class="main-content-viewport">
-
-    <!-- STICKY TOPBAR (OPTIMALIZOVANÝ PRE ANDROID A IOS) -->
-    <header class="topbar duo-header" id="mainHeader">
-      <div class="mobile-brand" id="brandLogoBtn" role="button" tabindex="0" title="Glide Biofeedback">
+  <main>
+    <!-- TOPBAR (STICKY NA MOBILE, ČISTÝ NA DESKTOPE) -->
+    <header class="topbar">
+      <div class="mobile-brand">
         <span class="brand-mark small"><span style="height:6px;"></span><span style="height:12px;"></span><span style="height:9px;"></span></span>
         <span>glide</span>
       </div>
-
-      <div class="date-pill" id="desktopDatePill">
+      <div class="date-pill">
         <span id="datePillDay">Dnes</span>
         <strong id="datePillFull">Tréning plynulosti</strong>
       </div>
-
-      <div class="topbar-right-metrics hud-metrics">
-        <!-- Streak -->
-        <div class="streak-card header-streak-pill" id="hudStreakPill" title="Denná séria tréningu">
-          <span class="streak-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z" /></svg>
-          </span>
-          <div>
-            <strong id="streakVal">6 dní</strong>
-            <small>Pravidelný rytmus</small>
-          </div>
-        </div>
-
-        <!-- XP -->
-        <div class="hud-pill xp" id="hudXpPill" title="Celkové body XP">
-          <span class="hud-icon">⚡</span>
-          <span class="hud-val" id="xpVal">120</span>
-        </div>
-
-        <!-- Srdiečka / Životy -->
-        <div class="hud-pill hearts" id="hudHeartsPill" title="Životy na lekciu">
-          <span class="hud-icon">❤️</span>
-          <span class="hud-val" id="heartsVal">5</span>
-        </div>
-
-        <!-- Profil Tlačidlo (avatar) -->
-        <button class="avatar mobile-avatar header-profile-btn" id="headerProfileBtn" type="button" title="Profil a nastavenia" aria-label="Otvoriť profil">
-          <span id="headerAvatarCircle">AM</span>
-        </button>
-      </div>
+      <button class="avatar mobile-avatar" data-nav="Nastavenia" type="button" aria-label="Otvoriť profil">
+        AM
+      </button>
     </header>
 
     <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 1: DNES (HLAVNÁ DOMOVSKÁ OBRAZOVKA + HERNÁ CESTA)          -->
+    <!-- ZÁLOŽKA 1: DNES (JEDNODUCHÁ, ČISTÁ DOMOVSKÁ OBRAZOVKA Z FIGMY)      -->
     <!-- ------------------------------------------------------------------ -->
-    <section class="tab-pane active" id="tabCesta">
+    <div class="tab-pane active" id="paneDnes">
       <div class="dashboard">
         <section class="welcome-row">
           <div>
             <p class="eyebrow">TVOJ KAŽDODENNÝ PRIESTOR</p>
-            <h1 id="dailyGreetingHeading">Dobré ráno, Alex<span>.</span></h1>
+            <h1>Dobré ráno, Alex<span>.</span></h1>
             <p class="subtitle">Nadýchni sa. Tu sa nemusíš ponáhľať.</p>
           </div>
-          <div class="streak-card desktop-only-streak">
-            <span class="streak-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z" /></svg></span>
+
+          <div class="streak-card">
+            <span class="streak-icon">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z" /></svg>
+            </span>
             <div>
-              <strong id="streakHeroVal">Séria 6 dní</strong>
+              <strong>Séria 6 dní</strong>
               <small>Buduješ si pravidelný rytmus</small>
             </div>
           </div>
         </section>
 
-        <!-- KARTA DNES: TODAY'S FOCUS S DYCHOVÝM KRUHOM -->
         <section class="hero-card">
           <div class="hero-copy">
-            <span class="mini-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 1.4 5.1L18 9.5l-4.6 2.4L12 17l-1.4-5.1L6 9.5l4.6-2.4L12 2ZM19 16l.6 2.2L22 19.5l-2.4 1.3L19 23l-.6-2.2-2.4-1.3 2.4-1.3L19 16Z" /></svg> DNEŠNÉ ZAMERANIE</span>
-            <h2 id="dailyQuestText">Rozohrej svoj hlas<br />jemne.</h2>
+            <span class="mini-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 1.4 5.1L18 9.5l-4.6 2.4L12 17l-1.4-5.1L6 9.5l4.6-2.4L12 2ZM19 16l.6 2.2L22 19.5l-2.4 1.3L19 23l-.6-2.2-2.4-1.3 2.4-1.3L19 16Z" /></svg>
+              DNEŠNÉ ZAMERANIE
+            </span>
+            <h2>
+              Rozohrej svoj hlas
+              <br />
+              jemne.
+            </h2>
             <p>Tri krátke cvičenia, ktoré ti pomôžu cítiť sa pokojne a pripraviť sa na deň.</p>
-            <button class="primary-button" id="continuePathBtn" type="button">
-              <span>Začať rozcvičku</span>
-              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
+            <button class="primary-button" id="startWarmupBtn" type="button">
+              Začať rozcvičku
+              <span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+              </span>
             </button>
           </div>
-          <div class="hero-visual" aria-hidden="true" id="velaBreathingStage" role="button" tabindex="0" title="Ťukni pre dychový rytmus">
+          <div class="hero-visual" aria-hidden="true">
             <span class="orb orb-one"></span>
             <span class="orb orb-two"></span>
-            <div class="breath-ring" id="stageBreathingCapsule">
+            <div class="breath-ring">
               <div>
-                <span id="stageBreathLabel">Nádych</span>
-                <strong id="stageBreathNum">4</strong>
+                <span id="breathRingLabel">Nádych</span>
+                <strong id="breathRingNum">4</strong>
                 <small>sekundy</small>
               </div>
             </div>
@@ -497,51 +153,53 @@
               </div>
               <span class="plan-count">0 z 3 dokončené</span>
             </div>
-
             <div class="exercise-list">
-              <button class="exercise-card open-practice-trigger" type="button" data-title="Nádych a uvoľnenie" data-type="Dýchanie" data-time="3 min">
+              <button class="exercise-card" type="button" data-title="Nádych a uvoľnenie" data-desc="Jemné naladenie pred rozprávaním" data-time="3 min">
                 <span class="exercise-number lavender">01</span>
                 <span class="exercise-copy">
                   <strong>Nádych a uvoľnenie</strong>
                   <small>Jemné naladenie pred rozprávaním</small>
                 </span>
-                <span class="duration"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 3 min</span>
-                <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+                <span class="duration">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  3 min
+                </span>
+                <span class="play-button">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+                </span>
                 <span class="connector"></span>
               </button>
 
-              <button class="exercise-card open-practice-trigger" type="button" data-title="Ľahké začiatky" data-type="Technika" data-time="5 min">
+              <button class="exercise-card" type="button" data-title="Ľahké začiatky" data-desc="Precvič si pokojné začiatky bez náhlenia" data-time="5 min">
                 <span class="exercise-number peach">02</span>
                 <span class="exercise-copy">
                   <strong>Ľahké začiatky</strong>
                   <small>Precvič si pokojné začiatky bez náhlenia</small>
                 </span>
-                <span class="duration"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 5 min</span>
-                <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+                <span class="duration">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  5 min
+                </span>
+                <span class="play-button">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+                </span>
                 <span class="connector"></span>
               </button>
 
-              <button class="exercise-card open-practice-trigger" type="button" data-title="Čítanie v rytme" data-type="Čítanie" data-time="4 min">
+              <button class="exercise-card" type="button" data-title="Čítanie v rytme" data-desc="Nájdi tempo, ktoré ti vyhovuje" data-time="4 min">
                 <span class="exercise-number mint">03</span>
                 <span class="exercise-copy">
                   <strong>Čítanie v rytme</strong>
                   <small>Nájdi tempo, ktoré ti vyhovuje</small>
                 </span>
-                <span class="duration"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 4 min</span>
-                <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+                <span class="duration">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  4 min
+                </span>
+                <span class="play-button">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+                </span>
               </button>
-            </div>
-
-            <!-- VEDECEKÝ ZÁKLAD A HERNÁ MAPA 5 SVETOV -->
-            <div class="section-heading" style="margin-top: 36px;">
-              <div>
-                <span class="section-kicker">HERNÁ CESTA</span>
-                <h3>5 Svetov plynulosti</h3>
-              </div>
-              <button class="text-button" id="openScienceModalBtn" type="button">Vedecký základ</button>
-            </div>
-            <div class="worlds-wrapper" id="worldsWrapper">
-              <!-- Dynamicky generované z gamification-engine.js -->
             </div>
           </section>
 
@@ -551,7 +209,9 @@
                 <span class="section-kicker">TENTO TÝŽDEŇ</span>
                 <h3>Tvoj rytmus</h3>
               </div>
-              <button class="text-button" id="goToProgressBtn" type="button">Zobraziť pokrok</button>
+              <button class="text-button" data-nav="Môj pokrok" type="button">
+                Zobraziť pokrok
+              </button>
             </div>
 
             <div class="rhythm-card">
@@ -578,27 +238,32 @@
           </aside>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 2: CVIČENIA (PRAX, ODPORÚČANÝ PLÁN & SOS DRIL)             -->
+    <!-- ZÁLOŽKA 2: CVIČENIA (PRACTICE PAGE Z FIGMY)                        -->
     <!-- ------------------------------------------------------------------ -->
-    <section class="tab-pane" id="tabDril">
+    <div class="tab-pane" id="paneCvičenia">
       <div class="dashboard inner-page">
         <div class="page-intro">
           <p class="eyebrow">CVIČENIA</p>
-          <h1>Vyber si, čo ti vyhovuje<span>.</span></h1>
+          <h1>Vyber si, čo ti vyhovuje</h1>
           <p class="subtitle">Bez hodnotenia a bez tlaku. Len priestor na cvičenie vlastným spôsobom.</p>
         </div>
 
         <section class="featured-practice">
           <div>
-            <span class="mini-label"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 1.4 5.1L18 9.5l-4.6 2.4L12 17l-1.4-5.1L6 9.5l4.6-2.4L12 2ZM19 16l.6 2.2L22 19.5l-2.4 1.3L19 23l-.6-2.2-2.4-1.3 2.4-1.3L19 16Z" /></svg> ODPORÚČANÉ PRE TEBA</span>
+            <span class="mini-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 1.4 5.1L18 9.5l-4.6 2.4L12 17l-1.4-5.1L6 9.5l4.6-2.4L12 2ZM19 16l.6 2.2L22 19.5l-2.4 1.3L19 23l-.6-2.2-2.4-1.3 2.4-1.3L19 16Z" /></svg>
+              ODPORÚČANÉ PRE TEBA
+            </span>
             <h2>Tvoja denná rozcvička</h2>
             <p>Tri jemné cvičenia na upokojenie dychu a ľahší začiatok rozprávania.</p>
-            <button class="primary-button" id="startFeaturedPracticeBtn" type="button">
-              <span>Začať 12-minútový plán</span>
-              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
+            <button class="primary-button" id="startFeaturedPlanBtn" type="button">
+              Začať 12-minútový plán
+              <span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+              </span>
             </button>
           </div>
           <div class="plan-orbit" aria-hidden="true">
@@ -613,470 +278,505 @@
               <span class="section-kicker">OBJAVUJ</span>
               <h3>Knižnica cvičení</h3>
             </div>
-            <span class="plan-count">6 cvičení</span>
+            <span class="plan-count" id="practiceCountLabel">6 cvičení</span>
           </div>
 
-          <div class="filter-scroll">
-            <button class="filter-chip active" type="button" data-filter="all">Všetky</button>
+          <div class="filter-scroll" id="practiceFilterScroll">
+            <button class="filter-chip active" type="button" data-filter="Všetky">Všetky</button>
             <button class="filter-chip" type="button" data-filter="Dýchanie">Dýchanie</button>
             <button class="filter-chip" type="button" data-filter="Technika">Technika</button>
             <button class="filter-chip" type="button" data-filter="Čítanie">Čítanie</button>
             <button class="filter-chip" type="button" data-filter="Sebavedomie">Sebavedomie</button>
           </div>
 
-          <div class="practice-grid">
-            <button class="practice-tile open-practice-trigger" type="button" data-title="Nádych a uvoľnenie" data-type="Dýchanie" data-time="3 min">
-              <span class="tile-art lavender"><span class="sound-line"></span><span class="sound-line"></span><span class="sound-line"></span></span>
+          <div class="practice-grid" id="practiceGrid">
+            <button class="practice-tile" type="button" data-type="Dýchanie" data-title="Nádych a uvoľnenie" data-desc="Pokojne sa nadýchni a pri výdychu nechaj svoj hlas začať. Slová nemusíš tlačiť.">
+              <span class="tile-art lavender">
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+              </span>
               <span class="tile-body">
                 <small>Dýchanie</small>
                 <strong>Nádych a uvoľnenie</strong>
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 3 min <i></i> Jemné</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  3 min
+                  <i></i>
+                  Jemné
+                </span>
               </span>
-              <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+              <span class="play-button">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+              </span>
               <em>Začni tu</em>
             </button>
 
-            <button class="practice-tile open-practice-trigger" type="button" data-title="Ľahké začiatky" data-type="Technika" data-time="5 min">
-              <span class="tile-art peach"><span class="sound-line"></span><span class="sound-line"></span><span class="sound-line"></span></span>
+            <button class="practice-tile" type="button" data-type="Technika" data-title="Ľahké začiatky" data-desc="Precvič si pokojné začiatky bez náhlenia a jemný nábeh hlasu.">
+              <span class="tile-art peach">
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+              </span>
               <span class="tile-body">
                 <small>Technika</small>
                 <strong>Ľahké začiatky</strong>
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 5 min <i></i> Každodenné</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  5 min
+                  <i></i>
+                  Každodenné
+                </span>
               </span>
-              <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+              <span class="play-button">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+              </span>
             </button>
 
-            <button class="practice-tile open-practice-trigger" type="button" data-title="Čítanie v rytme" data-type="Čítanie" data-time="4 min">
-              <span class="tile-art mint"><span class="sound-line"></span><span class="sound-line"></span><span class="sound-line"></span></span>
+            <button class="practice-tile" type="button" data-type="Čítanie" data-title="Čítanie v rytme" data-desc="Nájdi tempo, ktoré ti vyhovuje a čítaj plynule bez tlaku.">
+              <span class="tile-art mint">
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+              </span>
               <span class="tile-body">
                 <small>Čítanie</small>
                 <strong>Čítanie v rytme</strong>
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 4 min <i></i> Každodenné</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  4 min
+                  <i></i>
+                  Každodenné
+                </span>
               </span>
-              <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+              <span class="play-button">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+              </span>
             </button>
 
-            <button class="practice-tile open-practice-trigger" type="button" data-title="Pred telefonátom" data-type="Sebavedomie" data-time="6 min">
-              <span class="tile-art blue"><span class="sound-line"></span><span class="sound-line"></span><span class="sound-line"></span></span>
+            <button class="practice-tile" type="button" data-type="Sebavedomie" data-title="Pred telefonátom" data-desc="Uvoľni napätie v hrtane a priprav si dych pred dôležitým hovorom.">
+              <span class="tile-art blue">
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+              </span>
               <span class="tile-body">
                 <small>Sebavedomie</small>
                 <strong>Pred telefonátom</strong>
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 6 min <i></i> Reálny život</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  6 min
+                  <i></i>
+                  Reálny život
+                </span>
               </span>
-              <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+              <span class="play-button">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+              </span>
             </button>
 
-            <button class="practice-tile open-practice-trigger" type="button" data-title="Vedomá pauza" data-type="Technika" data-time="4 min">
-              <span class="tile-art yellow"><span class="sound-line"></span><span class="sound-line"></span><span class="sound-line"></span></span>
+            <button class="practice-tile" type="button" data-type="Technika" data-title="Vedomá pauza" data-desc="Dopraj si čas medzi vetami. Ticho je prirodzená súčasť reči.">
+              <span class="tile-art yellow">
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+              </span>
               <span class="tile-body">
                 <small>Technika</small>
                 <strong>Vedomá pauza</strong>
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 4 min <i></i> Jemné</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  4 min
+                  <i></i>
+                  Jemné
+                </span>
               </span>
-              <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+              <span class="play-button">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+              </span>
             </button>
 
-            <button class="practice-tile open-practice-trigger" type="button" data-title="Povedz, na čom záleží" data-type="Sebavedomie" data-time="8 min">
-              <span class="tile-art pink"><span class="sound-line"></span><span class="sound-line"></span><span class="sound-line"></span></span>
+            <button class="practice-tile" type="button" data-type="Sebavedomie" data-title="Povedz, na čom záleží" data-desc="Tréning vyjadrenia vlastného názoru s istotou a pokojom.">
+              <span class="tile-art pink">
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+                <span class="sound-line"></span>
+              </span>
               <span class="tile-body">
                 <small>Sebavedomie</small>
                 <strong>Povedz, na čom záleží</strong>
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> 8 min <i></i> Reálny život</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  8 min
+                  <i></i>
+                  Reálny život
+                </span>
               </span>
-              <span class="play-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
+              <span class="play-button">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg>
+              </span>
             </button>
-          </div>
-        </section>
-
-        <!-- Interaktívny rečový trenažér (Pôvodný Dril Sandbox) -->
-        <section class="page-section" style="margin-top: 40px;">
-          <div class="section-heading">
-            <div>
-              <span class="section-kicker">TERÉNNY TRENAŽÉR</span>
-              <h3>Rýchly dril & okamžitý biofeedback</h3>
-            </div>
-          </div>
-          <div class="sandbox-container">
-            
-        
-        <!-- Hero karta SOS Drilu -->
-        <div class="sandbox-hero-card">
-          <div class="sandbox-badge">⚡ SOS SANDBOX</div>
-          <h2 class="sandbox-title">Rýchly Dril v Teréne</h2>
-          <p class="sandbox-sub">Čaká ťa pokladňa, telefonát alebo objednávka? Zadaj cieľové slovo a uvoľni sánku v 3 rýchlych pokusoch.</p>
-        </div>
-
-        <!-- Vstup na vlastné slovo / meno -->
-        <div class="sandbox-input-card">
-          <label class="sandbox-label" for="wordInput">Cieľové slovo alebo veta:</label>
-          <div class="sandbox-input-wrap">
-            <input type="text" id="wordInput" class="custom-word-input" value="Peter Novák" placeholder="Zadaj slovo, meno alebo celú vetu..." />
-            <button class="btn-3d blue sm" id="clearWordBtn" title="Vyčistiť text">✕</button>
-          </div>
-
-          <!-- Rýchle SOS čipy -->
-          <div class="sos-chips-label">Rýchly výber SOS fráz:</div>
-          <div class="preset-chips">
-            <span class="chip" data-word="Peter Novák">Peter Novák</span>
-            <span class="chip" data-word="Kartou, prosím">Kartou, prosím</span>
-            <span class="chip" data-word="Dobrý deň, pri telefóne">Dobrý deň, pri telefóne</span>
-            <span class="chip" data-word="Káva s mliekom">Káva s mliekom</span>
-            <span class="chip" data-word="Chlieb">Chlieb (CH)</span>
-            <span class="chip" data-word="Štvrtok o tretej">Štvrtok o tretej</span>
-            <span class="chip" data-word="Isto, ďakujem">Isto, ďakujem</span>
-          </div>
-        </div>
-
-        <!-- Voľba režimu drilu -->
-        <div class="sandbox-mode-card">
-          <div class="sandbox-label">Zvoľ režim tréningu:</div>
-          <div class="mode-select-grid">
-            <label class="mode-card-radio">
-              <input type="radio" name="sandboxMode" value="standard" checked>
-              <div class="mode-card-inner">
-                <span class="mode-card-icon">🧘</span>
-                <span class="mode-card-title">Pacer (Technika)</span>
-                <span class="mode-card-desc">Dychový kruh, pomalý plynulý nábeh VRT</span>
-              </div>
-            </label>
-
-            <label class="mode-card-radio">
-              <input type="radio" name="sandboxMode" value="guillotine">
-              <div class="mode-card-inner">
-                <span class="mode-card-icon">⚡</span>
-                <span class="mode-card-title">Časový tlak</span>
-                <span class="mode-card-desc">Limit 550 ms na odpoveď bez kŕča</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Veľké tlačidlo na spustenie drilu -->
-        <div class="sandbox-action-wrap">
-          <button class="btn-3d green full lg" id="launchSosDrillBtn">
-            <span>SPUSTIŤ SOS DRIL (3 pokusy)</span>
-          </button>
-        </div>
-
-        <!-- ============================================================== -->
-        <!-- TREZOR OBÁVANÝCH SLOV (FEARED WORDS VAULT)                     -->
-        <!-- ============================================================== -->
-        <div class="telemetry-card feared-words-card" id="fearedWordsCard">
-          <div class="card-header-row">
-            <div>
-              <div class="card-subtitle orange">DESENZIBILIZAČNÝ MODUL</div>
-              <h3 class="card-title">🔐 Trezor Obávaných Slov</h3>
-            </div>
-            <span class="vault-status-badge" id="vaultMasteryBadge">0 / 0 Odblokované 🏆</span>
-          </div>
-
-          <p class="vault-lead">
-            Ulož si slová, mená či objednávky, ktoré v tebe vyvolávajú anticipačný kŕč. Trénuj ich v SOS drilu až do ich plného odblokovania (3 úspešné nábehy = trofej 🏆).
-          </p>
-
-          <!-- Pridanie nového slova do trezoru -->
-          <div class="vault-add-form">
-            <div class="vault-input-row">
-              <input type="text" id="vaultWordInput" class="vault-input" placeholder="Nové obávané slovo, meno alebo objednávka..." />
-              <select id="vaultCategorySelect" class="vault-select" title="Kategória slova">
-                <option value="Meno">👤 Meno</option>
-                <option value="Kaviareň">☕ Kaviareň</option>
-                <option value="Cestovanie">📍 Mesto</option>
-                <option value="Číslo">🔢 Číslo</option>
-                <option value="Práca">💼 Práca</option>
-                <option value="Iné">⚡ Iné</option>
-              </select>
-              <button class="btn-3d amber sm" id="vaultAddBtn">
-                <span>+ Pridať</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Filtre a akcie trezoru -->
-          <div class="vault-toolbar">
-            <button class="btn-3d purple sm" id="vaultRandomChallengeBtn" title="Vyberie náhodné obávané slovo a spustí dril">
-              <span>🎲 Náhodná výzva</span>
-            </button>
-            <div class="vault-filter-pills" id="vaultFilterPills">
-              <button class="vault-pill active" data-filter="all" id="vFilterAll">Všetky (<span id="vCountAll">0</span>)</button>
-              <button class="vault-pill" data-filter="unmastered" id="vFilterTraining">V tréningu (<span id="vCountTraining">0</span>)</button>
-              <button class="vault-pill" data-filter="mastered" id="vFilterMastered">🏆 (<span id="vCountMastered">0</span>)</button>
-            </div>
-          </div>
-
-          <!-- Zoznam kariet slov v trezore -->
-          <div class="vault-list" id="vaultList">
-            <!-- Dynamicky generované z gamification-engine.js -->
-          </div>
-        </div>
-
-        <div class="tab-bottom-spacer"></div>
-      
           </div>
         </section>
       </div>
-    </section>
+    </div>
 
     <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 3: DOTAZNÍK (VEDECKÁ DIAGNOSTIKA BALBUTIZMU Z FIGMY)        -->
+    <!-- ZÁLOŽKA 3: DOTAZNÍK (OFICIÁLNY FIGMA QUESTIONNAIRE PAGE)             -->
     <!-- ------------------------------------------------------------------ -->
-    <section class="tab-pane" id="tabDotaznik">
+    <div class="tab-pane" id="paneDotazník">
       <div class="dashboard inner-page questionnaire-page">
         <div class="questionnaire-top">
           <div>
             <p class="eyebrow">VÝSKUMNÝ DOTAZNÍK</p>
-            <h1>Tvoja skúsenosť s rečou<span>.</span></h1>
+            <h1>
+              Tvoja skúsenosť s rečou<span>.</span>
+            </h1>
           </div>
-          <span class="questionnaire-count" id="qCountBadge">1 / 4</span>
+          <span class="questionnaire-count" id="qCountText" style="display:none;">1 / 4</span>
         </div>
 
-        <div class="questionnaire-progress" aria-label="Priebeh dotazníka">
-          <span id="qProgressFill" style="width: 25%;"></span>
+        <div class="questionnaire-progress" id="qProgressWrap" aria-label="Priebeh dotazníka">
+          <span id="qProgressBar" style="width: 0%;"></span>
         </div>
 
-        <!-- Časť 1: Skúsenosť s rozprávaním -->
-        <section class="questionnaire-form" id="qSection1">
+        <!-- KROK 0: UVÍTACIA OBRAZOVKA DOTAZNÍKA S INFORMÁCIAMI A SÚHLASOM -->
+        <section class="questionnaire-welcome" id="qStep0">
+          <div class="research-intro">
+            <span class="research-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg>
+            </span>
+            <span class="section-kicker">PRED ZAČIATKOM</span>
+            <h2>Nejde o test plynulosti ani o diagnózu.</h2>
+            <p>
+              Tento dotazník mapuje, ako zajakavosť ovplyvňuje tvoje rozprávanie, prežívanie a
+              každodenný život. Vyplnenie trvá približne 4 minúty.
+            </p>
+          </div>
+
+          <div class="research-points">
+            <article>
+              <span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3 8-10V5l-8-3-8 3v7c0 7 8 10 8 10Z" /></svg>
+              </span>
+              <div>
+                <strong>Odpovede zostávajú v tomto zariadení</strong>
+                <p>
+                  Nikam sa neodosielajú ani neukladajú. Po opustení dotazníka alebo obnovení stránky
+                  sa vymažú.
+                </p>
+              </div>
+            </article>
+            <article>
+              <span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7h.01" /></svg>
+              </span>
+              <div>
+                <strong>Vedecky podložené oblasti</strong>
+                <p>Obsah vychádza z výskumných rámcov OASES-A, WASSP a ICF.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="consent-box">
+            <label>
+              <input type="checkbox" id="qAdultCheck">
+              <span>
+                <i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg></i>
+                Mám aspoň 18 rokov.
+              </span>
+            </label>
+            <label>
+              <input type="checkbox" id="qConsentCheck">
+              <span>
+                <i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg></i>
+                Rozumiem účelu dotazníka a dobrovoľne súhlasím s vyplnením.
+              </span>
+            </label>
+          </div>
+
+          <details class="research-details">
+            <summary>Metodické poznámky a zdroje</summary>
+            <p>
+              Ide o pôvodné, orientačné položky inšpirované doménami nástrojov OASES-A (Yaruss &amp;
+              Quesal, 2006), WASSP (Wright &amp; Ayre, 2000) a rámcom ICF Svetovej zdravotníckej
+              organizácie. Nejde o oficiálnu verziu týchto nástrojov ani o ich klinické skórovanie.
+            </p>
+          </details>
+        </section>
+
+        <!-- KROK 1: SKÚSENOSŤ S ROZPRÁVANÍM -->
+        <section class="questionnaire-form" id="qStep1" style="display:none;">
           <header>
-            <span class="step-label">ČASŤ 1 Z 3</span>
+            <span class="section-kicker">ČASŤ 1 Z 3</span>
             <h2>Skúsenosť s rozprávaním</h2>
             <p>Ako často si za posledné dva týždne zažíval/a nasledujúce situácie?</p>
           </header>
-
           <div class="question-list">
             <fieldset>
-              <legend>1. Mal/a som pocit, že pri rozprávaní strácam kontrolu.</legend>
-              <div class="answer-scale" data-question="q1">
-                <label><input type="radio" name="q1" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q1" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q1" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q1" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q1" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>01</span>Mal/a som pocit, že pri rozprávaní strácam kontrolu.</legend>
+              <div class="answer-scale" data-qid="speech-control">
+                <label><input type="radio" name="speech-control" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="speech-control" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="speech-control" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="speech-control" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="speech-control" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend>2. Na vyslovenie slov som musel/a vynaložiť fyzické úsilie.</legend>
-              <div class="answer-scale" data-question="q2">
-                <label><input type="radio" name="q2" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q2" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q2" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q2" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q2" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>02</span>Na vyslovenie slov som musel/a vynaložiť fyzické úsilie.</legend>
+              <div class="answer-scale" data-qid="speech-effort">
+                <label><input type="radio" name="speech-effort" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="speech-effort" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="speech-effort" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="speech-effort" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="speech-effort" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend>3. Neistota, kedy sa zakokcem, mi sťažovala rozprávanie.</legend>
-              <div class="answer-scale" data-question="q3">
-                <label><input type="radio" name="q3" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q3" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q3" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q3" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q3" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>03</span>Neistota, kedy sa zakokcem, mi sťažovala rozprávanie.</legend>
+              <div class="answer-scale" data-qid="speech-unpredictable">
+                <label><input type="radio" name="speech-unpredictable" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="speech-unpredictable" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="speech-unpredictable" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="speech-unpredictable" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="speech-unpredictable" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
-          </div>
-
-          <div class="questionnaire-actions">
-            <button class="primary-button next-action" id="qNextBtn1" type="button">
-              <span>Pokračovať na Pocity</span>
-              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
-            </button>
           </div>
         </section>
 
-        <!-- Časť 2: Myšlienky a pocity -->
-        <section class="questionnaire-form" id="qSection2" style="display:none;">
+        <!-- KROK 2: MYŠLIENKY A POCITY -->
+        <section class="questionnaire-form" id="qStep2" style="display:none;">
           <header>
-            <span class="step-label">ČASŤ 2 Z 3</span>
+            <span class="section-kicker">ČASŤ 2 Z 3</span>
             <h2>Myšlienky a pocity</h2>
             <p>Neexistuje správna odpoveď. Vyber to, čo najlepšie vystihuje tvoju skúsenosť.</p>
           </header>
-
           <div class="question-list">
             <fieldset>
-              <legend>4. Pred rozprávaním som cítil/a obavu alebo napätie.</legend>
-              <div class="answer-scale" data-question="q4">
-                <label><input type="radio" name="q4" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q4" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q4" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q4" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q4" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>01</span>Pred rozprávaním som cítil/a obavu alebo napätie.</legend>
+              <div class="answer-scale" data-qid="feeling-worry">
+                <label><input type="radio" name="feeling-worry" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="feeling-worry" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="feeling-worry" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="feeling-worry" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="feeling-worry" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend>5. Menil/a som slová alebo som sa rozprávaniu radšej vyhol/vyhla.</legend>
-              <div class="answer-scale" data-question="q5">
-                <label><input type="radio" name="q5" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q5" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q5" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q5" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q5" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>02</span>Menil/a som slová alebo som sa rozprávaniu radšej vyhol/vyhla.</legend>
+              <div class="answer-scale" data-qid="feeling-avoid">
+                <label><input type="radio" name="feeling-avoid" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="feeling-avoid" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="feeling-avoid" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="feeling-avoid" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="feeling-avoid" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend>6. Po rozhovore som sa k svojmu prejavu kriticky vracal/a.</legend>
-              <div class="answer-scale" data-question="q6">
-                <label><input type="radio" name="q6" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q6" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q6" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q6" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q6" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>03</span>Po rozhovore som sa k svojmu prejavu kriticky vracal/a.</legend>
+              <div class="answer-scale" data-qid="feeling-after">
+                <label><input type="radio" name="feeling-after" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="feeling-after" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="feeling-after" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="feeling-after" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="feeling-after" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
-          </div>
-
-          <div class="questionnaire-actions">
-            <button class="text-button back-action" id="qBackBtn2" type="button">Späť</button>
-            <button class="primary-button next-action" id="qNextBtn2" type="button">
-              <span>Pokračovať na Život</span>
-              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
-            </button>
           </div>
         </section>
 
-        <!-- Časť 3: Každodenný život & Situácie -->
-        <section class="questionnaire-form" id="qSection3" style="display:none;">
+        <!-- KROK 3: ÚČASŤ V KAŽDODENNOM ŽIVOTE -->
+        <section class="questionnaire-form" id="qStep3" style="display:none;">
           <header>
-            <span class="step-label">ČASŤ 3 Z 3</span>
+            <span class="section-kicker">ČASŤ 3 Z 3</span>
             <h2>Účasť v každodennom živote</h2>
             <p>Zamysli sa nad prácou, školou, vzťahmi aj bežnými povinnosťami.</p>
           </header>
-
           <div class="question-list">
             <fieldset>
-              <legend>7. Zajakavosť obmedzovala moje zapojenie v práci alebo škole.</legend>
-              <div class="answer-scale" data-question="q7">
-                <label><input type="radio" name="q7" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q7" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q7" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q7" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q7" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>01</span>Zajakavosť obmedzovala moje zapojenie v práci alebo škole.</legend>
+              <div class="answer-scale" data-qid="impact-work">
+                <label><input type="radio" name="impact-work" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="impact-work" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="impact-work" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="impact-work" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="impact-work" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend>8. Odkladal/a som telefonáty alebo iné úlohy spojené s hovorením.</legend>
-              <div class="answer-scale" data-question="q8">
-                <label><input type="radio" name="q8" value="0"><span><b>0</b><small>Nikdy</small></span></label>
-                <label><input type="radio" name="q8" value="1"><span><b>1</b><small>Zriedka</small></span></label>
-                <label><input type="radio" name="q8" value="2"><span><b>2</b><small>Niekedy</small></span></label>
-                <label><input type="radio" name="q8" value="3"><span><b>3</b><small>Často</small></span></label>
-                <label><input type="radio" name="q8" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
+              <legend><span>02</span>Zajakavosť ovplyvňovala moje spoločenské situácie alebo vzťahy.</legend>
+              <div class="answer-scale" data-qid="impact-social">
+                <label><input type="radio" name="impact-social" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="impact-social" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="impact-social" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="impact-social" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="impact-social" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
             </fieldset>
 
-            <div class="situation-grid-wrap" style="margin-top: 20px;">
-              <span class="section-kicker">KDE CÍTIŠ NAJVÄČŠIU ZÁŤAŽ? (ŤUKNI)</span>
-              <div class="situation-grid" style="margin-top: 10px;">
-                <button type="button" class="situation-chip" data-val="Telefonovanie">📞 Telefonovanie</button>
-                <button type="button" class="situation-chip" data-val="Nákupy a služby">🛍️ Nákupy a služby</button>
-                <button type="button" class="situation-chip" data-val="Neznámi ľudia">👥 Neznámi ľudia</button>
-                <button type="button" class="situation-chip" data-val="Prezentácie">📊 Prezentácie a mítingy</button>
-                <button type="button" class="situation-chip" data-val="Časový stres">⏱️ Časový stres</button>
-                <button type="button" class="situation-chip" data-val="Úradné jednanie">🏛️ Úradné jednanie</button>
+            <fieldset>
+              <legend><span>03</span>Odkladal/a som telefonáty alebo iné úlohy spojené s hovorením.</legend>
+              <div class="answer-scale" data-qid="impact-tasks">
+                <label><input type="radio" name="impact-tasks" value="0"><span><b>0</b><small>Nikdy</small></span></label>
+                <label><input type="radio" name="impact-tasks" value="1"><span><b>1</b><small>Zriedka</small></span></label>
+                <label><input type="radio" name="impact-tasks" value="2"><span><b>2</b><small>Niekedy</small></span></label>
+                <label><input type="radio" name="impact-tasks" value="3"><span><b>3</b><small>Často</small></span></label>
+                <label><input type="radio" name="impact-tasks" value="4"><span><b>4</b><small>Takmer vždy</small></span></label>
               </div>
-            </div>
-
-            <div class="questionnaire-note" style="margin-top: 20px;">
-              <label for="qUserNote" class="section-kicker">POZNÁMKA PRE TEBA (VOLITEĽNÉ)</label>
-              <textarea id="qUserNote" placeholder="Čokoľvek, čo by si si chcel/a k svojmu rečovému dňu zaznamenať..."></textarea>
-            </div>
-          </div>
-
-          <div class="questionnaire-actions">
-            <button class="text-button back-action" id="qBackBtn3" type="button">Späť</button>
-            <button class="primary-button next-action" id="qFinishBtn" type="button">
-              <span>Vyhodnotiť dotazník</span>
-              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
-            </button>
+            </fieldset>
           </div>
         </section>
 
-        <!-- Časť 4: Výsledky a odporúčanie -->
-        <section class="questionnaire-results" id="qResultsSection" style="display:none;">
+        <!-- KROK 4: DOPLŇUJÚCI KONTEXT -->
+        <section class="questionnaire-form context-step" id="qStep4" style="display:none;">
           <header>
-            <span class="step-label">VÝSLEDKY DIAGNOSTIKY</span>
-            <h2>Tvoj osobný profil</h2>
-            <p>Výsledky ukazujú oblasti, kde ti Glide a cvičenia prinesú najväčšiu úľavu.</p>
+            <span class="section-kicker">DOPLŇUJÚCI KONTEXT</span>
+            <h2>Kde je rozprávanie najnáročnejšie?</h2>
+            <p>Môžeš vybrať viac možností alebo tento krok preskočiť.</p>
           </header>
+          <div class="situation-grid" id="qSituationGrid">
+            <button type="button" class="situation-btn" data-sit="Telefonovanie"><span></span>Telefonovanie</button>
+            <button type="button" class="situation-btn" data-sit="Práca alebo škola"><span></span>Práca alebo škola</button>
+            <button type="button" class="situation-btn" data-sit="Rozhovor v skupine"><span></span>Rozhovor v skupine</button>
+            <button type="button" class="situation-btn" data-sit="Noví ľudia"><span></span>Noví ľudia</button>
+            <button type="button" class="situation-btn" data-sit="Verejné vystúpenie"><span></span>Verejné vystúpenie</button>
+            <button type="button" class="situation-btn" data-sit="Rodina a blízki"><span></span>Rodina a blízki</button>
+          </div>
+          <label class="questionnaire-note">
+            <span>
+              Chceš niečo doplniť? <small>nepovinné</small>
+            </span>
+            <textarea id="qNoteInput" placeholder="Napíš vlastnými slovami, čo je pre teba dôležité…" maxlength="500"></textarea>
+            <small id="qNoteCount">0 / 500</small>
+          </label>
+        </section>
+
+        <!-- KROK 5: VÝSLEDKY A ZHRNUTIE -->
+        <section class="questionnaire-results" id="qStep5" style="display:none;">
+          <span class="complete-icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>
+          </span>
+          <span class="section-kicker">DOTAZNÍK DOKONČENÝ</span>
+          <h2>Ďakujeme za tvoju otvorenosť.</h2>
+          <p>
+            Toto zhrnutie opisuje iba tvoje odpovede. Neurčuje závažnosť zajakavosti a nie je
+            diagnózou.
+          </p>
 
           <div class="domain-results">
             <article>
-              <span class="stat-icon purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg></span>
               <div>
-                <strong>Rečová skúsenosť</strong>
-                <p id="resSpeechExp">Mierna záťaž — zameriame sa na mäkký nábeh hlasiviek.</p>
+                <strong>Rozprávanie</strong>
+                <span id="domainRes0">stredná záťaž</span>
+              </div>
+              <div class="domain-bar">
+                <span id="domainBar0" style="width: 50%;"></span>
               </div>
             </article>
 
             <article>
-              <span class="stat-icon coral"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 1.4 5.1L18 9.5l-4.6 2.4L12 17l-1.4-5.1L6 9.5l4.6-2.4L12 2ZM19 16l.6 2.2L22 19.5l-2.4 1.3L19 23l-.6-2.2-2.4-1.3 2.4-1.3L19 16Z" /></svg></span>
               <div>
-                <strong>Prežívanie a pocity</strong>
-                <p id="resFeelingExp">Stabilné tempo — technika vedomej pauzy uvoľní stres.</p>
+                <strong>Prežívanie</strong>
+                <span id="domainRes1">nižšia záťaž</span>
+              </div>
+              <div class="domain-bar">
+                <span id="domainBar1" style="width: 25%;"></span>
               </div>
             </article>
 
             <article>
-              <span class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="m8.5 12-1.5 9 5-3 5 3-1.5-9" /></svg></span>
               <div>
-                <strong>Každodenná účasť</strong>
-                <p id="resDailyExp">Dobrá adaptácia — odporúčame Svet 3 a reálne scenáre.</p>
+                <strong>Každodenný život</strong>
+                <span id="domainRes2">stredná záťaž</span>
+              </div>
+              <div class="domain-bar">
+                <span id="domainBar2" style="width: 50%;"></span>
               </div>
             </article>
           </div>
 
-          <div class="clinical-note" style="margin-top: 24px;">
-            <p>Dotazník vychádza zo štandardizovaných logopedických metód reflexie balbutizmu. Tvoje odpovede pomáhajú nastaviť DAF asistenta a odporučiť najlepšie tempo tréningu.</p>
+          <div class="result-context" id="qResultContext" style="display:none;">
+            <strong>Situácie, ktoré si označil/a</strong>
+            <div id="qResultSituationChips"></div>
           </div>
 
-          <div class="questionnaire-actions" style="position:static; margin-top:28px;">
-            <button class="primary-button" id="qSaveAndEnterBtn" type="button">
-              <span>Začať tréning podľa profilu</span>
-              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
-            </button>
+          <div class="clinical-note">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7h.01" /></svg>
+            <p>
+              Ak ťa zajakavosť výrazne obmedzuje alebo ti spôsobuje trápenie, môže pomôcť rozhovor s
+              logopédom či logopedičkou so skúsenosťou so zajakavosťou.
+            </p>
           </div>
+
+          <button class="secondary-action" id="qResetBtn" type="button">
+            Vyplniť znova
+          </button>
         </section>
+
+        <!-- SPODNÁ NAVIGÁCIA DOTAZNÍKA -->
+        <footer class="questionnaire-actions" id="qActionsFooter">
+          <button class="back-action" id="qBackBtn" type="button" style="visibility:hidden;">
+            Späť
+          </button>
+          <button class="next-action" id="qNextBtn" type="button" disabled>
+            <span id="qNextBtnText">Začať dotazník</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+          </button>
+        </footer>
       </div>
-    </section>
+    </div>
 
     <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 4: MÔJ POKROK (TELEMETRIA, ŠTATISTIKY & MÍĽNIKY)            -->
+    <!-- ZÁLOŽKA 4: MÔJ POKROK (PROGRESS PAGE Z FIGMY)                      -->
     <!-- ------------------------------------------------------------------ -->
-    <section class="tab-pane" id="tabTelemetria">
+    <div class="tab-pane" id="paneMôj pokrok">
       <div class="dashboard inner-page">
         <div class="page-title-row">
           <div class="page-intro">
             <p class="eyebrow">MÔJ POKROK</p>
-            <h1>Všímaj si, čo rastie<span>.</span></h1>
+            <h1>Všímaj si, čo rastie</h1>
             <p class="subtitle">Pokrok nie je dokonalá reč. Je to o trochu väčšia ľahkosť každý deň.</p>
           </div>
+          <select aria-label="Obdobie pokroku">
+            <option>Tento mesiac</option>
+            <option>Minulý mesiac</option>
+          </select>
         </div>
 
         <section class="stat-grid">
           <article>
-            <span class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg></span>
+            <span class="stat-icon purple">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>
+            </span>
             <div>
-              <strong id="tDaysCount">14</strong>
+              <strong>14</strong>
               <small>dní cvičenia</small>
             </div>
             <em>+3 tento mesiac</em>
           </article>
           <article>
-            <span class="stat-icon coral"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></span>
+            <span class="stat-icon coral">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+            </span>
             <div>
-              <strong id="tTotalTime">2h 18m</strong>
+              <strong>2h 18m</strong>
               <small>čas pre tvoj hlas</small>
             </div>
             <em>Stále tempo</em>
           </article>
           <article>
-            <span class="stat-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z" /></svg></span>
+            <span class="stat-icon green">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-2.8 7-6.8 0-3.4-2-5.5-4.3-7.6.1 2-1 3.4-2.1 3.9.3-4.4-2.2-7.2-4.4-9.5.2 3.4-3.2 6-3.2 10.6C5 17.8 8 22 12 22Z" /></svg>
+            </span>
             <div>
-              <strong id="tStreakCount">6 dní</strong>
+              <strong>6 dní</strong>
               <small>aktuálny rytmus</small>
             </div>
             <em>Osobný rekord</em>
@@ -1090,16 +790,32 @@
                 <span class="section-kicker">RYTMUS CVIČENIA</span>
                 <h3>Posledné 4 týždne</h3>
               </div>
-              <span class="chart-key"><i style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--purple); margin-right:4px;"></i> Minúty</span>
+              <span class="chart-key">
+                <i style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--purple); margin-right:4px;"></i>
+                Minúty
+              </span>
             </div>
             <div class="monthly-chart">
-              <span style="height:18%;"></span><span style="height:32%;"></span><span style="height:24%;"></span>
-              <span style="height:45%;"></span><span style="height:28%;"></span><span style="height:56%;"></span>
-              <span style="height:38%;"></span><span style="height:26%;"></span><span style="height:48%;"></span>
-              <span style="height:36%;"></span><span style="height:62%;"></span><span style="height:44%;"></span>
-              <span style="height:52%;"></span><span style="height:34%;"></span><span style="height:68%;"></span>
-              <span style="height:48%;"></span><span style="height:40%;"></span><span style="height:58%;"></span>
-              <span style="height:72%;" class="highlight"></span><span style="height:54%;"></span>
+              <span style="height: 18%;"></span>
+              <span style="height: 32%;"></span>
+              <span style="height: 24%;"></span>
+              <span style="height: 45%;"></span>
+              <span style="height: 28%;"></span>
+              <span style="height: 56%;"></span>
+              <span style="height: 38%;"></span>
+              <span style="height: 26%;"></span>
+              <span style="height: 48%;"></span>
+              <span style="height: 36%;"></span>
+              <span style="height: 62%;"></span>
+              <span style="height: 44%;"></span>
+              <span style="height: 52%;"></span>
+              <span style="height: 34%;"></span>
+              <span style="height: 68%;"></span>
+              <span style="height: 48%;"></span>
+              <span style="height: 40%;"></span>
+              <span style="height: 58%;"></span>
+              <span style="height: 72%;" class="highlight"></span>
+              <span style="height: 54%;"></span>
             </div>
             <div class="chart-labels">
               <span>28. apr</span>
@@ -1110,49 +826,66 @@
           </section>
 
           <section class="milestone-card">
-            <span class="stat-icon yellow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="m8.5 12-1.5 9 5-3 5 3-1.5-9" /></svg></span>
+            <span class="stat-icon yellow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="m8.5 12-1.5 9 5-3 5 3-1.5-9" /></svg>
+            </span>
             <span class="section-kicker">NOVÝ MÍĽNIK</span>
             <h3>Dva týždne, počas ktorých dávaš priestor svojmu hlasu.</h3>
             <p>Pravidelnosť môže byť nenápadná. Tento mesiac si cvičil/a počas 14 dní.</p>
           </section>
         </div>
 
-        <!-- Telemetria & História (Pôvodná Telemetria Dashboard) -->
-        <section class="page-section" style="margin-top: 40px;">
+        <section class="reflection-section">
           <div class="section-heading">
             <div>
-              <span class="section-kicker">REČOVÉ METRIKY & HARDWARE</span>
-              <h3>Vedecká telemetria reči</h3>
+              <span class="section-kicker">ZÁZNAMY</span>
+              <h3>Ako si sa cítil/a pri rozprávaní</h3>
             </div>
+            <span class="plan-count">2 posledné poznámky</span>
           </div>
-          <div class="telemetry-dashboard">
-            
+          <div class="reflection-list">
+            <article>
+              <span>21. mája</span>
+              <div>
+                <strong>„Menej napätia“</strong>
+                <p>Na tímovom stretnutí som sa neponáhľal/a a neospravedlňoval/a som sa.</p>
+              </div>
+              <em class="mood calm">Pokoj</em>
+            </article>
+            <article>
+              <span>18. mája</span>
+              <div>
+                <strong>„Hrdosť na seba“</strong>
+                <p>Vybavil/a som telefonát, ktorý som dlho odkladal/a.</p>
+              </div>
+              <em class="mood proud">Hrdosť</em>
+            </article>
           </div>
         </section>
       </div>
-    </section>
+    </div>
 
     <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 5: KNIŽNICA & ASISTENT (ODBORNÉ ČLÁNKY + DAF ASISTENT)       -->
+    <!-- ZÁLOŽKA 5: KNIŽNICA (LIBRARY PAGE Z FIGMY)                        -->
     <!-- ------------------------------------------------------------------ -->
-    <section class="tab-pane" id="tabAsistent">
+    <div class="tab-pane" id="paneKnižnica">
       <div class="dashboard inner-page">
         <div class="page-intro">
-          <p class="eyebrow">KNIŽNICA A ASISTENT</p>
-          <h1>Uč sa vlastným tempom<span>.</span></h1>
-          <p class="subtitle">Praktické nástroje, logopedické techniky a rečový asistent DAF/FAF v reálnom čase.</p>
+          <p class="eyebrow">KNIŽNICA</p>
+          <h1>Uč sa vlastným tempom</h1>
+          <p class="subtitle">Praktické nástroje a premyslené príbehy bez sľubov rýchleho riešenia.</p>
         </div>
 
         <label class="search-field">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
-          <input type="text" id="librarySearchInput" placeholder="Hľadaj články, audio a sprievodcov">
+          <input type="text" id="libSearchInput" placeholder="Hľadaj články, audio a sprievodcov">
         </label>
 
-        <div class="filter-scroll library-filters">
-          <button class="filter-chip active" type="button" data-lib="all">Všetky</button>
-          <button class="filter-chip" type="button" data-lib="Sebavedomie">Sebavedomie</button>
-          <button class="filter-chip" type="button" data-lib="Každodenné nástroje">Každodenné nástroje</button>
-          <button class="filter-chip" type="button" data-lib="Skutočné príbehy">Skutočné príbehy</button>
+        <div class="filter-scroll library-filters" id="libFilterScroll">
+          <button class="filter-chip active" type="button" data-cat="Všetky">Všetky</button>
+          <button class="filter-chip" type="button" data-cat="Sebavedomie">Sebavedomie</button>
+          <button class="filter-chip" type="button" data-cat="Každodenné nástroje">Každodenné nástroje</button>
+          <button class="filter-chip" type="button" data-cat="Skutočné príbehy">Skutočné príbehy</button>
         </div>
 
         <section class="library-feature">
@@ -1166,9 +899,9 @@
             <span class="mini-label">ODPORÚČANÉ AUDIO · 11 MIN</span>
             <h2>Zmier sa s prestávkami</h2>
             <p>Jemný rozhovor o tichu, očakávaní a dovolení dopovedať vlastnou rýchlosťou.</p>
-            <button class="primary-button" id="playFeatureAudioBtn" type="button">
+            <button class="primary-button" id="libAudioPlayBtn" type="button">
               <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7 8 5-8 5Z" /></svg></span>
-              <span id="featureAudioText">Počúvať teraz</span>
+              <span id="libAudioPlayText">Počúvať teraz</span>
             </button>
           </div>
         </section>
@@ -1179,11 +912,11 @@
               <span class="section-kicker">PRE TEBA</span>
               <h3>Objavuj knižnicu</h3>
             </div>
-            <span class="plan-count">6 materiálov</span>
+            <span class="plan-count" id="libCountLabel">6 materiálov</span>
           </div>
 
-          <div class="resource-list">
-            <article>
+          <div class="resource-list" id="resourceList">
+            <article data-cat="Porozumenie zajakavosti">
               <span class="resource-index tone-1">01</span>
               <div>
                 <small>Porozumenie zajakavosti</small>
@@ -1193,7 +926,7 @@
               <button class="bookmark-btn" type="button" aria-label="Uložiť"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4Z" /></svg></button>
             </article>
 
-            <article>
+            <article data-cat="Sebavedomie">
               <span class="resource-index tone-2">02</span>
               <div>
                 <small>Sebavedomie</small>
@@ -1203,7 +936,7 @@
               <button class="bookmark-btn" type="button" aria-label="Uložiť"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4Z" /></svg></button>
             </article>
 
-            <article>
+            <article data-cat="Každodenné nástroje">
               <span class="resource-index tone-3">03</span>
               <div>
                 <small>Každodenné nástroje</small>
@@ -1213,7 +946,7 @@
               <button class="bookmark-btn" type="button" aria-label="Uložiť"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4Z" /></svg></button>
             </article>
 
-            <article>
+            <article data-cat="Skutočné príbehy">
               <span class="resource-index tone-4">04</span>
               <div>
                 <small>Skutočné príbehy</small>
@@ -1223,7 +956,7 @@
               <button class="bookmark-btn" type="button" aria-label="Uložiť"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4Z" /></svg></button>
             </article>
 
-            <article>
+            <article data-cat="Porozumenie zajakavosti">
               <span class="resource-index tone-1">05</span>
               <div>
                 <small>Porozumenie zajakavosti</small>
@@ -1233,7 +966,7 @@
               <button class="bookmark-btn" type="button" aria-label="Uložiť"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4Z" /></svg></button>
             </article>
 
-            <article>
+            <article data-cat="Každodenné nástroje">
               <span class="resource-index tone-2">06</span>
               <div>
                 <small>Každodenné nástroje</small>
@@ -1244,1147 +977,551 @@
             </article>
           </div>
         </section>
+      </div>
+    </div>
 
-        <!-- Pôvodný DAF Asistent Studio -->
-        <section class="page-section" style="margin-top: 40px;">
-          <div class="section-heading">
-            <div>
-              <span class="section-kicker">REČOVÝ ASISTENT V REÁLNOM ČASE</span>
-              <h3>DAF & FAF Akustický procesor</h3>
-            </div>
+    <!-- ------------------------------------------------------------------ -->
+    <!-- ZÁLOŽKA 6: NASTAVENIA (SETTINGS PAGE Z FIGMY)                      -->
+    <!-- ------------------------------------------------------------------ -->
+    <div class="tab-pane" id="paneNastavenia">
+      <div class="dashboard inner-page">
+        <div class="page-intro">
+          <p class="eyebrow">NASTAVENIA</p>
+          <h1>Tvoj osobný účet</h1>
+          <p class="subtitle">Prispôsob si aplikáciu tak, aby ti vyhovovala.</p>
+        </div>
+
+        <section class="profile-card-large">
+          <div class="avatar" style="height:60px; width:60px; font-size:18px;">AM</div>
+          <div class="profile-fields">
+            <label>
+              <span>Meno a priezvisko</span>
+              <input type="text" id="settingNameInput" value="Alex Morgan">
+            </label>
+            <label>
+              <span>E-mail</span>
+              <input type="email" id="settingEmailInput" value="alex@example.com">
+            </label>
           </div>
-          <div class="assistant-studio">
-            
+          <button class="primary-button" id="saveProfileBtn" type="button">Uložiť zmeny</button>
+        </section>
+
+        <section class="settings-group" style="margin-top:24px;">
+          <div class="setting-row">
+            <div>
+              <strong>Pripomienky na cvičenie</strong>
+              <small>Jemné upozornenie raz denne</small>
+            </div>
+            <button class="toggle active" id="toggleNotifBtn" type="button">
+              <span></span>
+            </button>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <strong>Hmatová odozva (Vibrácie)</strong>
+              <small>Jemné potvrdenie pri správnom nábehu hlasu</small>
+            </div>
+            <button class="toggle active" id="toggleHapticsBtn" type="button">
+              <span></span>
+            </button>
           </div>
         </section>
+
+        <p class="settings-note">
+          Glide podporuje cvičenie a sebareflexiu. Nenahrádza starostlivosť kvalifikovaného logopéda alebo logopedičky.
+        </p>
       </div>
-    </section>
+    </div>
 
   </main>
 
   <!-- ==================================================================== -->
-  <!-- SPODNÁ MOBILNÁ NAVIGÁCIA (5 ZÁLOŽIEK Z FIGMY S OCHRANOU SAFE-AREA)   -->
+  <!-- SPODNÁ MOBILNÁ NAVIGÁCIA (ZOBRAZENÁ IBA NA MOBILE <= 700PX)          -->
   <!-- ==================================================================== -->
-  <nav class="mobile-nav bottom-nav" id="bottomNav" aria-label="Mobilná navigácia">
-    <button class="nav-tab active" data-tab="tabCesta" id="navTabCesta" type="button">
+  <nav class="mobile-nav" aria-label="Mobilná navigácia">
+    <button class="active" data-nav="Dnes" type="button">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7" /><path d="M5 9v11h14V9M9 20v-6h6v6" /></svg>
       <span>Dnes</span>
     </button>
-    <button class="nav-tab" data-tab="tabDril" id="navTabDril" type="button">
+    <button data-nav="Cvičenia" type="button">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16" /><path d="M9 8v8M15 8v8M2 12h20" /></svg>
       <span>Cvičenia</span>
     </button>
-    <button class="nav-tab" data-tab="tabDotaznik" id="navTabDotaznik" type="button">
+    <button data-nav="Dotazník" type="button">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg>
       <span>Dotazník</span>
     </button>
-    <button class="nav-tab" data-tab="tabTelemetria" id="navTabTelemetria" type="button">
+    <button data-nav="Môj pokrok" type="button">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></svg>
       <span>Pokrok</span>
     </button>
-    <button class="nav-tab" data-tab="tabAsistent" id="navTabAsistent" type="button">
+    <button data-nav="Knižnica" type="button">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z" /><path d="M7 8h1M17 8h1" /></svg>
       <span>Knižnica</span>
     </button>
   </nav>
 
   <!-- ==================================================================== -->
-  <!-- PRACTICE OVERLAY MODAL (INTERAKTÍVNE CVIČENIE Z FIGMY S AUDIO DSP)   -->
+  <!-- PRACTICE OVERLAY (CVIČEBNÝ MODAL Z FIGMY SO SPÄTNOU VÄZBOU)          -->
   <!-- ==================================================================== -->
-  <div class="practice-overlay" id="practiceOverlayModal" role="dialog" aria-modal="true" style="display:none;">
-    <button class="close-button" id="closePracticeOverlayBtn" aria-label="Zavrieť cvičenie">
+  <div class="practice-overlay" id="practiceOverlay" role="dialog" aria-modal="true" style="display:none;">
+    <button class="close-button" id="closePracticeBtn" type="button" aria-label="Zavrieť cvičenie">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10M17 7 7 17" /></svg>
     </button>
     <div class="practice-panel">
-      <div id="practiceActiveState">
+      <div id="practiceActiveView">
         <span class="step-label" id="practiceStepLabel">CVIČENIE 1 Z 3</span>
-        <h2 id="practiceModalTitle">Nádych a uvoľnenie</h2>
-        <p id="practiceModalDesc">Pokojne sa nadýchni a pri výdychu nechaj svoj hlas začať. Slová nemusíš tlačiť.</p>
-        <div class="pulse-circle" id="practicePulseCircle">
-          <button id="practiceRecordToggleBtn" type="button" aria-label="Spustiť / Pozastaviť nahrávanie">
+        <h2 id="practiceTitle">Nádych a uvoľnenie</h2>
+        <p id="practiceDesc">Pokojne sa nadýchni a pri výdychu nechaj svoj hlas začať. Slová nemusíš tlačiť.</p>
+        <div class="pulse-circle" id="pulseCircle">
+          <button id="practiceRecordBtn" type="button" aria-label="Spustiť nahrávanie">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6" /></svg>
           </button>
-          <span id="practiceTimer">00:00</span>
+          <span id="practiceTime">00:00</span>
         </div>
-        <strong class="record-prompt" id="practicePromptText">Ťukni, keď budeš pripravený/á</strong>
-        <button class="finish-button" id="finishPracticeBtn" type="button">
-          Dokončiť cvičenie
-        </button>
+        <strong class="record-prompt" id="practicePrompt">Ťukni, keď budeš pripravený/á</strong>
+        <button class="finish-button" id="finishPracticeBtn" type="button" disabled>Dokončiť cvičenie</button>
       </div>
 
-      <div class="complete-state" id="practiceCompleteState" style="display:none;">
+      <div class="complete-state" id="practiceCompleteView" style="display:none;">
         <span class="complete-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>
         </span>
         <span class="step-label">CVIČENIE DOKONČENÉ</span>
         <h2>Venoval/a si čas svojmu hlasu.</h2>
         <p>Na tom záleží. Pred pokračovaním si chvíľu všimni, ako sa cítiš.</p>
-        <button class="primary-button" id="backToTodayFromPracticeBtn" type="button" style="margin-top:20px;">
-          <span>Späť na dnes</span>
+        <button class="primary-button" id="backToTodayBtn" type="button" style="margin-top:20px;">
+          Späť na dnes
           <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================================================================== -->
-  <!-- NASTAVENIA MODAL (SETTINGS & PROFIL Z FIGMY)                         -->
-  <!-- ==================================================================== -->
-  <div class="practice-overlay" id="settingsModal" role="dialog" aria-modal="true" style="display:none;">
-    <button class="close-button" id="closeSettingsModalBtn" aria-label="Zavrieť nastavenia">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10M17 7 7 17" /></svg>
-    </button>
-    <div class="practice-panel" style="max-height:85vh; overflow-y:auto;">
-      <span class="step-label">NASTAVENIA & PROFIL</span>
-      <h2>Tvoj osobný účet</h2>
-      
-      <div class="profile-fields" style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
-        <label>
-          <span class="section-kicker">MENO / PREZÝVKA</span>
-          <input type="text" id="settingsProfileName" value="Alex Morgan" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:16px;">
-        </label>
-        <label>
-          <span class="section-kicker">EMAIL (VOLITEĽNÉ)</span>
-          <input type="email" id="settingsProfileEmail" placeholder="tvoj.email@gmail.com" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:16px;">
-        </label>
-      </div>
-
-      <div class="settings-group" style="margin-top:24px; border:1px solid var(--line); border-radius:16px; padding:16px;">
-        <div class="setting-row" style="display:flex; align-items:center; justify-content:space-between; padding:10px 0;">
-          <div>
-            <strong>Hmatová odozva (Vibrácie)</strong>
-            <small style="display:block; color:var(--muted); font-size:11px;">Jemné potvrdenie pri správnom nábehu hlasu</small>
-          </div>
-          <button class="toggle active" id="toggleHapticsBtn" type="button" style="width:48px; height:28px; border-radius:999px; background:var(--purple); position:relative; border:none; cursor:pointer;">
-            <span style="display:block; width:22px; height:22px; border-radius:50%; background:white; position:absolute; top:3px; right:3px;"></span>
-          </button>
-        </div>
-
-        <div class="setting-row" style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-top:1px solid var(--line);">
-          <div>
-            <strong>Kalibrácia mikrofónu</strong>
-            <small style="display:block; color:var(--muted); font-size:11px;">Automaticky prispôsobiť prah citlivosti tichu v miestnosti</small>
-          </div>
-          <button class="primary-button" id="calibrateSettingsBtn" type="button" style="margin:0; padding:6px 14px; font-size:11px;">
-            Kalibrovať
-          </button>
-        </div>
-      </div>
-
-      <p class="settings-note" style="margin-top:20px; font-size:11px; color:var(--muted); line-height:1.5;">
-        Glide podporuje rečové sebavedomie a sebareflexiu. Nenahrádza starostlivosť kvalifikovaného logopéda alebo logopedičky.
-      </p>
-
-      <button class="primary-button" id="saveSettingsBtn" type="button" style="width:100%; justify-content:center; margin-top:20px;">
-        Uložiť nastavenia
-      </button>
-    </div>
-  </div>
-
-  <div class="node-popover-backdrop" id="nodePopoverBackdrop">
-    <div class="node-popover-card" id="nodePopover">
-      <button class="popover-close" id="popoverCloseBtn">✕</button>
-      <div class="popover-world-tag" id="popoverWorldTag">SVET 1 • SAMOHLÁSKY</div>
-      <h3 class="popover-title" id="popoverTitle">Lekcia 1.1: Úvod do A a O</h3>
-      <p class="popover-desc" id="popoverDesc">Tréning mäkkého nábehu hlasiviek (VRT 45–160 ms). Žiadny tvrdý glotálny úder v hrtane.</p>
-      
-      <div class="popover-meta">
-        <span class="popover-xp">⚡ +30 XP</span>
-        <span class="popover-count" id="popoverWordCount">4 cvičenia</span>
-      </div>
-
-      <button class="btn-3d green full" id="startLessonBtn">
-        <span>SPUSTIŤ TRÉNING</span>
-      </button>
-    </div>
-  </div>
-  <section class="lesson-screen" id="lessonScreen">
-    
-    <!-- Horná lišta lekcie -->
-    <div class="lesson-topbar">
-      <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu">✕</button>
-      
-      <div class="lesson-progress-track">
-        <div class="lesson-progress-fill" id="lessonProgressFill" style="width: 0%;"></div>
-      </div>
-
-      <div class="lesson-hearts" id="lessonHearts">
-        <span>❤️</span>
-        <span id="lessonHeartsVal">5</span>
-      </div>
-    </div>
-
-    <!-- Minimalistické tréningové javisko počas reči -->
-    <div class="lesson-stage">
-      
-      <!-- Video zrkadlo kamery (pre Boss fighty a očný kontakt) -->
-      <video id="cameraFeed" autoplay playsinline muted></video>
-      <div class="eye-contact-prompt" id="interlocutorPrompt">👀 Udrž očný kontakt s kamerou!</div>
-
-      <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->
-      <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none;">
-        <div class="ld-speaker-badge">
-          <span class="ld-avatar" id="ldAvatar">👩‍💼</span>
-          <span class="ld-name" id="ldSpeaker">Pokladníčka Zuzana</span>
-          <span class="ld-speaking-icon" id="ldSpeakingIcon">🔊</span>
-        </div>
-        <div class="ld-bubble">
-          <span class="ld-quote">“</span>
-          <span class="ld-text" id="ldText">Dobrý deň, budete platiť v hotovosti alebo kartou?</span>
-        </div>
-      </div>
-
-      <!-- Kontext lekcie -->
-      <div class="lesson-context-badge" id="lessonContextBadge">Svet 1 • Cvičenie 1 z 4</div>
-
-      <!-- Živý indikátor slúchadiel DAF + FAF -->
-      <div id="headphoneLiveIndicator" class="headphone-live-badge off" title="Klikni pre zapnutie alebo vypnutie zvuku v slúchadlách">
-        <span class="hlb-icon">🎧</span>
-        <span class="hlb-text" id="headphoneStatusText">DAF & FAF Slúchadlá: Vypnuté (Klikni pre zapnutie)</span>
-        <span class="hlb-dot"></span>
-      </div>
-
-      <!-- Veľký dominantný terč slova -->
-      <div class="target-word-container">
-        <h1 class="target-word" id="targetWord">AUTO</h1>
-        <div class="target-meta" id="targetMeta">Klasifikácia: Samohláska (A) – cieľ VRT 45–160 ms</div>
-      </div>
-
-      <!-- Zen Dýchací Kruh (Pacer) -->
-      <div class="pacer-wrapper">
-        <div class="pacer-circle" id="pacerCircle" title="Klikni sem pre okamžité predčasné vyhodnotenie!">
-          <span class="pacer-text" id="pacerText">Priprav sa</span>
-        </div>
-      </div>
-
-      <!-- Stavové hlásenie pod kruhom -->
-      <div class="status-alert" id="statusAlert">Stlač tlačidlo Štart pre začiatok dychového cyklu.</div>
-
-      <!-- Ovládacie tlačidlá lekcie -->
-      <div class="lesson-controls" id="lessonControls">
-        <button id="calibrateBtn" class="btn-3d amber sm">1. Kalibrovať ticho</button>
-        <button id="startBtn" class="btn-3d green md">▶ Spustiť slovo (Pacer)</button>
-      </div>
-
-      <!-- Prepínače stresorov -->
-      <div class="lesson-toggles">
-        <label class="toggle-pill" title="Zapne webkameru do pozadia pre nácvik očného kontaktu">
-          <input type="checkbox" id="camToggle">
-          <span>📷 Očný kontakt</span>
-        </label>
-        <label class="toggle-pill" title="Použiť reálne MP3 hlasy zo štúdia (/audio)">
-          <input type="checkbox" id="voicePromptToggle" checked>
-          <span>🔊 Reálny hlas (/audio)</span>
-        </label>
-        <button id="cardioBtn" class="btn-3d purple sm" style="padding: 6px 12px; font-size: 0.78rem;">⚡ Tepový šok (30s)</button>
-      </div>
-
-      <!-- Kompatibilita pre dsp-core.js -->
-      <div style="display: none;">
-        <div id="xpNextLabel"></div>
-        <div id="xpFillBar"></div>
-        <span id="comboVal">1x</span>
-      </div>
-
-    </div>
-
-    <!-- Prepadový hovor Overlay (pre Boss Fighty) -->
-    <div class="call-overlay" id="callOverlay">
-      <div class="call-box">
-        <div class="caller-avatar-circle">📞</div>
-        <h2 class="caller-name" id="callerName">Kuriér (Balík)</h2>
-        <p class="caller-sub" id="callerSub">Prichádzajúci hovor... Vypočuj si otázku a odpovedz bez bloku!</p>
-        
-        <div class="call-actions">
-          <button class="btn-3d red" id="declineCallBtn">Zrušiť</button>
-          <button class="btn-3d green" id="answerCallBtn">Prijať hovor</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Spodný Feedback Drawer (Duolingo Sheet po pokuse) -->
-    <div class="feedback-drawer" id="feedbackDrawer">
-      <div class="drawer-inner">
-        
-        <div class="drawer-header">
-          <div class="drawer-status-icon" id="drawerStatusIcon">✓</div>
-          <div class="drawer-text-wrap">
-            <h3 class="drawer-headline" id="drawerHeadline">Úžasné! Dokonalý nábeh!</h3>
-            <p class="drawer-subtext" id="drawerSubtext">Hlasivky naskočili mäkko a bez kŕča v sweet-spote.</p>
-          </div>
-          <div class="drawer-xp-badge" id="drawerXpBadge">+30 XP</div>
-        </div>
-
-        <!-- Akustická miniatúra a toggle tlačidlo -->
-        <div class="drawer-details-toggle">
-          <button class="toggle-matrix-btn" id="toggleMatrixBtn">
-            <span>Zobraziť akustickú analýzu (VRT & graf)</span>
-            <span class="chevron">▼</span>
-          </button>
-        </div>
-
-        <!-- Matica akustických pravidiel pre dsp-core.js -->
-        <div class="matrix-panel" id="matrixPanel">
-          <div class="badge-banner" id="verdictBanner"></div>
-
-          <div class="canvas-wrap">
-            <div class="canvas-label">
-              <span>Akustická obálka formantov (FFT 2048)</span>
-              <span>Žlté pásmo = VRT (20% → 80% RMS)</span>
-            </div>
-            <canvas id="envelopeCanvas" width="600" height="90"></canvas>
-          </div>
-
-          <div class="metrics-grid">
-            <div class="metric-row">
-              <span class="metric-title" id="m1Title">1. Reakčný čas (Štart)</span>
-              <span class="metric-val" id="m1">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">2. Čistota štartu (Anticheat)</span>
-              <span class="metric-val" id="m2">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">3. Trvanie spoluhlásky / Diera</span>
-              <span class="metric-val" id="m3">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">4. Vocal Rise Time (VRT)</span>
-              <span class="metric-val" id="m4">-</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-title">5. Kontinuita slabiky</span>
-              <span class="metric-val" id="m5">-</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tlačidlo Pokračovať -->
-        <div class="drawer-action-row">
-          <button class="btn-3d full" id="drawerContinueBtn">
-            <span>POKRAČOVAŤ (Enter)</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-  </section>
-  <div class="celebration-overlay" id="celebrationModal">
-    <div class="celebration-card">
-      <div class="trophy-bounce">🏆</div>
-      <h2 class="celebration-title" id="celebrationTitle">Lekcia dokončená!</h2>
-      <p class="celebration-sub" id="celebrationSub">Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.</p>
-
-      <div class="stats-recap-grid">
-        <div class="recap-card">
-          <div class="recap-label">CELKOVÝ ZISK</div>
-          <div class="recap-val xp" id="recapXpVal">+120 XP</div>
-        </div>
-        <div class="recap-card">
-          <div class="recap-label">ÚSPEŠNOSŤ</div>
-          <div class="recap-val green" id="recapAccuracyVal">100%</div>
-        </div>
-        <div class="recap-card">
-          <div class="recap-label">DENNÁ SÉRIA</div>
-          <div class="recap-val fire" id="recapStreakVal">🔥 1 deň</div>
-        </div>
-      </div>
-
-      <button class="btn-3d green full lg" id="celebrationBackBtn">
-        <span>POKRAČOVAŤ</span>
-      </button>
-    </div>
-  </div>
-  <div class="science-modal-backdrop" id="scienceModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="scienceModalTitle">
-    <div class="science-modal-card">
-      
-      <!-- Hlavička modálu -->
-      <div class="science-modal-header">
-        <div class="smh-left">
-          <div class="smh-badge">EVIDENCE-BASED NEUROAKUSTIKA</div>
-          <h2 class="smh-title" id="scienceModalTitle">Vedecký Základ & Klinické Modely</h2>
-          <p class="smh-sub">Klinická architektúra, neurobiologické mechanizmy a recenzované citácie aplikácie Glide</p>
-        </div>
-        <button class="science-close-btn" id="scienceModalCloseBtn" title="Zavrieť dialóg">✕</button>
-      </div>
-
-      <!-- Úvodný banner -->
-      <div class="science-intro-banner">
-        <div class="sib-icon">🔬</div>
-        <div class="sib-text">
-          Glide Biofeedback vychádza z prísnych empirických výskumov v oblasti motorického riadenia reči, neuroakustiky a kognitívno-behaviorálnej terapie balbuties. Kliknutím na jednotlivé piliere zobrazíš detailný fyziologický mechanizmus a formálne APA citácie.
-        </div>
-      </div>
-
-      <!-- Akordeón 5 pilierov -->
-      <div class="science-accordion" id="scienceAccordion">
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 1: DIVA & GODIVA MODEL                                  -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="1">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">🧠</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 1 • NEUROVÝPOČTOVÝ MODEL</div>
-                <h3 class="sc-title">DIVA & GODIVA Model (Neurónové riadenie reči)</h3>
-                <p class="sc-summary">Kompenzácia zlyhávajúcej doprednej motorickej väzby vizuálnym biofeedbackom v reálnom čase</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">Feedforward Bypass</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">DIVA Architecture</span>
-              <span class="sc-tag">GODIVA Sequencing</span>
-              <span class="sc-tag">Kortiko-striatálne slučky</span>
-              <span class="sc-tag">Latencia &lt; 50 ms</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Neurobiologický a výpočtový mechanizmus</h4>
-              <p>
-                Výpočtový model <strong>DIVA (Directions into Velocities of Articulators)</strong> a jeho sekvenčná nadstavba <strong>GODIVA (Gradient Order DIVA)</strong> opisujú reč ako súhru dvoch paralelných systémov:
-              </p>
-              <ul class="sc-list">
-                <li><strong>Dopredný podsystém (Feedforward Control):</strong> Rýchly riadiaci okruh lokalizovaný v suplementárnej motorickej oblasti (SMA) a primárnej motorickej kôre (M1). Zodpovedá za okamžité, automatizované spúšťanie fonácie bez čakania na zmyslovú odozvu.</li>
-                <li><strong>Spätnoväzbový podsystém (Feedback Control):</strong> Pomalší okruh v sluchovej a somatosenzorickej kôre, ktorý porovnáva reálny akustický výstup s očakávaným zmyslovým vzorcom.</li>
-              </ul>
-              <p>
-                Pri balbuties dochádza k štrukturálnej a funkčnej dysfunkcii v kortiko-striato-talamo-kortikálnych dráhach bazálnych ganglií. Interný dopredný prediktívny model zlyháva v časovaní a generuje falošný somatosenzorický chybový signál. Mozog situáciu vyhodnotí ako kolíziu, okamžite preruší motorický príkaz a pokúsi sa o reštart slabiky – čo sa klinicky prejavuje ako <strong>tonický blok</strong> alebo <strong>klonické opakovanie</strong>.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Aplikácia nahrádza zlyhávajúcu vnútornú somatosenzorickú väzbu <strong>okamžitým externým vizuálnym biofeedbackom v reálnom čase</strong> (vizuálny pacer, okamžitá amplitúdová obálka RMS a spektrálny audit). Vizuálna slučka obchádza poškodené senzorimotorické okruhy, poskytuje kortexu alternatívny stabilizačný signál v latencii do 50 ms a umožňuje vedomú rekalibráciu artikulačného traktu.
-              </p>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Guenther, F. H., Ghosh, S. S., & Tourville, J. A. (2006). Neural modeling and imaging of the cortical interactions underlying syllable production. <em>Brain and Language</em>, 96(3), 280–301.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1016/j.bandl.2005.06.001" target="_blank" rel="noopener">doi:10.1016/j.bandl.2005.06.001</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Bohland, J. W., Bullock, D., & Guenther, F. H. (2010). Neural representations and mechanisms for the performance of action sequences: The GODIVA model. <em>Cerebral Cortex</em>, 20(4), 844–867.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1093/cercor/bhp152" target="_blank" rel="noopener">doi:10.1093/cercor/bhp152</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Tourville, J. A., & Guenther, F. H. (2011). The DIVA model: A neural theory of speech acquisition and production. <em>Language and Cognitive Processes</em>, 26(7), 952–981.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1080/01690960903498424" target="_blank" rel="noopener">doi:10.1080/01690960903498424</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 2: GENTLE VOICE ONSET & AKUSTIKA VRT                    -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="2">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">📈</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 2 • AKUSTICKÁ BIOMETRIKA</div>
-                <h3 class="sc-title">Gentle Voice Onset & Akustika VRT (Mäkký nábeh)</h3>
-                <p class="sc-summary">Eliminácia tvrdého glotálneho rázu a hyperaddukcie hlasiviek riadeným predĺžením nábehu akustického tlaku</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">VRT 60–140 ms</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Vocal Rise Time</span>
-              <span class="sc-tag">Hollins Fluency System</span>
-              <span class="sc-tag">Laryngálna addukcia</span>
-              <span class="sc-tag">M. thyroarytenoideus</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Fyziologický a akustický mechanizmus</h4>
-              <p>
-                Primárnym mechanickým spúšťačom laryngálneho bloku pri iniciácii samohlások a plozív je <strong>tvrdý glotálny ráz (hard glottal attack)</strong>. Ešte pred začiatkom fonácie dochádza k nadmernej hyperaddukcii a stiahnutiu vnútorných hlasivkových svalov (najmä <em>m. thyroarytenoideus</em> a <em>m. cricoarytenoideus lateralis</em>). Pľúcny exspiračný tlak narastá za pevne uzavretou glotis, až kým nedôjde k explozívnemu akustickému tresku (VRT &lt; 45 ms) alebo k úplnému laryngálnemu spazmu.
-              </p>
-              <p>
-                Klinická metodika <strong>Gentle Voice Onset (GVO)</strong>, vyvinutá v rámci Hollins Fluency System (Dr. Ronald Webster), trénuje plynulý, kontrolovaný prechod od subfonatórneho laminárneho prúdenia vzduchu k postupnému rozkmitaniu slizničného krytu hlasiviek. Akustickým indexom tejto mäkkosti je <strong>Vocal Rise Time (VRT)</strong> – časový interval potrebný na vzostup amplitúdy zvukovej obálky z 20 % na 80 % saturovaného RMS signálu.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Modul <code>dsp-core.js</code> vykonáva sub-milisekundový výpočet obálky signálu metódou kĺzavého RMS okna. Systém kalibruje tri diagnostické zóny:
-              </p>
-              <ul class="sc-list">
-                <li><span class="sc-stat-pill red">&lt; 45 ms (Tvrdý glotálny ráz):</span> Prudký úder v hrtane, riziko spazmu. Aplikácia neakceptuje pokus ako Perfect a navrhne jemnejší začiatok s výdychom.</li>
-                <li><span class="sc-stat-pill green">60–140 ms (Klinický Sweet-Spot):</span> Optimálny fyziologický nábeh sliznice, uvoľnené suprahyoidné svalstvo, zlatý štandard plynulosti.</li>
-                <li><span class="sc-stat-pill purple">&gt; 240 ms (Dychový únik / Aspiration):</span> Nadmerný únik vzduchu bez včasného kontaktu hlasiviek (hypoaddukcia).</li>
-              </ul>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Webster, R. L. (1974). A behavioral analysis of stuttering: Presentation of a rationale with speech improvement targets. In K. S. Calhoun, H. E. Adams, & K. M. Mitchell (Eds.), <em>Innovative treatment methods in psychopathology</em> (pp. 73–96). John Wiley & Sons.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Mallard, A. R., & Westbrook, J. B. (1983). Vowel duration in stutterers and nonstutterers: A study of gentle onset. <em>Journal of Fluency Disorders</em>, 8(3), 279–285.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1016/0094-730X(83)90010-8" target="_blank" rel="noopener">doi:10.1016/0094-730X(83)90010-8</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Peters, H. F. M., & Boves, L. (1988). Coordination of aerodynamic and phonatory processes in stuttering and normal speech. <em>Journal of Speech and Hearing Research</em>, 31(3), 352–361.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1044/jshr.3103.352" target="_blank" rel="noopener">doi:10.1044/jshr.3103.352</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 3: CHORAL SPEECH EFFECT & DAF MODULÁCIA                 -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="3">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">🎧</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 3 • AUDITÍVNA NEUROSTIMULÁCIA</div>
-                <h3 class="sc-title">Choral Speech Effect & Sluchová modulácia (DAF)</h3>
-                <p class="sc-summary">Oneskorená sluchová spätná väzba (40–140 ms) obchádzajúca časovú dysfunkciu bazálnych ganglií</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">DAF 70 ms</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Delayed Auditory Feedback</span>
-              <span class="sc-tag">Choral Effect</span>
-              <span class="sc-tag">Reaktivácia STG</span>
-              <span class="sc-tag">DAF Architektúra</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Neurobiologický mechanizmus efektu zborovej reči</h4>
-              <p>
-                Jedným z najvýraznejších a najlepšie preskúmaných fenoménov v rečovej patológii je <strong>efekt zborovej reči (choral speech effect)</strong>: ak osoba so zajakavosťou číta alebo hovorí súčasne v synchronizácii s iným rečníkom, prejavy zajakavosti okamžite klesajú o 80 až 90 % bez nutnosti vedomej techniky.
-              </p>
-              <p>
-                Neurozobrazovacie fMRI štúdie (Foundas et al., 2004) odhalili, že u osôb s balbuties je počas vlastnej reči ľavá sluchová kôra (najmä <em>gyrus temporalis superior</em> – STG a <em>planum temporale</em>) hypoaktívna, zatiaľ čo pravá hemisféra vykazuje neefektívnu kompenzačnú hyperaktivitu. <strong>Oneskorená sluchová spätná väzba (Delayed Auditory Feedback – DAF)</strong> v rozsahu 50–100 ms simuluje prítomnosť druhého hovoriaceho hlasu priamo v uchu. Tento signál vyvoláva masívnu bilaterálnu reaktiváciu STG a poskytuje kortikálnym okruhom externý rytmický kľúč (<em>external pacing cue</em>), ktorý nahrádza porušené biologické hodiny v bazálnych gangliách.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Záložka <strong>"🎧 Asistent"</strong> prináša klinický ekvivalent prenosných DAF zariadení priamo do webového rozhrania. Cez Web Audio API je vytvorená paralelná, nízko-latenčná zvuková vetva (<code>mediaStreamSource → DelayNode → GainNode → destination</code>), ktorá neovplyvňuje analytický DSP motor. Používateľ má k dispozícii kalibrovaný rozsah 40–140 ms s optimálnym klinickým stredom <strong>70 ms</strong> a vizuálnym pulzným indikátorom prenosu hlasu do ucha.
-              </p>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Kalinowski, J., Stuart, A., Sark, S., & Armson, J. (1996). Stuttering amelioration at various auditory delays and speech rates. <em>European Journal of Disorders of Communication</em>, 31(3), 259–269.</span>
-                  <a class="cit-doi" href="https://doi.org/10.3109/13682829609033157" target="_blank" rel="noopener">doi:10.3109/13682829609033157</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Foundas, A. L., Bollich, A. M., Feldman, J., Corey, D. M., Hurley, M., Lemen, L. C., & Heilman, K. M. (2004). Aberrant auditory-motor processing in developmental stuttering: An fMRI study. <em>Cognitive and Behavioral Neurology</em>, 17(2), 77–85.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1097/00146965-200406000-00004" target="_blank" rel="noopener">doi:10.1097/00146965-200406000-00004</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Stuart, A., Kalinowski, J., Rastatter, M. P., & Saltuklaroglu, T. (2004). Investigations of the impact of altered auditory feedback in-the-ear devices on the speech of people who stutter: One-year follow-up. <em>Disability and Rehabilitation</em>, 26(14–15), 830–841.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1080/09638280410001699419" target="_blank" rel="noopener">doi:10.1080/09638280410001699419</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 4: VALSALVOV REFLEX A DEKOMPRESIA MANDIBULY             -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="4">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">&#129729;</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 4 • BIOMECHANICKÁ DEKOMPRESIA</div>
-                <h3 class="sc-title">Valsalvov reflex a dekompresia mandibuly (SOS Dril)</h3>
-                <p class="sc-summary">Rozpojenie nevedomého zovretia hrtanových zvieračov mechanickým uvoľnením sánky o 2–3 mm</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">Valsalva Bypass</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Valsalva Mechanism</span>
-              <span class="sc-tag">Mandibulárna dekompresia</span>
-              <span class="sc-tag">Suprahyoidné svalstvo</span>
-              <span class="sc-tag">Laryngálny spazmus</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Biomechanický a fyziologický mechanizmus</h4>
-              <p>
-                Výskum klinického neurológa a rečového teoretika Dr. Williama D. Parryho formuloval hypotézu <strong>Valsalvovho mechanizmu (Valsalva Hypothesis)</strong>. Podľa tohto modelu nevzniká rečový blok v primárnych jazykových centrách, ale spustením primitívneho reflexu tlaku v hrtane. Valsalvov reflex je evolučne starý obranný program: slúži na nepriedušné uzatvorenie dýchacích ciest pri ťažkej fyzickej námahe (dvíhanie bremien, tlačenie, defekácia) prostredníctvom pevných laryngeálnych zvieračov.
-              </p>
-              <p>
-                Keď rečník anticipuje náročnú hlásku alebo sociálne ohrozenie, mozog situáciu chybne interpretuje ako potrebu "vynaložiť viac sily na pretlačenie slova". Tento impulz zapne Valsalvov reflex: suprahyoidné svaly (<em>m. mylohyoideus</em>, <em>m. geniohyoideus</em>) vytiahnu jazylku a sánku smerom hore a hrtanové zvierače sa reflexne hermeticky zovrú. Čím viac sa človek snaží slovo silou vytlačiť, tým silnejšie sa zvierače zovrú.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v motore Glide Biofeedback</h4>
-              <p>
-                Záložka <strong>"⚡ Rýchly Dril" (SOS Sandbox)</strong> poskytuje rýchlu terénnu rekalibráciu pred reálnym sociálnym vstupom (napr. pred nákupom, hovorom či poradou). Pacer aplikácie vedie rečníka k cielenej <strong>dekompresii mandibuly</strong>: mechanickému uvoľneniu spodnej sánky o 2 až 3 milimetre (zubné oblúky sa nesmú dotýkať, pery len jemne priľnú). Tento jednoduchý pohyb mechanicky neutralizuje ťah suprahyoidných svalov, čo fyziologicky znemožňuje zopnutie zvieračov hrtana a rozbíja patologický Valsalvov reflex ešte pred prvou fonáciou.
-              </p>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Parry, W. D. (1985/2013). <em>Understanding & controlling stuttering: A comprehensive new approach based on the Valsalva mechanism</em> (3rd ed.). National Stuttering Association.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Smith, A., & Denny, M. (1990). High-frequency oscillations in human speech muscle activity. <em>Brain Research</em>, 534(1–2), 269–274.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1016/0006-8993(90)90141-8" target="_blank" rel="noopener">doi:10.1016/0006-8993(90)90141-8</a>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Loucks, T. M., & De Nil, L. F. (2006). Anomalous sensorimotor integration in developmental stuttering: A review. <em>International Journal of Orofacial Myology</em>, 32, 22–37.</span>
-                  <a class="cit-doi" href="https://doi.org/10.52010/ijom.2006.32.1.3" target="_blank" rel="noopener">doi:10.52010/ijom.2006.32.1.3</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- -------------------------------------------------------------- -->
-        <!-- PILIER 5: HIERARCHICKÁ DESENZIBILIZÁCIA A STRESOVÁ INOKULÁCIA  -->
-        <!-- -------------------------------------------------------------- -->
-        <article class="science-card" data-pillar="5">
-          <header class="sc-header" tabindex="0" role="button" aria-expanded="false">
-            <div class="sc-header-left">
-              <span class="sc-icon">⚡</span>
-              <div class="sc-title-wrap">
-                <div class="sc-lead-tag">PILIER 5 • BEHAVIORÁLNA INOKULÁCIA</div>
-                <h3 class="sc-title">Hierarchická desenzibilizácia a stresová inokulácia (5 Svetov)</h3>
-                <p class="sc-summary">Postupné vrstvenie psychofyziologickej záťaže od samohlások po prepadové hovory s kamerou</p>
-              </div>
-            </div>
-            <div class="sc-header-right">
-              <span class="sc-badge">Stress Inoculation</span>
-              <span class="sc-chevron">▼</span>
-            </div>
-          </header>
-
-          <div class="sc-body">
-            <div class="sc-tags">
-              <span class="sc-tag">Stress Inoculation Training</span>
-              <span class="sc-tag">Van Riper Therapy</span>
-              <span class="sc-tag">Reakčný limit 550 ms</span>
-              <span class="sc-tag">Kamerový očný kontakt</span>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Psychofyziologický mechanizmus a sympatiková regulácia</h4>
-              <p>
-                Plynulosť reči je mimoriadne zraniteľná voči aktivácii sympatikového nervového systému. V reálnych sociálnych interakciách vyvoláva hrozba zlyhania okamžitú autonómnu sympatikovú reakciu – vyplavenie katecholamínov, zrýchlenie srdcovej frekvencie a motorickú reakciu typu <em>freeze</em> v orofaciálnej oblasti. Ak je tréning obmedzený len na bezpečné, tiché laboratórne podmienky, dochádza k nulovému transferu zručností do reálneho života.
-              </p>
-              <p>
-                Koncept <strong>stresovej inokulácie (Stress Inoculation Training – SIT, Donald Meichenbaum, 1985)</strong> v kombinácii s klasickou <strong>desenzibilizačnou terapiou Charlesa Van Ripera (1973)</strong> a kognitívno-behaviorálnymi protokolmi (Menzies et al., 2008) buduje trvalú odolnosť voči blokom riadeným, postupným dávkovaním záťaže priamo počas nácviku motorického vzorca.
-              </p>
-            </div>
-
-            <div class="sc-section">
-              <h4 class="sc-sec-title">Aplikácia v 5 Svetoch Glide Biofeedback</h4>
-              <p>
-                Cesta 5 Svetov je presne odstupňovaná podľa náročnosti autonómnej nervovej záťaže:
-              </p>
-              <ul class="sc-list">
-                <li><strong>Svet 1: Samohlásky (A, O, E, U, I):</strong> Bezpečné prostredie bez časového limitu; izolovaný nábehový tréning sliznice (VRT).</li>
-                <li><strong>Svet 2: Znelé spoluhlásky (M, N, V, L):</strong> Udržanie nepretržitého kmitania hlasiviek cez artikulačné prechody.</li>
-                <li><strong>Svet 3: Plozívy a zhluky (P, T, K, CH, Štv-):</strong> Tlmenie aerodynamických rázov v artikulačných bodoch bez barličiek.</li>
-                <li><strong>Svet 4: Pokladňa & Rýchlosť:</strong> Reakčný limit <strong>550 ms</strong> (zvukový prompt pokladne) – eliminuje priestor na anticipačnú paniku a trénuje okamžitú automatickú dekompresiu sánky.</li>
-                <li><strong>Svet 5: Boss Fights (Prepadové hovory & Sociálna expozícia):</strong> Telefonáty s nepredvídateľnými reakciami oponenta (kuriér, lekár, automechanik) v kombinácii s voliteľným zrkadlom prednej webkamery pre nácvik stabilného očného kontaktu pri reči.</li>
-              </ul>
-            </div>
-
-            <div class="sc-citations">
-              <div class="cit-header">FORMÁLNE CITÁCIE & POUŽITÁ LITERATÚRA (APA)</div>
-              <ul class="cit-list">
-                <li class="cit-item">
-                  <span class="cit-ref">Van Riper, C. (1973). <em>The treatment of stuttering</em>. Prentice-Hall.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Meichenbaum, D. (1985). <em>Stress inoculation training</em>. Pergamon Press.</span>
-                </li>
-                <li class="cit-item">
-                  <span class="cit-ref">Menzies, R. G., Onslow, M., Packman, A., & O’Brian, S. (2008). Cognitive behavior therapy for adults who stutter: A tutorial for speech-language pathologists. <em>Journal of Speech, Language, and Hearing Research</em>, 51(6), 1451–1464.</span>
-                  <a class="cit-doi" href="https://doi.org/10.1044/1092-4388(2008/07-0259)" target="_blank" rel="noopener">doi:10.1044/1092-4388(2008/07-0259)</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-      </div>
-
-      <!-- Pätička modálu -->
-      <div class="science-modal-footer">
-        <div class="smf-disclaimer">
-          ⚠️ <strong>Upozornenie:</strong> Glide Biofeedback je neuro-tréningový biofeedback systém zameraný na motorické učenie reči. Nenahrádza individuálnu diagnostiku a intervenciu certifikovaného klinického logopéda.
-        </div>
-        <button class="btn-3d slate full" id="closeScienceModalBtn">
-          <span>← SPÄŤ NA TELEMETRIU</span>
-        </button>
-      </div>
-
-    </div>
-  </div>
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./questions-and-voices.js"></script>
+<!-- SKRIPTY A REČOVÁ LOGIKA -->
 <script src="./dsp-core.js"></script>
-<script src="./gamification-engine.js"></script>
 <script src="./daf-assistant.js"></script>
-<script src="./supabase-auth.js"></script>
 
-<!-- PWA Service Worker & Install Manager -->
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('[PWA] Service Worker aktívny:', reg.scope))
-        .catch(err => console.warn('[PWA] Service Worker registrácia zlyhala:', err));
+(function() {
+  // Navigation Router
+  const navButtons = document.querySelectorAll('[data-nav]');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  function navigate(page) {
+    tabPanes.forEach(pane => pane.classList.remove('active'));
+    const targetPane = document.getElementById('pane' + page);
+    if (targetPane) targetPane.classList.add('active');
+
+    navButtons.forEach(btn => {
+      if (btn.dataset.nav === page) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => navigate(btn.dataset.nav));
+  });
+
+  const desktopLogo = document.getElementById('desktopBrandLink');
+  if (desktopLogo) {
+    desktopLogo.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigate('Dnes');
     });
   }
 
-  // PWA Install prompt listener
-  let deferredPrompt = null;
-  const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+  // Calm Breathing Ring Animation on Home
+  const ringLabel = document.getElementById('breathRingLabel');
+  const ringNum = document.getElementById('breathRingNum');
+  if (ringLabel && ringNum) {
+    let count = 4;
+    let isInhale = true;
+    setInterval(() => {
+      count--;
+      if (count < 1) {
+        isInhale = !isInhale;
+        count = 4;
+        ringLabel.textContent = isInhale ? 'Nádych' : 'Výdych';
+      }
+      ringNum.textContent = count;
+    }, 1000);
+  }
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (pwaInstallBtn) pwaInstallBtn.style.display = 'block';
+  // Practice Overlay
+  const practiceOverlay = document.getElementById('practiceOverlay');
+  const closePracticeBtn = document.getElementById('closePracticeBtn');
+  const backToTodayBtn = document.getElementById('backToTodayBtn');
+  const practiceTitle = document.getElementById('practiceTitle');
+  const practiceDesc = document.getElementById('practiceDesc');
+  const practiceRecordBtn = document.getElementById('practiceRecordBtn');
+  const pulseCircle = document.getElementById('pulseCircle');
+  const practiceTime = document.getElementById('practiceTime');
+  const practicePrompt = document.getElementById('practicePrompt');
+  const finishPracticeBtn = document.getElementById('finishPracticeBtn');
+  const practiceActiveView = document.getElementById('practiceActiveView');
+  const practiceCompleteView = document.getElementById('practiceCompleteView');
+
+  let isRecording = false;
+  let recSeconds = 0;
+  let recTimer = null;
+
+  function openPractice(title, desc) {
+    if (practiceTitle) practiceTitle.textContent = title || 'Nádych a uvoľnenie';
+    if (practiceDesc) practiceDesc.textContent = desc || 'Pokojne sa nadýchni a pri výdychu nechaj svoj hlas začať. Slová nemusíš tlačiť.';
+    if (practiceActiveView) practiceActiveView.style.display = 'block';
+    if (practiceCompleteView) practiceCompleteView.style.display = 'none';
+    if (pulseCircle) pulseCircle.classList.remove('recording');
+    if (practiceTime) practiceTime.textContent = '00:00';
+    if (practicePrompt) practicePrompt.textContent = 'Ťukni, keď budeš pripravený/á';
+    if (finishPracticeBtn) finishPracticeBtn.disabled = true;
+
+    isRecording = false;
+    recSeconds = 0;
+    if (recTimer) clearInterval(recTimer);
+
+    if (practiceOverlay) practiceOverlay.style.display = 'flex';
+  }
+
+  function closePractice() {
+    if (practiceOverlay) practiceOverlay.style.display = 'none';
+    if (recTimer) clearInterval(recTimer);
+    isRecording = false;
+  }
+
+  const startWarmupBtn = document.getElementById('startWarmupBtn');
+  if (startWarmupBtn) startWarmupBtn.addEventListener('click', () => openPractice('Nádych a uvoľnenie', 'Tri krátke cvičenia na rozohriatie hlasu.'));
+
+  const startFeaturedPlanBtn = document.getElementById('startFeaturedPlanBtn');
+  if (startFeaturedPlanBtn) startFeaturedPlanBtn.addEventListener('click', () => openPractice('Tvoja denná rozcvička', 'Tri jemné cvičenia na upokojenie dychu a ľahší začiatok rozprávania.'));
+
+  document.querySelectorAll('.exercise-card, .practice-tile').forEach(card => {
+    card.addEventListener('click', () => {
+      const title = card.dataset.title || card.querySelector('strong')?.textContent;
+      const desc = card.dataset.desc || card.querySelector('small')?.textContent;
+      openPractice(title, desc);
+    });
   });
 
-  if (pwaInstallBtn) {
-    pwaInstallBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) {
-        alert('Aplikáciu môžeš nainštalovať cez ponuku prehliadača: Zdieľať (alebo ⋮) -> Pridať na plochu.');
-        return;
+  if (closePracticeBtn) closePracticeBtn.addEventListener('click', closePractice);
+  if (backToTodayBtn) backToTodayBtn.addEventListener('click', () => {
+    closePractice();
+    navigate('Dnes');
+  });
+
+  if (practiceRecordBtn) {
+    practiceRecordBtn.addEventListener('click', () => {
+      isRecording = !isRecording;
+      if (isRecording) {
+        pulseCircle.classList.add('recording');
+        practicePrompt.textContent = 'Počúvam — dopraj si toľko času, koľko potrebuješ';
+        finishPracticeBtn.disabled = false;
+        recTimer = setInterval(() => {
+          recSeconds++;
+          const m = Math.floor(recSeconds / 60).toString().padStart(2, '0');
+          const s = (recSeconds % 60).toString().padStart(2, '0');
+          practiceTime.textContent = m + ':' + s;
+        }, 1000);
+      } else {
+        pulseCircle.classList.remove('recording');
+        practicePrompt.textContent = 'Pozastavené. Ťukni pre pokračovanie.';
+        if (recTimer) clearInterval(recTimer);
       }
-      deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        console.log('[PWA] Používateľ prijal inštaláciu');
-      }
-      deferredPrompt = null;
-      pwaInstallBtn.style.display = 'none';
     });
   }
 
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] Glide bola úspešne nainštalovaná!');
-    if (pwaInstallBtn) pwaInstallBtn.style.display = 'none';
+  if (finishPracticeBtn) {
+    finishPracticeBtn.addEventListener('click', () => {
+      if (recTimer) clearInterval(recTimer);
+      isRecording = false;
+      if (practiceActiveView) practiceActiveView.style.display = 'none';
+      if (practiceCompleteView) practiceCompleteView.style.display = 'block';
+    });
+  }
+
+  // Filter chips in Cvičenia
+  const filterChips = document.querySelectorAll('#practiceFilterScroll .filter-chip');
+  const tiles = document.querySelectorAll('#practiceGrid .practice-tile');
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const cat = chip.dataset.filter;
+      let count = 0;
+      tiles.forEach(tile => {
+        if (cat === 'Všetky' || tile.dataset.type === cat) {
+          tile.style.display = 'grid';
+          count++;
+        } else {
+          tile.style.display = 'none';
+        }
+      });
+      const countLabel = document.getElementById('practiceCountLabel');
+      if (countLabel) countLabel.textContent = count + ' cvičení';
+    });
   });
 
-  // Material 3 Compact Player Wire-up
-  (function initM3CompactPlayer() {
-    var playerBtn = document.getElementById('m3PlayerActionBtn');
-    var playerTitle = document.getElementById('m3PlayerTitle');
-    var playerSub = document.getElementById('m3PlayerSub');
-    var playerAvatar = document.getElementById('m3PlayerAvatar');
+  // Library Search and Filters
+  const libSearch = document.getElementById('libSearchInput');
+  const libChips = document.querySelectorAll('#libFilterScroll .filter-chip');
+  const articles = document.querySelectorAll('#resourceList article');
 
-    if (playerBtn) {
-      playerBtn.addEventListener('click', function() {
-        var continueBtn = document.getElementById('continuePathBtn');
-        var startLessonBtn = document.getElementById('startLessonBtn');
-        if (continueBtn && continueBtn.offsetParent !== null) {
-          continueBtn.click();
-        } else if (startLessonBtn && startLessonBtn.offsetParent !== null) {
-          startLessonBtn.click();
-        } else {
-          var navCesta = document.getElementById('navTabCesta');
-          if (navCesta) navCesta.click();
-        }
-      });
-    }
+  function updateLibrary() {
+    const q = libSearch ? libSearch.value.toLowerCase().trim() : '';
+    const activeChip = document.querySelector('#libFilterScroll .filter-chip.active');
+    const cat = activeChip ? activeChip.dataset.cat : 'Všetky';
+    let count = 0;
 
-    // Pozorovanie zmien na DAF asistenta
-    var assistantBtn = document.getElementById('assistantToggle');
-    if (assistantBtn) {
-      assistantBtn.addEventListener('click', function() {
-        setTimeout(function() {
-          var isRunning = assistantBtn.classList.contains('active') || assistantBtn.textContent.indexOf('Zastaviť') !== -1;
-          if (isRunning) {
-            if (playerTitle) playerTitle.textContent = 'DAF Asistent Beží';
-            if (playerSub) playerSub.textContent = 'Choral Speech Effect • Slúchadlá pripojené';
-            if (playerAvatar) playerAvatar.textContent = '🎧';
-          } else {
-            if (playerTitle) playerTitle.textContent = 'Tréning Plynulosti';
-            if (playerSub) playerSub.textContent = 'Glide Biofeedback Engine • Pripravený';
-            if (playerAvatar) playerAvatar.textContent = '🎙️';
-          }
-        }, 100);
-      });
-    }
-  })();
+    articles.forEach(art => {
+      const artCat = art.dataset.cat || '';
+      const text = art.textContent.toLowerCase();
+      const catMatch = cat === 'Všetky' || artCat === cat;
+      const qMatch = !q || text.includes(q);
+      if (catMatch && qMatch) {
+        art.style.display = 'grid';
+        count++;
+      } else {
+        art.style.display = 'none';
+      }
+    });
+    const libCount = document.getElementById('libCountLabel');
+    if (libCount) libCount.textContent = count + ' materiálov';
+  }
+
+  if (libSearch) libSearch.addEventListener('input', updateLibrary);
+  libChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      libChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      updateLibrary();
+    });
+  });
+
+  // Bookmark toggle
+  document.querySelectorAll('.bookmark-btn').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('saved'));
+  });
+
+  // Audio Play toggle
+  const libAudioBtn = document.getElementById('libAudioPlayBtn');
+  const libAudioText = document.getElementById('libAudioPlayText');
+  let audioPlaying = false;
+  if (libAudioBtn) {
+    libAudioBtn.addEventListener('click', () => {
+      audioPlaying = !audioPlaying;
+      if (libAudioText) libAudioText.textContent = audioPlaying ? 'Pozastaviť audio' : 'Počúvať teraz';
+    });
+  }
+
+  // Toggles in Nastavenia
+  document.querySelectorAll('.toggle').forEach(t => {
+    t.addEventListener('click', () => t.classList.toggle('active'));
+  });
 
   // ==========================================================================
-  // FIGMA VELA SERENE UI INTERACTIONS & PRACTICE MODAL
+  // FIGMA QUESTIONNAIRE STEPPER (KROKY 0 AŽ 5 S VALIDÁCIOU)
   // ==========================================================================
-  (function initFigmaVelaInteractions() {
-    // 1. Practice Overlay Logic
-    const practiceModal = document.getElementById('practiceOverlayModal');
-    const closePracticeBtn = document.getElementById('closePracticeOverlayBtn');
-    const backToTodayBtn = document.getElementById('backToTodayFromPracticeBtn');
-    const recordBtn = document.getElementById('practiceRecordToggleBtn');
-    const pulseCircle = document.getElementById('practicePulseCircle');
-    const timerEl = document.getElementById('practiceTimer');
-    const promptText = document.getElementById('practicePromptText');
-    const finishBtn = document.getElementById('finishPracticeBtn');
-    const activeState = document.getElementById('practiceActiveState');
-    const completeState = document.getElementById('practiceCompleteState');
-    const practiceModalTitle = document.getElementById('practiceModalTitle');
-    const practiceModalDesc = document.getElementById('practiceModalDesc');
+  let qStep = 0;
+  const qAdultCheck = document.getElementById('qAdultCheck');
+  const qConsentCheck = document.getElementById('qConsentCheck');
+  const qNextBtn = document.getElementById('qNextBtn');
+  const qBackBtn = document.getElementById('qBackBtn');
+  const qNextBtnText = document.getElementById('qNextBtnText');
+  const qCountText = document.getElementById('qCountText');
+  const qProgressBar = document.getElementById('qProgressBar');
+  const qSituationGrid = document.getElementById('qSituationGrid');
+  const qNoteInput = document.getElementById('qNoteInput');
+  const qNoteCount = document.getElementById('qNoteCount');
+  const qResetBtn = document.getElementById('qResetBtn');
 
-    let isRecording = false;
-    let practiceSeconds = 0;
-    let timerInterval = null;
+  const answers = {};
+  const situations = new Set();
 
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60).toString().padStart(2, '0');
-      const s = (sec % 60).toString().padStart(2, '0');
-      return m + ':' + s;
+  function updateQuestionnaireUI() {
+    for (let i = 0; i <= 5; i++) {
+      const el = document.getElementById('qStep' + i);
+      if (el) el.style.display = (i === qStep) ? 'block' : 'none';
     }
 
-    function openPracticeModal(title, desc, duration) {
-      if (practiceModalTitle) practiceModalTitle.textContent = title || 'Nádych a uvoľnenie';
-      if (practiceModalDesc) practiceModalDesc.textContent = desc || 'Pokojne sa nadýchni a pri výdychu nechaj svoj hlas začať. Slová nemusíš tlačiť.';
-      if (activeState) activeState.style.display = 'block';
-      if (completeState) completeState.style.display = 'none';
-      if (pulseCircle) pulseCircle.classList.remove('recording');
-      if (timerEl) timerEl.textContent = '00:00';
-      if (promptText) promptText.textContent = 'Ťukni, keď budeš pripravený/á';
-      if (finishBtn) finishBtn.disabled = true;
+    if (qStep === 0) {
+      if (qCountText) qCountText.style.display = 'none';
+      if (qProgressBar) qProgressBar.style.width = '0%';
+      if (qBackBtn) qBackBtn.style.visibility = 'hidden';
+      if (qNextBtnText) qNextBtnText.textContent = 'Začať dotazník';
+      if (qNextBtn) qNextBtn.disabled = !(qAdultCheck?.checked && qConsentCheck?.checked);
+      if (qActionsFooter) qActionsFooter.style.display = 'flex';
+    } else if (qStep >= 1 && qStep <= 3) {
+      if (qCountText) {
+        qCountText.style.display = 'block';
+        qCountText.textContent = qStep + ' / 4';
+      }
+      if (qProgressBar) qProgressBar.style.width = ((qStep / 5) * 100) + '%';
+      if (qBackBtn) qBackBtn.style.visibility = 'visible';
+      if (qNextBtnText) qNextBtnText.textContent = 'Pokračovať';
+      if (qActionsFooter) qActionsFooter.style.display = 'flex';
 
-      isRecording = false;
-      practiceSeconds = 0;
-      if (timerInterval) clearInterval(timerInterval);
-
-      if (practiceModal) practiceModal.style.display = 'flex';
-    }
-
-    function closePracticeModal() {
-      if (practiceModal) practiceModal.style.display = 'none';
-      if (timerInterval) clearInterval(timerInterval);
-      isRecording = false;
-    }
-
-    // Connect open-practice triggers
-    document.querySelectorAll('.open-practice-trigger').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const title = btn.dataset.title || btn.querySelector('strong')?.textContent || 'Cvičenie plynulosti';
-        const desc = btn.querySelector('small')?.textContent || 'Uvoľni napätie v hrtane a sústreď sa na mäkký začiatok reči.';
-        openPracticeModal(title, desc);
+      // Check if all 3 questions in current section are answered
+      let secAnswers = 0;
+      const currentStepEl = document.getElementById('qStep' + qStep);
+      const scales = currentStepEl.querySelectorAll('.answer-scale');
+      scales.forEach(scale => {
+        const qid = scale.dataset.qid;
+        if (answers[qid] !== undefined) secAnswers++;
       });
+      if (qNextBtn) qNextBtn.disabled = (secAnswers < scales.length);
+    } else if (qStep === 4) {
+      if (qCountText) {
+        qCountText.style.display = 'block';
+        qCountText.textContent = '4 / 4';
+      }
+      if (qProgressBar) qProgressBar.style.width = '80%';
+      if (qBackBtn) qBackBtn.style.visibility = 'visible';
+      if (qNextBtnText) qNextBtnText.textContent = 'Zobraziť zhrnutie';
+      if (qNextBtn) qNextBtn.disabled = false;
+      if (qActionsFooter) qActionsFooter.style.display = 'flex';
+    } else if (qStep === 5) {
+      if (qCountText) qCountText.style.display = 'none';
+      if (qProgressBar) qProgressBar.style.width = '100%';
+      if (qActionsFooter) qActionsFooter.style.display = 'none';
+
+      // Calculate domain averages
+      calculateResults();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const qActionsFooter = document.getElementById('qActionsFooter');
+
+  if (qAdultCheck) qAdultCheck.addEventListener('change', updateQuestionnaireUI);
+  if (qConsentCheck) qConsentCheck.addEventListener('change', updateQuestionnaireUI);
+
+  // Radio button changes
+  document.querySelectorAll('.answer-scale input[type="radio"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const qid = r.name;
+      answers[qid] = parseInt(r.value, 10);
+      updateQuestionnaireUI();
     });
+  });
 
-    const featuredBtn = document.getElementById('startFeaturedPracticeBtn');
-    if (featuredBtn) {
-      featuredBtn.addEventListener('click', () => {
-        openPracticeModal('Tvoja denná rozcvička', 'Tri jemné cvičenia na upokojenie dychu a ľahší začiatok rozprávania.', '12 min');
-      });
-    }
-
-    if (closePracticeBtn) closePracticeBtn.addEventListener('click', closePracticeModal);
-    if (backToTodayBtn) backToTodayBtn.addEventListener('click', () => {
-      closePracticeModal();
-      const navCesta = document.getElementById('navTabCesta');
-      if (navCesta) navCesta.click();
+  // Situation buttons toggle
+  document.querySelectorAll('#qSituationGrid .situation-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sit = btn.dataset.sit;
+      if (situations.has(sit)) {
+        situations.delete(sit);
+        btn.classList.remove('selected');
+        const iconSpan = btn.querySelector('span');
+        if (iconSpan) iconSpan.innerHTML = '';
+      } else {
+        situations.add(sit);
+        btn.classList.add('selected');
+        const iconSpan = btn.querySelector('span');
+        if (iconSpan) iconSpan.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>';
+      }
     });
+  });
 
-    if (recordBtn) {
-      recordBtn.addEventListener('click', () => {
-        isRecording = !isRecording;
-        if (isRecording) {
-          pulseCircle.classList.add('recording');
-          promptText.textContent = 'Počúvam — dopraj si toľko času, koľko potrebuješ';
-          if (finishBtn) finishBtn.disabled = false;
-          timerInterval = setInterval(() => {
-            practiceSeconds++;
-            timerEl.textContent = formatTime(practiceSeconds);
-          }, 1000);
-        } else {
-          pulseCircle.classList.remove('recording');
-          promptText.textContent = 'Nahrávanie pozastavené. Ťukni pre pokračovanie.';
-          if (timerInterval) clearInterval(timerInterval);
-        }
-      });
-    }
-
-    if (finishBtn) {
-      finishBtn.addEventListener('click', () => {
-        if (timerInterval) clearInterval(timerInterval);
-        isRecording = false;
-        if (activeState) activeState.style.display = 'none';
-        if (completeState) completeState.style.display = 'block';
-
-        if (typeof duoState !== 'undefined' && duoState.addXp) {
-          duoState.addXp(25);
-        }
-        if (typeof duoSfx !== 'undefined' && duoSfx.playVictoryFanfare) {
-          duoSfx.playVictoryFanfare();
-        }
-      });
-    }
-
-    // 2. Settings Modal
-    const settingsModal = document.getElementById('settingsModal');
-    const closeSettingsBtn = document.getElementById('closeSettingsModalBtn');
-    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-    const profileNameInput = document.getElementById('settingsProfileName');
-
-    function openSettings() {
-      if (settingsModal) settingsModal.style.display = 'flex';
-    }
-    function closeSettings() {
-      if (settingsModal) settingsModal.style.display = 'none';
-    }
-
-    const headerProfileBtn = document.getElementById('headerProfileBtn');
-    const sidebarProfileChip = document.getElementById('sidebarProfileChip');
-    const sidebarSettingsBtn = document.getElementById('sidebarSettingsBtn');
-
-    if (headerProfileBtn) headerProfileBtn.addEventListener('click', openSettings);
-    if (sidebarProfileChip) sidebarProfileChip.addEventListener('click', openSettings);
-    if (sidebarSettingsBtn) sidebarSettingsBtn.addEventListener('click', openSettings);
-    if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettings);
-
-    if (saveSettingsBtn) {
-      saveSettingsBtn.addEventListener('click', () => {
-        const newName = profileNameInput?.value?.trim() || 'Alex Morgan';
-        const greetingHeading = document.getElementById('dailyGreetingHeading');
-        const desktopName = document.getElementById('desktopProfileName');
-        const avatarCircles = document.querySelectorAll('#headerAvatarCircle, #desktopAvatar');
-
-        if (greetingHeading) greetingHeading.innerHTML = 'Dobré ráno, ' + newName + '<span>.</span>';
-        if (desktopName) desktopName.textContent = newName;
-
-        const initials = newName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AM';
-        avatarCircles.forEach(el => el.textContent = initials);
-
-        localStorage.setItem('glide_user_name', newName);
-        closeSettings();
-      });
-    }
-
-    // Load saved name
-    const savedName = localStorage.getItem('glide_user_name');
-    if (savedName) {
-      const greetingHeading = document.getElementById('dailyGreetingHeading');
-      const desktopName = document.getElementById('desktopProfileName');
-      const avatarCircles = document.querySelectorAll('#headerAvatarCircle, #desktopAvatar');
-      if (greetingHeading) greetingHeading.innerHTML = 'Dobré ráno, ' + savedName + '<span>.</span>';
-      if (desktopName) desktopName.textContent = savedName;
-      if (profileNameInput) profileNameInput.value = savedName;
-      const initials = savedName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-      avatarCircles.forEach(el => el.textContent = initials);
-    }
-
-    // 3. Diagnostic Questionnaire Stepper
-    const qSec1 = document.getElementById('qSection1');
-    const qSec2 = document.getElementById('qSection2');
-    const qSec3 = document.getElementById('qSection3');
-    const qRes = document.getElementById('qResultsSection');
-    const qCountBadge = document.getElementById('qCountBadge');
-    const qProgressFill = document.getElementById('qProgressFill');
-
-    const qNext1 = document.getElementById('qNextBtn1');
-    const qBack2 = document.getElementById('qBackBtn2');
-    const qNext2 = document.getElementById('qNextBtn2');
-    const qBack3 = document.getElementById('qBackBtn3');
-    const qFinish = document.getElementById('qFinishBtn');
-    const qSaveAndEnter = document.getElementById('qSaveAndEnterBtn');
-
-    if (qNext1) {
-      qNext1.addEventListener('click', () => {
-        if (qSec1) qSec1.style.display = 'none';
-        if (qSec2) qSec2.style.display = 'block';
-        if (qCountBadge) qCountBadge.textContent = '2 / 4';
-        if (qProgressFill) qProgressFill.style.width = '50%';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-
-    if (qBack2) {
-      qBack2.addEventListener('click', () => {
-        if (qSec2) qSec2.style.display = 'none';
-        if (qSec1) qSec1.style.display = 'block';
-        if (qCountBadge) qCountBadge.textContent = '1 / 4';
-        if (qProgressFill) qProgressFill.style.width = '25%';
-      });
-    }
-
-    if (qNext2) {
-      qNext2.addEventListener('click', () => {
-        if (qSec2) qSec2.style.display = 'none';
-        if (qSec3) qSec3.style.display = 'block';
-        if (qCountBadge) qCountBadge.textContent = '3 / 4';
-        if (qProgressFill) qProgressFill.style.width = '75%';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-
-    if (qBack3) {
-      qBack3.addEventListener('click', () => {
-        if (qSec3) qSec3.style.display = 'none';
-        if (qSec2) qSec2.style.display = 'block';
-        if (qCountBadge) qCountBadge.textContent = '2 / 4';
-        if (qProgressFill) qProgressFill.style.width = '50%';
-      });
-    }
-
-    // Situation chips toggle
-    document.querySelectorAll('.situation-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        chip.classList.toggle('active');
-        if (chip.classList.contains('active')) {
-          chip.style.borderColor = 'var(--purple)';
-          chip.style.background = '#ebe7fb';
-          chip.style.color = 'var(--purple-dark)';
-        } else {
-          chip.style.borderColor = '';
-          chip.style.background = '';
-          chip.style.color = '';
-        }
-      });
+  if (qNoteInput) {
+    qNoteInput.addEventListener('input', () => {
+      if (qNoteCount) qNoteCount.textContent = qNoteInput.value.length + ' / 500';
     });
+  }
 
-    if (qFinish) {
-      qFinish.addEventListener('click', () => {
-        if (qSec3) qSec3.style.display = 'none';
-        if (qRes) qRes.style.display = 'block';
-        if (qCountBadge) qCountBadge.textContent = '4 / 4';
-        if (qProgressFill) qProgressFill.style.width = '100%';
+  if (qNextBtn) {
+    qNextBtn.addEventListener('click', () => {
+      if (qStep < 5) {
+        qStep++;
+        updateQuestionnaireUI();
+      }
+    });
+  }
 
-        if (typeof duoSfx !== 'undefined' && duoSfx.playLevelFanfare) {
-          duoSfx.playLevelFanfare();
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
+  if (qBackBtn) {
+    qBackBtn.addEventListener('click', () => {
+      if (qStep > 0) {
+        qStep--;
+        updateQuestionnaireUI();
+      }
+    });
+  }
 
-    if (qSaveAndEnter) {
-      qSaveAndEnter.addEventListener('click', () => {
-        const navCesta = document.getElementById('navTabCesta');
-        if (navCesta) navCesta.click();
-      });
-    }
+  function getDesc(avg) {
+    if (avg < 1.35) return 'nižšia záťaž';
+    if (avg < 2.7) return 'stredná záťaž';
+    return 'vyššia záťaž';
+  }
 
-    // 4. Practice Filters
-    document.querySelectorAll('.filter-scroll [data-filter]').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.filter-scroll [data-filter]').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const filter = chip.dataset.filter;
-        document.querySelectorAll('.practice-tile').forEach(tile => {
-          const type = tile.dataset.type;
-          if (filter === 'all' || type === filter) {
-            tile.style.display = 'grid';
-          } else {
-            tile.style.display = 'none';
-          }
+  function calculateResults() {
+    const q1 = [answers['speech-control'] || 0, answers['speech-effort'] || 0, answers['speech-unpredictable'] || 0];
+    const q2 = [answers['feeling-worry'] || 0, answers['feeling-avoid'] || 0, answers['feeling-after'] || 0];
+    const q3 = [answers['impact-work'] || 0, answers['impact-social'] || 0, answers['impact-tasks'] || 0];
+
+    const avg1 = (q1[0] + q1[1] + q1[2]) / 3;
+    const avg2 = (q2[0] + q2[1] + q2[2]) / 3;
+    const avg3 = (q3[0] + q3[1] + q3[2]) / 3;
+
+    const res0 = document.getElementById('domainRes0');
+    const res1 = document.getElementById('domainRes1');
+    const res2 = document.getElementById('domainRes2');
+    const bar0 = document.getElementById('domainBar0');
+    const bar1 = document.getElementById('domainBar1');
+    const bar2 = document.getElementById('domainBar2');
+
+    if (res0) res0.textContent = getDesc(avg1);
+    if (res1) res1.textContent = getDesc(avg2);
+    if (res2) res2.textContent = getDesc(avg3);
+
+    if (bar0) bar0.style.width = Math.round((avg1 / 4) * 100) + '%';
+    if (bar1) bar1.style.width = Math.round((avg2 / 4) * 100) + '%';
+    if (bar2) bar2.style.width = Math.round((avg3 / 4) * 100) + '%';
+
+    const sitWrap = document.getElementById('qResultContext');
+    const sitChips = document.getElementById('qResultSituationChips');
+    if (sitWrap && sitChips) {
+      if (situations.size > 0) {
+        sitWrap.style.display = 'block';
+        sitChips.innerHTML = '';
+        situations.forEach(s => {
+          const sp = document.createElement('span');
+          sp.textContent = s;
+          sitChips.appendChild(sp);
         });
+      } else {
+        sitWrap.style.display = 'none';
+      }
+    }
+  }
+
+  if (qResetBtn) {
+    qResetBtn.addEventListener('click', () => {
+      qStep = 0;
+      if (qAdultCheck) qAdultCheck.checked = false;
+      if (qConsentCheck) qConsentCheck.checked = false;
+      document.querySelectorAll('.answer-scale input[type="radio"]').forEach(r => r.checked = false);
+      for (const k in answers) delete answers[k];
+      situations.clear();
+      document.querySelectorAll('#qSituationGrid .situation-btn').forEach(b => {
+        b.classList.remove('selected');
+        const iconSpan = b.querySelector('span');
+        if (iconSpan) iconSpan.innerHTML = '';
       });
+      if (qNoteInput) qNoteInput.value = '';
+      if (qNoteCount) qNoteCount.textContent = '0 / 500';
+      updateQuestionnaireUI();
     });
+  }
 
-    // 5. Library Search & Filters
-    const libInput = document.getElementById('librarySearchInput');
-    if (libInput) {
-      libInput.addEventListener('input', () => {
-        const q = libInput.value.toLowerCase().trim();
-        document.querySelectorAll('.resource-list article').forEach(article => {
-          const text = article.textContent.toLowerCase();
-          article.style.display = text.includes(q) ? 'grid' : 'none';
-        });
-      });
-    }
-
-    document.querySelectorAll('.library-filters [data-lib]').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.library-filters [data-lib]').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const cat = chip.dataset.lib;
-        document.querySelectorAll('.resource-list article').forEach(article => {
-          const text = article.querySelector('small')?.textContent || '';
-          if (cat === 'all' || text.includes(cat)) {
-            article.style.display = 'grid';
-          } else {
-            article.style.display = 'none';
-          }
-        });
-      });
-    });
-
-    // 6. Go to Progress button from Dashboard
-    const goToProgressBtn = document.getElementById('goToProgressBtn');
-    if (goToProgressBtn) {
-      goToProgressBtn.addEventListener('click', () => {
-        const navProg = document.getElementById('navTabTelemetria');
-        if (navProg) navProg.click();
-      });
-    }
-
-    // 7. Interactive Calm Breathing Ring on Dashboard
-    const stageNum = document.getElementById('stageBreathNum');
-    const stageLabel = document.getElementById('stageBreathLabel');
-    if (stageNum && stageLabel) {
-      let count = 4;
-      let isInhale = true;
-      setInterval(() => {
-        count--;
-        if (count < 1) {
-          isInhale = !isInhale;
-          count = 4;
-          stageLabel.textContent = isInhale ? 'Nádych' : 'Výdych';
-        }
-        stageNum.textContent = count;
-      }, 1000);
-    }
-  })();
-
+  updateQuestionnaireUI();
+})();
 </script>
 </body>
 </html>
-
