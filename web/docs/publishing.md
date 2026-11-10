@@ -34,4 +34,5 @@ builds the already-bundled native assets rather than running Vite itself.
 The complete distributable ZIP includes source, public assets, configuration,
 the built web application, and the preserved Android shell. It excludes
 `node_modules`, `.git`, environment files, and build caches. It is created in the
-workspace's `artifacts/` directory and can be downloaded from the GitHub release.
+workspace's `artifacts/` directory and published in the GitHub repository's
+`downloads/` directory for direct download.
