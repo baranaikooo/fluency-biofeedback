@@ -1,5 +1,26 @@
 {
   "framework": null,
-  "buildCommand": null,
-  "outputDirectory": "."
+  "installCommand": "npm ci && npx --yes pnpm@10.34.3 --dir web install --frozen-lockfile",
+  "buildCommand": "npx --yes pnpm@10.34.3 --dir web build",
+  "outputDirectory": "web/dist",
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    }
+  ]
 }

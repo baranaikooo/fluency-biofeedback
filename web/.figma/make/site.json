@@ -1,0 +1,12 @@
+{
+  "title": "Glide – Tvoj hlas, tvoje tempo",
+  "language": "sk",
+  "description": "Tvoj osobný priestor pre tréning reči, biofeedback a vlastné tempo.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

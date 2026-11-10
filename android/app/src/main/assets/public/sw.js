@@ -1,90 +1,78 @@
-// GLIDE BIOFEEDBACK - SERVICE WORKER (PWA OFFLINE ENGINE)
-const CACHE_NAME = 'glide-pwa-v1';
-
-const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './style.css',
-  './manifest.json',
-  './icon.svg',
-  './icon-192.png',
-  './icon-512.png',
-  './questions-and-voices.js',
-  './dsp-core.js',
-  './gamification-engine.js',
-  './daf-assistant.js',
-  './supabase-auth.js',
-  './audio/courier.mp3',
-  './audio/cashier.mp3',
-  './audio/doctor.mp3',
-  './audio/automechanik.mp3'
+const CACHE = "glide-light-v3";
+const ASSETS = [
+  "/",
+  "/manifest.json",
+  "/icon.svg",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/engine/questions-and-voices.js",
+  "/engine/dsp-core.js",
+  "/engine/gamification-engine.js",
+  "/engine/daf-assistant.js",
+  "/engine/interface.js",
+  "/engine/supabase-auth.js",
+  "/engine/lifecycle.js",
+  "/audio/courier.mp3",
+  "/audio/cashier.mp3",
+  "/audio/doctor.mp3",
+  "/audio/automechanik.mp3",
 ];
-
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Pre-caching static assets');
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[SW] Some assets failed to pre-cache:', err);
-      });
-    }).then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', key);
-            return caches.delete(key);
-          }
-        })
+    (async () => {
+      const cache = await caches.open(CACHE);
+      await cache.addAll(ASSETS);
+      const shell = await cache.match("/");
+      const html = await shell.text();
+      // Include Vite's hashed JS/CSS so offline works after the first production visit.
+      const bundles = [...html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g)].map(
+        (match) => match[1],
       );
-    }).then(() => self.clients.claim())
+      await cache.addAll(bundles);
+      await self.skipWaiting();
+    })(),
   );
 });
-
-self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
-  if (event.request.method !== 'GET') return;
-
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key.startsWith("glide-") && key !== CACHE)
+            .map((key) => caches.delete(key)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
+});
+self.addEventListener("message", (event) => {
+  if (event.data?.type !== "CACHE_BUNDLES" || !Array.isArray(event.data.assets)) return;
+  const assets = event.data.assets.filter((value) => {
+    try {
+      const url = new URL(value);
+      return url.origin === self.location.origin && url.pathname.startsWith("/assets/");
+    } catch (_) {
+      return false;
+    }
+  });
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(assets)));
+});
+self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-
-  // Network-first for html navigation, cache-first for assets
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-
+  if (event.request.method !== "GET" || url.origin !== self.location.origin) return;
+  // Do not cache API requests, OAuth responses, or development-server traffic.
+  if (!ASSETS.includes(url.pathname) && !url.pathname.startsWith("/assets/")) return;
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return from cache, fetch update in background (stale-while-revalidate)
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
-          }
-        }).catch(() => {});
-        return cachedResponse;
-      }
-
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          event.waitUntil(caches.open(CACHE).then((cache) => cache.put(event.request, copy)));
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-        return networkResponse;
-      }).catch(() => {
-        // Fallback for offline images/audio
-        if (event.request.destination === 'image') {
-          return caches.match('./icon.svg');
-        }
-      });
-    })
+        return response;
+      })
+      .catch(async () => (await caches.match(event.request)) || Response.error()),
   );
 });

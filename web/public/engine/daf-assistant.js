@@ -1,6 +1,6 @@
 /**
  * FLUENCY BIOFEEDBACK - LIVE DAF & FAF (FREQUENCY ALTERED FEEDBACK) ASSISTANT
- * 
+ *
  * Skutočný vedecký Real-Time Dual-Line Doppler Pitch Shifter (FAF):
  *   mediaStreamSource ──> DelayNode A (Primary DAF, napr. 70 ms)
  *                            │
@@ -17,14 +17,16 @@
  */
 
 (function (window) {
-  'use strict';
+  "use strict";
 
   class DafAssistantEngine {
     constructor() {
       this.isActive = false;
       this.delayMs = 70;
-      this.volumePercent = 85;
+      this.volumePercent = 35;
       this.pitchSemitones = 2;
+      this.starting = false;
+      this.startGeneration = 0;
 
       this.audioCtx = null;
       this.mediaStreamSource = null;
@@ -49,43 +51,47 @@
     }
 
     initDom() {
-      if (typeof document === 'undefined') return;
+      if (typeof document === "undefined") return;
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => this.bindEvents());
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => this.bindEvents());
       } else {
         this.bindEvents();
       }
     }
 
     bindEvents() {
-      const toggleBtn = document.getElementById('assistantToggle');
-      const delaySlider = document.getElementById('assistantDelaySlider');
-      const delayValEl = document.getElementById('assistantDelayVal');
-      const volSlider = document.getElementById('assistantVolSlider');
-      const volValEl = document.getElementById('assistantVolVal');
+      const toggleBtn = document.getElementById("assistantToggle");
+      const delaySlider = document.getElementById("assistantDelaySlider");
+      const delayValEl = document.getElementById("assistantDelayVal");
+      const volSlider = document.getElementById("assistantVolSlider");
+      const volValEl = document.getElementById("assistantVolVal");
 
       const updateRulerActive = (rulerId, currentVal, tolerance = 3) => {
         const ruler = document.getElementById(rulerId);
         if (!ruler) return;
-        const marks = ruler.querySelectorAll ? ruler.querySelectorAll('.ruler-mark') : [];
+        const marks = ruler.querySelectorAll ? ruler.querySelectorAll(".ruler-mark") : [];
         if (!marks || !marks.forEach) return;
-        marks.forEach(mark => {
-          const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+        marks.forEach((mark) => {
+          const rawVal = mark.dataset
+            ? mark.dataset.val
+            : mark.getAttribute
+              ? mark.getAttribute("data-val")
+              : null;
           const mVal = parseInt(rawVal, 10);
           if (!isNaN(mVal) && Math.abs(mVal - currentVal) <= tolerance) {
-            mark.classList.add('active');
+            mark.classList.add("active");
           } else {
-            mark.classList.remove('active');
+            mark.classList.remove("active");
           }
         });
       };
 
       // 1. Master Switch (Aktivácia / Deaktivácia)
       if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
+        toggleBtn.addEventListener("click", () => {
           // Okamžité obnovenie AudioContext pri kliknutí používateľa (user gesture)
-          if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          if (this.audioCtx && this.audioCtx.state === "suspended") {
             this.audioCtx.resume();
           }
           this.toggle();
@@ -98,13 +104,13 @@
           const val = parseInt(delaySlider.value, 10);
           this.setDelay(val);
           if (delayValEl) delayValEl.textContent = `${val} ms`;
-          updateRulerActive('delayRuler', val, 3);
+          updateRulerActive("delayRuler", val, 3);
 
           const pct = ((val - 40) / (140 - 40)) * 100;
-          delaySlider.style.background = `linear-gradient(to right, var(--duo-blue) 0%, var(--duo-blue) ${pct}%, #0b132b ${pct}%, #0b132b 100%)`;
+          delaySlider.style.background = `linear-gradient(to right, var(--duo-blue) 0%, var(--duo-blue) ${pct}%, #e6e2ef ${pct}%, #e6e2ef 100%)`;
         };
 
-        delaySlider.addEventListener('input', handleDelayInput);
+        delaySlider.addEventListener("input", handleDelayInput);
         handleDelayInput();
       }
 
@@ -114,49 +120,53 @@
           const val = parseInt(volSlider.value, 10);
           this.setVolume(val);
           if (volValEl) volValEl.textContent = `${val} %`;
-          updateRulerActive('volRuler', val, 2);
+          updateRulerActive("volRuler", val, 2);
 
-          volSlider.style.background = `linear-gradient(to right, var(--duo-blue) 0%, var(--duo-blue) ${val}%, #0b132b ${val}%, #0b132b 100%)`;
+          volSlider.style.background = `linear-gradient(to right, var(--duo-blue) 0%, var(--duo-blue) ${val}%, #e6e2ef ${val}%, #e6e2ef 100%)`;
         };
 
-        volSlider.addEventListener('input', handleVolInput);
+        volSlider.addEventListener("input", handleVolInput);
         handleVolInput();
       }
 
       // 3.5. FAF Zmena výšky hlasu (Pitch Shift slider -4..+4 st)
-      const pitchSlider = document.getElementById('assistantPitchSlider');
-      const pitchValEl = document.getElementById('assistantPitchVal');
+      const pitchSlider = document.getElementById("assistantPitchSlider");
+      const pitchValEl = document.getElementById("assistantPitchVal");
       if (pitchSlider) {
         const handlePitchInput = () => {
           const val = parseInt(pitchSlider.value, 10);
           this.setPitch(val);
-          if (pitchValEl) pitchValEl.textContent = `${val > 0 ? '+' : ''}${val} st`;
-          updateRulerActive('pitchRuler', val, 0);
+          if (pitchValEl) pitchValEl.textContent = `${val > 0 ? "+" : ""}${val} st`;
+          updateRulerActive("pitchRuler", val, 0);
 
-          const min = parseInt(pitchSlider.min || '-4', 10);
-          const max = parseInt(pitchSlider.max || '4', 10);
+          const min = parseInt(pitchSlider.min || "-4", 10);
+          const max = parseInt(pitchSlider.max || "4", 10);
           const pct = ((val - min) / (max - min)) * 100;
-          pitchSlider.style.background = `linear-gradient(to right, var(--duo-purple) 0%, var(--duo-purple) ${pct}%, #0b132b ${pct}%, #0b132b 100%)`;
+          pitchSlider.style.background = `linear-gradient(to right, var(--duo-purple) 0%, var(--duo-purple) ${pct}%, #e6e2ef ${pct}%, #e6e2ef 100%)`;
         };
 
-        pitchSlider.addEventListener('input', handlePitchInput);
+        pitchSlider.addEventListener("input", handlePitchInput);
         handlePitchInput();
       }
 
       // 4. Klikateľné značky stupnice
-      const delayRuler = document.getElementById('delayRuler');
+      const delayRuler = document.getElementById("delayRuler");
       if (delayRuler && delaySlider && delayRuler.querySelectorAll) {
-        const dMarks = delayRuler.querySelectorAll('.ruler-mark');
+        const dMarks = delayRuler.querySelectorAll(".ruler-mark");
         if (dMarks && dMarks.forEach) {
-          dMarks.forEach(mark => {
-            mark.addEventListener('click', () => {
-              const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+          dMarks.forEach((mark) => {
+            mark.addEventListener("click", () => {
+              const rawVal = mark.dataset
+                ? mark.dataset.val
+                : mark.getAttribute
+                  ? mark.getAttribute("data-val")
+                  : null;
               const snapVal = parseInt(rawVal, 10);
               if (!isNaN(snapVal)) {
                 delaySlider.value = snapVal;
-                delaySlider.dispatchEvent(new Event('input'));
-                if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-                  duoSfx.playTone(660, 'sine', 0.04, 0.08);
+                delaySlider.dispatchEvent(new Event("input"));
+                if (typeof duoSfx !== "undefined" && duoSfx.playTone) {
+                  duoSfx.playTone(660, "sine", 0.04, 0.08);
                 }
               }
             });
@@ -164,19 +174,23 @@
         }
       }
 
-      const volRuler = document.getElementById('volRuler');
+      const volRuler = document.getElementById("volRuler");
       if (volRuler && volSlider && volRuler.querySelectorAll) {
-        const vMarks = volRuler.querySelectorAll('.ruler-mark');
+        const vMarks = volRuler.querySelectorAll(".ruler-mark");
         if (vMarks && vMarks.forEach) {
-          vMarks.forEach(mark => {
-            mark.addEventListener('click', () => {
-              const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+          vMarks.forEach((mark) => {
+            mark.addEventListener("click", () => {
+              const rawVal = mark.dataset
+                ? mark.dataset.val
+                : mark.getAttribute
+                  ? mark.getAttribute("data-val")
+                  : null;
               const snapVal = parseInt(rawVal, 10);
               if (!isNaN(snapVal)) {
                 volSlider.value = snapVal;
-                volSlider.dispatchEvent(new Event('input'));
-                if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-                  duoSfx.playTone(740, 'sine', 0.04, 0.08);
+                volSlider.dispatchEvent(new Event("input"));
+                if (typeof duoSfx !== "undefined" && duoSfx.playTone) {
+                  duoSfx.playTone(740, "sine", 0.04, 0.08);
                 }
               }
             });
@@ -184,19 +198,23 @@
         }
       }
 
-      const pitchRuler = document.getElementById('pitchRuler');
+      const pitchRuler = document.getElementById("pitchRuler");
       if (pitchRuler && pitchSlider && pitchRuler.querySelectorAll) {
-        const pMarks = pitchRuler.querySelectorAll('.ruler-mark');
+        const pMarks = pitchRuler.querySelectorAll(".ruler-mark");
         if (pMarks && pMarks.forEach) {
-          pMarks.forEach(mark => {
-            mark.addEventListener('click', () => {
-              const rawVal = mark.dataset ? mark.dataset.val : (mark.getAttribute ? mark.getAttribute('data-val') : null);
+          pMarks.forEach((mark) => {
+            mark.addEventListener("click", () => {
+              const rawVal = mark.dataset
+                ? mark.dataset.val
+                : mark.getAttribute
+                  ? mark.getAttribute("data-val")
+                  : null;
               const snapVal = parseInt(rawVal, 10);
               if (!isNaN(snapVal)) {
                 pitchSlider.value = snapVal;
-                pitchSlider.dispatchEvent(new Event('input'));
-                if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-                  duoSfx.playTone(820, 'sine', 0.04, 0.08);
+                pitchSlider.dispatchEvent(new Event("input"));
+                if (typeof duoSfx !== "undefined" && duoSfx.playTone) {
+                  duoSfx.playTone(820, "sine", 0.04, 0.08);
                 }
               }
             });
@@ -206,6 +224,11 @@
     }
 
     async ensureAudioPipeline() {
+      if (typeof window.setupAudio === "function") {
+        await window.setupAudio();
+        this.audioCtx = window.audioCtx;
+        this.mediaStreamSource = window.mediaStreamSource;
+      }
       // 1. Získaj alebo vytvor AudioContext
       if (window.audioCtx) {
         this.audioCtx = window.audioCtx;
@@ -215,7 +238,7 @@
         window.audioCtx = this.audioCtx;
       }
 
-      if (this.audioCtx.state === 'suspended') {
+      if (this.audioCtx.state === "suspended") {
         await this.audioCtx.resume();
       }
 
@@ -223,7 +246,12 @@
       if (window.mediaStreamSource) {
         this.mediaStreamSource = window.mediaStreamSource;
       } else {
-        if (typeof window.setupAudio === 'function') {
+        if (typeof window.setupAudio === "function") {
+          // Share the DSP context; do not create a second AudioContext before setupAudio.
+          if (window.audioCtx !== this.audioCtx && this.audioCtx) {
+            await this.audioCtx.close();
+            this.audioCtx = null;
+          }
           await window.setupAudio();
           this.mediaStreamSource = window.mediaStreamSource;
           this.audioCtx = window.audioCtx;
@@ -231,7 +259,7 @@
           let stream;
           try {
             stream = await navigator.mediaDevices.getUserMedia({
-              audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+              audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
             });
           } catch (_) {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -253,7 +281,7 @@
         this.delayNodeA.delayTime.setValueAtTime(this.delayMs / 1000, now);
 
         this.directGain = this.audioCtx.createGain();
-        this.directGain.gain.setValueAtTime(0.75, now);
+        this.directGain.gain.setValueAtTime(this.pitchSemitones === 0 ? 1 : 0.5, now);
 
         // Voice B: Skutočný Real-Time Dual-Line Doppler Pitch Shifter (FAF, +2 poltóny / ~1.12x F0)
         // Pripojený za delayNodeA (takže automaticky preberá nastavené DAF oneskorenie)
@@ -261,7 +289,14 @@
 
         // Master Gain
         this.masterGain = this.audioCtx.createGain();
-        this.masterGain.gain.setValueAtTime(this.volumePercent / 100, now);
+        this.masterGain.gain.setValueAtTime(0, now);
+        this.limiter = this.audioCtx.createDynamicsCompressor();
+        this.limiter.threshold.setValueAtTime(-12, now);
+        this.limiter.knee.setValueAtTime(6, now);
+        this.limiter.ratio.setValueAtTime(12, now);
+        this.limiter.attack.setValueAtTime(0.002, now);
+        this.limiter.release.setValueAtTime(0.05, now);
+        this.masterGain.connect(this.limiter);
 
         // Analyser pre vizuálny pulz v reálnom čase
         this.dafAnalyser = this.audioCtx.createAnalyser();
@@ -285,13 +320,18 @@
       const ctx = this.audioCtx;
       if (!ctx) return null;
       const sampleRate = ctx.sampleRate || 48000;
-      const bufferLength = sampleRate;
-      const numCycles = 8;
       const baseDelaySec = 0.003;
 
       const ratio = Math.pow(2, semitones / 12);
       const slope = 1 - ratio;
-      const windowSec = Math.min(0.035, Math.max(0.001, Math.abs(slope) / numCycles));
+      // One complete modulation cycle per buffer avoids discontinuities on loop.
+      // A 40 ms grain reduces the strong 8 Hz sidebands of the original fixed-rate shifter.
+      const bufferLength =
+        semitones === 0
+          ? sampleRate
+          : Math.max(2, Math.round((sampleRate * 0.04) / Math.abs(slope)));
+      const numCycles = sampleRate / bufferLength;
+      const windowSec = Math.abs(slope) / numCycles;
 
       const lfoBuffer = ctx.createBuffer(4, bufferLength, sampleRate);
       const chD1 = lfoBuffer.getChannelData(0);
@@ -304,6 +344,12 @@
         const phi1 = (t * numCycles) % 1.0;
         const phi2 = (phi1 + 0.5) % 1.0;
 
+        if (semitones === 0) {
+          chD1[i] = chD2[i] = baseDelaySec;
+          chG1[i] = 1;
+          chG2[i] = 0;
+          continue;
+        }
         if (slope <= 0) {
           chD1[i] = baseDelaySec + windowSec * (1.0 - phi1);
           chD2[i] = baseDelaySec + windowSec * (1.0 - phi2);
@@ -319,11 +365,24 @@
     }
 
     setPitch(semitones) {
+      semitones = Math.max(-4, Math.min(4, Number(semitones) || 0));
       this.pitchSemitones = semitones;
       if (!this.audioCtx || !this.lfoSplitter) return;
+      this.fafVoiceGain.gain.setTargetAtTime(
+        semitones === 0 ? 0 : 0.5,
+        this.audioCtx.currentTime,
+        0.01,
+      );
+      this.directGain.gain.setTargetAtTime(
+        semitones === 0 ? 1 : 0.5,
+        this.audioCtx.currentTime,
+        0.01,
+      );
       try {
         if (this.lfoSource) {
-          try { this.lfoSource.stop(); } catch (_) {}
+          try {
+            this.lfoSource.stop();
+          } catch (_) {}
           this.lfoSource.disconnect();
         }
         const buf = this.buildLfoBuffer(semitones);
@@ -333,7 +392,7 @@
         this.lfoSource.connect(this.lfoSplitter);
         this.lfoSource.start(this.audioCtx.currentTime);
       } catch (e) {
-        console.warn('[FAF] setPitch error:', e);
+        console.warn("[FAF] setPitch error:", e);
       }
     }
 
@@ -362,7 +421,7 @@
       this.fafGain2.gain.setValueAtTime(0, now);
 
       // 3. AudioBuffer pre presné 8.0 Hz LFO
-      const lfoBuffer = this.buildLfoBuffer(this.pitchSemitones || 2);
+      const lfoBuffer = this.buildLfoBuffer(this.pitchSemitones);
 
       this.lfoSource = ctx.createBufferSource();
       this.lfoSource.buffer = lfoBuffer;
@@ -388,7 +447,7 @@
 
       // Filter na odstránenie sub-audible frekvencií pod 140 Hz (prevencia Dopplerovho brumu)
       this.fafFilter = ctx.createBiquadFilter();
-      this.fafFilter.type = 'highpass';
+      this.fafFilter.type = "highpass";
       this.fafFilter.frequency.setValueAtTime(140, now);
       this.fafFilter.Q.setValueAtTime(0.7, now);
 
@@ -397,26 +456,42 @@
 
       // Hlasitosť druhého zborového FAF hlasu (+2 poltóny)
       this.fafVoiceGain = ctx.createGain();
-      this.fafVoiceGain.gain.setValueAtTime(0.65, now);
+      this.fafVoiceGain.gain.setValueAtTime(this.pitchSemitones === 0 ? 0 : 0.5, now);
       this.fafFilter.connect(this.fafVoiceGain);
 
       return this.fafVoiceGain;
     }
-    }
 
     async start() {
+      if (this.isActive || this.starting) return;
+      if (
+        !window.confirm(
+          "Pred zapnutím odposluchu pripoj slúchadlá. Začni nízkou hlasitosťou. Pokračovať?",
+        )
+      )
+        return;
+      const generation = ++this.startGeneration;
+      this.starting = true;
       try {
         await this.ensureAudioPipeline();
+        if (generation !== this.startGeneration) {
+          window.releaseGlideAudio?.();
+          return;
+        }
 
-        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        if (this.audioCtx && this.audioCtx.state === "suspended") {
           await this.audioCtx.resume();
         }
 
         // Pripoj do slúchadiel (audioCtx.destination)
         if (this.masterGain && this.audioCtx) {
           this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
-          this.masterGain.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
-          this.masterGain.connect(this.audioCtx.destination);
+          this.masterGain.gain.setTargetAtTime(
+            this.volumePercent / 100,
+            this.audioCtx.currentTime,
+            0.02,
+          );
+          this.limiter.connect(this.audioCtx.destination);
         }
 
         this.isActive = true;
@@ -424,32 +499,37 @@
         this.startVisualPulse();
 
         // Potvrdzujúci tón aktivácie
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(880, 'sine', 0.08, 0.1);
+        if (typeof duoSfx !== "undefined" && duoSfx.playTone) {
+          duoSfx.playTone(880, "sine", 0.08, 0.1);
         }
       } catch (err) {
-        console.error('DAF Assistant activation error:', err);
-        alert('Nepodarilo sa spustiť asistenta. Skontroluj prístup k mikrofónu v prehliadači.');
+        console.error("DAF Assistant activation error:", err);
+        window.releaseGlideAudio?.();
+        alert("Nepodarilo sa spustiť asistenta. Skontroluj prístup k mikrofónu v prehliadači.");
         this.updateUiState(false);
+      } finally {
+        this.starting = false;
       }
     }
 
     stop() {
+      this.startGeneration++;
       this.isActive = false;
 
       // Plynulé odpojenie z výstupu do slúchadiel
       if (this.masterGain && this.audioCtx) {
         try {
+          this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
           this.masterGain.gain.setValueAtTime(0.0, this.audioCtx.currentTime);
-          this.masterGain.disconnect(this.audioCtx.destination);
+          this.limiter.disconnect(this.audioCtx.destination);
         } catch (_) {}
       }
 
       this.stopVisualPulse();
       this.updateUiState(false);
 
-      if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-        duoSfx.playTone(440, 'sine', 0.08, 0.08);
+      if (typeof duoSfx !== "undefined" && duoSfx.playTone) {
+        duoSfx.playTone(440, "sine", 0.08, 0.08);
       }
     }
 
@@ -463,9 +543,6 @@
 
     setDelay(ms) {
       this.delayMs = Math.max(40, Math.min(140, ms));
-      if (window.dafFafPipeline && typeof window.dafFafPipeline.setDelay === 'function') {
-        window.dafFafPipeline.setDelay(this.delayMs);
-      }
       if (this.audioCtx && this.delayNodeA) {
         const now = this.audioCtx.currentTime;
         this.delayNodeA.delayTime.cancelScheduledValues(now);
@@ -475,9 +552,6 @@
 
     setVolume(percent) {
       this.volumePercent = Math.max(0, Math.min(100, percent));
-      if (window.dafFafPipeline && typeof window.dafFafPipeline.setVolume === 'function') {
-        window.dafFafPipeline.setVolume(this.volumePercent);
-      }
       if (this.masterGain && this.audioCtx && this.isActive) {
         this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
         this.masterGain.gain.setValueAtTime(this.volumePercent / 100, this.audioCtx.currentTime);
@@ -485,40 +559,48 @@
     }
 
     updateUiState(active) {
-      const toggleBtn = document.getElementById('assistantToggle');
-      const pulseWrap = document.getElementById('assistantPulseIndicator');
-      const pulseStatus = document.getElementById('assistantPulseStatus');
+      const badge = document.getElementById("headphoneLiveIndicator");
+      if (badge) badge.classList.toggle("off", !active);
+      const headphoneText = document.getElementById("headphoneStatusText");
+      if (headphoneText)
+        headphoneText.textContent = active
+          ? "DAF + FAF: Zapnuté — klikni pre stlmenie"
+          : "DAF + FAF: Vypnuté — klikni pre zapnutie";
+      const toggleBtn = document.getElementById("assistantToggle");
+      const pulseWrap = document.getElementById("assistantPulseIndicator");
+      const pulseStatus = document.getElementById("assistantPulseStatus");
 
       if (toggleBtn) {
         if (active) {
-          toggleBtn.classList.add('active', 'running');
-          toggleBtn.innerHTML = '<span class="btn-main-label">🟢 Asistent aktívny v slúchadle (Klikni pre vypnutie)</span>';
+          toggleBtn.classList.add("active", "running");
+          toggleBtn.innerHTML =
+            '<span class="btn-main-label">🟢 Asistent aktívny v slúchadle (Klikni pre vypnutie)</span>';
         } else {
-          toggleBtn.classList.remove('active', 'running');
+          toggleBtn.classList.remove("active", "running");
           toggleBtn.innerHTML = '<span class="btn-main-label">▶ Aktivovať asistenta</span>';
         }
       }
 
       if (pulseWrap) {
         if (active) {
-          pulseWrap.classList.add('active');
+          pulseWrap.classList.add("active");
         } else {
-          pulseWrap.classList.remove('active');
-          pulseWrap.style.transform = 'scale(1)';
+          pulseWrap.classList.remove("active");
+          pulseWrap.style.transform = "scale(1)";
         }
       }
 
       if (pulseStatus) {
         pulseStatus.textContent = active
-          ? '🎧 Živý odposluch so zborovým efektom je aktívny v slúchadle'
-          : 'Asistent je pripravený';
+          ? "🎧 Živý odposluch so zborovým efektom je aktívny v slúchadle"
+          : "Asistent je pripravený";
       }
     }
 
     startVisualPulse() {
       this.stopVisualPulse();
 
-      const pulseEl = document.getElementById('assistantPulseIndicator');
+      const pulseEl = document.getElementById("assistantPulseIndicator");
       if (!this.dafAnalyser || !pulseEl) return;
 
       const bufferLength = this.dafAnalyser.frequencyBinCount;
@@ -542,11 +624,11 @@
         pulseEl.style.transform = `scale(${scale.toFixed(3)})`;
 
         if (rms > 0.04) {
-          pulseEl.style.borderColor = 'var(--duo-green)';
+          pulseEl.style.borderColor = "var(--duo-green)";
           pulseEl.style.boxShadow = `0 0 ${Math.floor(rms * 45)}px rgba(46, 204, 113, 0.6)`;
         } else {
-          pulseEl.style.borderColor = 'rgba(56, 189, 248, 0.3)';
-          pulseEl.style.boxShadow = 'none';
+          pulseEl.style.borderColor = "rgba(56, 189, 248, 0.3)";
+          pulseEl.style.boxShadow = "none";
         }
 
         this.animFrameId = requestAnimationFrame(drawPulse);
@@ -560,16 +642,46 @@
         cancelAnimationFrame(this.animFrameId);
         this.animFrameId = null;
       }
-      const pulseEl = document.getElementById('assistantPulseIndicator');
+      const pulseEl = document.getElementById("assistantPulseIndicator");
       if (pulseEl) {
-        pulseEl.style.transform = 'scale(1)';
-        pulseEl.style.borderColor = '';
-        pulseEl.style.boxShadow = '';
+        pulseEl.style.transform = "scale(1)";
+        pulseEl.style.borderColor = "";
+        pulseEl.style.boxShadow = "";
       }
+    }
+
+    dispose() {
+      this.stop();
+      if (this.lfoSource) {
+        try {
+          this.lfoSource.stop();
+        } catch (_) {}
+      }
+      for (const name of [
+        "mediaStreamSource",
+        "delayNodeA",
+        "directGain",
+        "fafDelay1",
+        "fafDelay2",
+        "fafGain1",
+        "fafGain2",
+        "fafFilter",
+        "fafVoiceGain",
+        "lfoSource",
+        "lfoSplitter",
+        "masterGain",
+        "limiter",
+        "dafAnalyser",
+      ]) {
+        try {
+          this[name]?.disconnect();
+        } catch (_) {}
+        this[name] = null;
+      }
+      this.audioCtx = null;
     }
   }
 
   // Registrácia inštancie globálne
   window.dafAssistant = new DafAssistantEngine();
-
-})(typeof window !== 'undefined' ? window : this);
+})(typeof window !== "undefined" ? window : this);

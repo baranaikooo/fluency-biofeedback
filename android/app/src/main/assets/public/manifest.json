@@ -2,17 +2,13 @@
   "name": "Glide – Rečový Biofeedback",
   "short_name": "Glide",
   "description": "Klinický biofeedback, DAF a FAF trenažér reči pre zvládanie balbuties.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0b132b",
-  "theme_color": "#0b132b",
-  "categories": [
-    "medical",
-    "health",
-    "education"
-  ],
+  "background_color": "#f8f6f0",
+  "theme_color": "#f8f6f0",
+  "categories": ["medical", "health", "education"],
   "icons": [
     {
       "src": "./icon.svg",

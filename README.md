@@ -131,3 +131,17 @@ Všetky akustické výpočty, DSP analýza mikrofónu, oneskorenie DAF aj frekve
 ## 📄 Copyright
 
 Copyright © 2026 Glide. All rights reserved.
+
+
+## Current React/Vite web application
+
+The maintained Glide web application is in `web/`. Vercel serves `web/dist/`.
+Install the native dependencies with `npm ci` and the web dependencies with
+`npx --yes pnpm@10.34.3 --dir web install --frozen-lockfile`. Build with
+`npx --yes pnpm@10.34.3 --dir web build`. Before building Android run `npx cap sync android`
+from this repository root; Capacitor uses the same `web/dist` output. The older
+root and `www/` source files are retained for reference, not deployed.
+See `web/docs/publishing.md` for release and backup details.
+
+The existing APK workflow is unchanged. Commit synchronized files in
+`android/app/src/main/assets/` when releasing, so Gradle bundles the current web UI.
