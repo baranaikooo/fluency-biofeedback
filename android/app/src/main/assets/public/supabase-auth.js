@@ -128,23 +128,14 @@
 
   // Prepínanie medzi prihlásením a dotazníkom
   function showAuthScreen() {
-    const authBox = document.getElementById('welcomeAuthBox');
-    const diagBox = document.getElementById('welcomeDiagnosticBox');
-    if (authBox) authBox.style.display = 'block';
-    if (diagBox) diagBox.style.display = 'none';
     showWelcomeOverlay();
   }
 
   function showDiagnosticScreen(reset = false) {
-    const authBox = document.getElementById('welcomeAuthBox');
-    const diagBox = document.getElementById('welcomeDiagnosticBox');
-    if (authBox) authBox.style.display = 'none';
-    if (diagBox) diagBox.style.display = 'block';
-
-    if (reset) {
-      goToDiagStep(1);
+    hideWelcomeOverlay();
+    if (window.openFigmaQuestionnaire) {
+      window.openFigmaQuestionnaire(reset);
     }
-    showWelcomeOverlay();
   }
 
   // 1. Prihlásenie cez Google OAuth
@@ -436,29 +427,10 @@
     }
   }
 
-  // 6. Obsluha a kroky vedeckého dotazníka balbutizmu
+  // 6. Obsluha a kroky vedeckého dotazníka (delegované na oficiálny Figma dotazník)
   function goToDiagStep(step) {
-    const s1 = document.getElementById('diagStep1');
-    const s2 = document.getElementById('diagStep2');
-    const s3 = document.getElementById('diagStep3');
-    const sRes = document.getElementById('diagStepResult');
-    const bar = document.getElementById('diagProgressBar');
-    const counter = document.getElementById('diagStepCounter');
-
-    if (s1) s1.style.display = step === 1 ? 'block' : 'none';
-    if (s2) s2.style.display = step === 2 ? 'block' : 'none';
-    if (s3) s3.style.display = step === 3 ? 'block' : 'none';
-    if (sRes) sRes.style.display = step === 4 ? 'block' : 'none';
-
-    if (step === 1) {
-      if (bar) bar.style.width = '33%';
-      if (counter) counter.textContent = 'Krok 1 z 3: Motorika & Kŕče';
-    } else if (step === 2) {
-      if (bar) bar.style.width = '66%';
-      if (counter) counter.textContent = 'Krok 2 z 3: Sociálny stres & Situácie';
-    } else if (step === 3) {
-      if (bar) bar.style.width = '100%';
-      if (counter) counter.textContent = 'Osobný Neuro-profil reči';
+    if (window.openFigmaQuestionnaire) {
+      window.openFigmaQuestionnaire(false);
     }
   }
 
@@ -675,38 +647,10 @@
     const welcomeBtnGoogle = document.getElementById('welcomeBtnGoogle');
     const welcomeSubmitBtn = document.getElementById('welcomeSubmitBtn');
     const welcomeGuestBtn = document.getElementById('welcomeGuestBtn');
-    const welcomeStartDiagBtn = document.getElementById('welcomeStartDiagBtn');
-    const welcomeToggleAuthBtn = document.getElementById('welcomeToggleAuthBtn');
-    const welcomeAuthCardCollapse = document.getElementById('welcomeAuthCardCollapse');
     const headerProfileBtn = document.getElementById('headerProfileBtn');
     const btnLogout = document.getElementById('btnLogout');
     const reopenDiagnosticBtn = document.getElementById('reopenDiagnosticBtn');
     const openAuthModalFromTelemetryBtn = document.getElementById('openAuthModalFromTelemetryBtn');
-
-    // Štart diagnostiky z Onboardingu
-    if (welcomeStartDiagBtn) {
-      welcomeStartDiagBtn.addEventListener('click', () => {
-        sessionStorage.setItem('fl_guest_mode', '1');
-        showDiagnosticScreen(true);
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(520, 'sine', 0.08, 0.12);
-        }
-      });
-    }
-
-    // Prepínanie prihlasovacieho formulára
-    if (welcomeToggleAuthBtn && welcomeAuthCardCollapse) {
-      welcomeToggleAuthBtn.addEventListener('click', () => {
-        const isHidden = welcomeAuthCardCollapse.style.display === 'none';
-        welcomeAuthCardCollapse.style.display = isHidden ? 'block' : 'none';
-        welcomeToggleAuthBtn.innerHTML = isHidden
-          ? '<span>✕ Skryť prihlasovací formulár</span>'
-          : '<span>🔑 Už máš účet? Prihlásiť sa</span>';
-        if (isHidden) {
-          welcomeAuthCardCollapse.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      });
-    }
 
     // Google Sign-In
     if (welcomeBtnGoogle) {
@@ -843,125 +787,7 @@
   }
 
   function setupDiagnosticSteps() {
-    // 1. Obsluha 1-5 škály pre Krok 1 (Motorické prejavy)
-    const step1Points = document.querySelectorAll('#diagStep1 .diag-scale-point');
-    const diagNext1 = document.getElementById('diagNext1');
-
-    function checkStep1Complete() {
-      const isDone = diagnosticAnswers.laryngeal > 0 &&
-                     diagnosticAnswers.plosives > 0 &&
-                     diagnosticAnswers.prolongation > 0 &&
-                     diagnosticAnswers.clonic > 0;
-      if (diagNext1) diagNext1.disabled = !isDone;
-    }
-
-    step1Points.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const domain = btn.getAttribute('data-domain');
-        const val = parseInt(btn.getAttribute('data-val'), 10);
-        diagnosticAnswers[domain] = val;
-
-        const parentCard = btn.closest('.diag-scale-card');
-        if (parentCard) {
-          parentCard.classList.add('has-val');
-          parentCard.querySelectorAll('.diag-scale-point').forEach(p => p.classList.remove('selected'));
-        }
-        btn.classList.add('selected');
-
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(400 + val * 55, 'sine', 0.04, 0.08);
-        }
-        checkStep1Complete();
-      });
-    });
-
-    if (diagNext1) {
-      diagNext1.addEventListener('click', () => goToDiagStep(2));
-    }
-
-    // 2. Obsluha Kroku 2 (Sociálny stres, situácie a cieľ)
-    const step2Points = document.querySelectorAll('#diagStep2 .diag-scale-point');
-    const diagFinishBtn = document.getElementById('diagFinishBtn');
-    const diagBack2 = document.getElementById('diagBack2');
-
-    function checkStep2Complete() {
-      const isDone = diagnosticAnswers.social > 0 && !!diagnosticAnswers.situation;
-      if (diagFinishBtn) diagFinishBtn.disabled = !isDone;
-    }
-
-    step2Points.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const val = parseInt(btn.getAttribute('data-val'), 10);
-        diagnosticAnswers.social = val;
-
-        const parentCard = btn.closest('.diag-scale-card');
-        if (parentCard) {
-          parentCard.classList.add('has-val');
-          parentCard.querySelectorAll('.diag-scale-point').forEach(p => p.classList.remove('selected'));
-        }
-        btn.classList.add('selected');
-
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(480 + val * 60, 'sine', 0.04, 0.08);
-        }
-        checkStep2Complete();
-      });
-    });
-
-    const situationCards = document.querySelectorAll('#diagSituationGrid .diag-option-card');
-    situationCards.forEach(card => {
-      card.addEventListener('click', () => {
-        situationCards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        diagnosticAnswers.situation = card.getAttribute('data-val');
-        if (typeof duoSfx !== 'undefined' && duoSfx.playTone) {
-          duoSfx.playTone(560, 'sine', 0.04, 0.08);
-        }
-        checkStep2Complete();
-      });
-    });
-
-    if (diagBack2) {
-      diagBack2.addEventListener('click', () => goToDiagStep(1));
-    }
-
-    if (diagFinishBtn) {
-      diagFinishBtn.addEventListener('click', () => {
-        applyDiagnosticPersonalization(diagnosticAnswers, true);
-        goToDiagStep(3);
-        if (typeof duoSfx !== 'undefined' && duoSfx.playLevelComplete) {
-          duoSfx.playLevelComplete();
-        }
-      });
-    }
-
-    const diagBack3 = document.getElementById('diagBack3');
-    if (diagBack3) {
-      diagBack3.addEventListener('click', () => goToDiagStep(2));
-    }
-
-    // 3. Vstup do aplikácie a okamžitý štart odporúčaným svetom
-    const diagEnterAppBtn = document.getElementById('diagEnterAppBtn');
-    if (diagEnterAppBtn) {
-      diagEnterAppBtn.addEventListener('click', () => {
-        const evalRes = evaluateDiagnosticScores(diagnosticAnswers);
-        diagnosticAnswers.recWorldId = evalRes.recWorldId;
-        diagnosticAnswers.tension = evalRes.dominantKey;
-
-        localStorage.setItem('fl_diagnostic', JSON.stringify(diagnosticAnswers));
-        localStorage.setItem('fl_onboarding_completed', '1');
-
-        if (window.duoState && window.duoState.startAtRecommendedWorld) {
-          window.duoState.startAtRecommendedWorld(evalRes.recWorldId);
-        }
-
-        hideWelcomeOverlay();
-        updateUI();
-
-        const navTabCesta = document.getElementById('navTabCesta');
-        if (navTabCesta) navTabCesta.click();
-      });
-    }
+    // Starý dotazník bol nahradený oficiálnym Figma dotazníkom riadeným cez window.openFigmaQuestionnaire
   }
 
   // 9. Inicializácia pri štarte aplikácie (Tiché auto-prihlásenie)

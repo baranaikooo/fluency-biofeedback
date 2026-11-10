@@ -15,7 +15,7 @@
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
-  <!-- Google Fonts: Newsreader (Serif pre nadpisy) & DM Sans (UI) -->
+  <!-- Google Fonts: DM Sans & Newsreader -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -34,24 +34,8 @@
         if (isAuthReturn) {
           var isCapacitor = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
           if (!isCapacitor) {
-            console.log('[Auth Relay] OAuth token nájdený v externom prehliadači. Prepínam do natívnej aplikácie...');
             var targetScheme = 'com.fluency.biofeedback://auth-callback' + (hash || search);
             window.location.href = targetScheme;
-
-            window.addEventListener('DOMContentLoaded', function () {
-              var relayDiv = document.createElement('div');
-              relayDiv.id = 'nativeAuthRelayOverlay';
-              relayDiv.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#252341;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:#fff;font-family:system-ui,-apple-system,sans-serif;';
-              relayDiv.innerHTML = 
-                '<div style="font-size:3.5rem;margin-bottom:12px;">🎙️</div>' +
-                '<h2 style="font-size:1.35rem;font-weight:900;color:#f8f6f0;margin:0 0 8px 0;">Google Účet Overený!</h2>' +
-                '<p style="font-size:0.85rem;color:#d8d1f6;max-width:320px;line-height:1.45;margin:0 0 24px 0;">Prepínam ťa späť do natívnej aplikácie Glide...</p>' +
-                '<a href="' + targetScheme + '" style="background:#6d5bd0;color:#fff;text-decoration:none;font-weight:800;font-size:1rem;padding:14px 28px;border-radius:16px;box-shadow:0 8px 24px rgba(109,91,208,0.4);display:inline-flex;align-items:center;gap:8px;">' +
-                  '<span>🚀 Otvoriť v Aplikácii</span>' +
-                '</a>' +
-                '<p style="font-size:0.75rem;color:#9ca3af;margin-top:20px;">Ak sa aplikácia neprepla automaticky, ťukni na tlačidlo vyššie.</p>';
-              document.body.appendChild(relayDiv);
-            });
           }
         }
       } catch (e) {
@@ -61,302 +45,355 @@
   </script>
 </head>
 <body>
-<!-- ==================================================================== -->
-<!-- ÚVODNÁ OBRAZOVKA & AUTENTIFIKAČNÝ MODAL (WELCOME & LOGIN GATEWAY)     -->
-<!-- ==================================================================== -->
-<div class="welcome-auth-overlay" id="welcomeAuthOverlay" style="display:none;">
-  <div class="welcome-auth-modal">
 
-    <!-- KROK 1: PRIHLÁSENIE / REGISTRÁCIA -->
-    <div id="welcomeAuthBox">
-      <!-- Branding & Title -->
-      <div class="welcome-hero">
-        <div class="welcome-logo-badge">
-          <div class="brand-soundwave">
-            <span class="sw-col c1"></span>
-            <span class="sw-col c2"></span>
-            <span class="sw-col c3"></span>
-          </div>
-        </div>
-        <div class="welcome-brand-name">glide</div>
-        <span class="welcome-overline">TVOJ BEZPEČNÝ PRIESTOR PRE REČ</span>
-        <h1 class="welcome-title">Dýchaj voľne. Hovor s istotou.</h1>
-        <p class="welcome-tagline">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
+<!-- ==================================================================== -->
+<!-- 1. PRIHLASOVACÍ MODAL (AUTENTIFIKAČNÁ BRÁNA)                        -->
+<!-- ==================================================================== -->
+<div class="modal-backdrop-overlay" id="welcomeAuthOverlay" style="display:none;">
+  <div class="auth-modal-card">
+    <div class="auth-modal-hero">
+      <div class="brand-soundwave lg">
+        <span class="sw-col c1"></span>
+        <span class="sw-col c2"></span>
+        <span class="sw-col c3"></span>
+      </div>
+      <div class="brand-title-sub">glide</div>
+      <span class="auth-overline">TVOJ BEZPEČNÝ PRIESTOR PRE REČ</span>
+      <h1 class="auth-modal-title">Dýchaj voľne. Hovor s istotou.</h1>
+      <p class="auth-modal-desc">Vedecký rečový biofeedback & DAF/FAF trenažér rečovej plynulosti</p>
+    </div>
 
-        <div class="welcome-features-grid">
-          <div class="wf-item">
-            <span class="wf-icon">🎧</span>
-            <div class="wf-text">
-              <strong>DAF & FAF</strong>
-              <span>Sluchová spätná väzba</span>
-            </div>
-          </div>
-          <div class="wf-item">
-            <span class="wf-icon">🎯</span>
-            <div class="wf-text">
-              <strong>5 Svetov / 25 Úrovní</strong>
-              <span>Neuro-tréning nábehu</span>
-            </div>
-          </div>
-          <div class="wf-item">
-            <span class="wf-icon">☁️</span>
-            <div class="wf-text">
-              <strong>Cloud Záloha</strong>
-              <span>Ukladanie sérií & XP</span>
-            </div>
-          </div>
-        </div>
+    <div class="auth-card-body">
+      <!-- Google Sign-in -->
+      <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
+        <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Pokračovať cez Google účet</span>
+      </button>
+
+      <div class="auth-divider">
+        <span>ALEBO REGISTRÁCIA CEZ EMAIL</span>
       </div>
 
-      <!-- Auth Card -->
-      <div class="welcome-auth-card">
-        <div class="welcome-auth-header">
-          <h2 class="welcome-auth-heading">Vstup do aplikácie</h2>
-          <p class="welcome-auth-sub">Prihlás sa jedným klikom cez Google alebo registráciou cez email.</p>
+      <div class="auth-form-fields" id="welcomeAuthBox">
+        <div class="auth-field-group">
+          <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
+          <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Alex" autocomplete="name" />
         </div>
 
-        <!-- Google Sign-in 1-Click -->
-        <button class="social-login-btn google full-width" id="welcomeBtnGoogle" type="button">
-          <svg class="social-btn-icon" viewBox="0 0 24 24" width="22" height="22">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Pokračovať cez Google účet</span>
+        <div class="auth-field-group">
+          <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
+          <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
+        </div>
+
+        <div class="auth-field-group">
+          <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
+          <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
+        </div>
+
+        <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
+
+        <button class="btn-primary full" id="welcomeSubmitBtn" type="button">
+          <span id="welcomeSubmitText">🚀 Pokračovať</span>
         </button>
-
-        <div class="auth-divider">
-          <span>ALEBO REGISTRÁCIA CEZ EMAIL</span>
-        </div>
-
-        <!-- Form -->
-        <div id="welcomeAuthCardCollapse">
-          <div class="welcome-auth-form">
-            <div class="auth-field-group">
-              <label class="auth-field-label" for="welcomeNameInput">Tvoje meno / prezývka</label>
-              <input type="text" class="auth-input" id="welcomeNameInput" placeholder="napr. Alex" autocomplete="name" />
-            </div>
-
-            <div class="auth-field-group">
-              <label class="auth-field-label" for="welcomeEmailInput">Emailová adresa</label>
-              <input type="email" class="auth-input" id="welcomeEmailInput" placeholder="napr. tvoj.email@gmail.com" autocomplete="email" />
-            </div>
-
-            <div class="auth-field-group">
-              <label class="auth-field-label" for="welcomePasswordInput">Heslo</label>
-              <input type="password" class="auth-input" id="welcomePasswordInput" placeholder="Minimálne 6 znakov" autocomplete="current-password" />
-            </div>
-
-            <div class="auth-feedback-msg" id="welcomeAuthFeedback" style="display:none;"></div>
-
-            <button class="btn-primary full" id="welcomeSubmitBtn" type="button">
-              <span id="welcomeSubmitText">🚀 Pokračovať</span>
-            </button>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
-          <button class="btn-secondary full sm" id="welcomeStartDiagBtn" type="button">
-            <span>🔬 Vedecký dotazník reči (Personalizácia)</span>
-          </button>
-          <button class="btn-secondary full sm" id="welcomeToggleAuthBtn" type="button" style="display:none;">
-            <span>🔑 Už máš účet? Prihlásiť sa</span>
-          </button>
-        </div>
-
-        <!-- Guest bypass -->
-        <div class="welcome-guest-row">
-          <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
-            <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
-          </button>
-        </div>
       </div>
+
+      <button class="guest-bypass-btn" id="welcomeGuestBtn" type="button">
+        <span>👤 Vyskúšať bez prihlásenia (Lokálny režim)</span>
+      </button>
     </div>
-
-    <!-- KROK 2: VEDECKÝ DOTAZNÍK BALBUTIZMU S LIKERTOVOU ŠKÁLOU (1-5) -->
-    <div id="welcomeDiagnosticBox" style="display:none;">
-      <div class="diagnostic-card">
-        <!-- Progress Bar -->
-        <div class="diag-progress-header">
-          <div class="diag-badge-pill">🔬 VEDECKÁ DIAGNOSTIKA BALBUTIZMU</div>
-          <span class="diag-step-counter" id="diagStepCounter">Krok 1 z 3: Motorika</span>
-        </div>
-        <div class="diag-progress-track">
-          <div class="diag-progress-bar" id="diagProgressBar" style="width: 33%;"></div>
-        </div>
-
-        <!-- Krok 1: Motorické kŕče a zárazy (Otázky 1–4, škála 1–5) -->
-        <div class="diag-step-view active" id="diagStep1">
-          <h2 class="diag-step-title">Kde a ako silno vnímaš rečové kŕče?</h2>
-          <p class="diag-step-desc">Ohodnoť na logopedickej škále (1 = Vôbec až 5 = Silne), akou intenzitou zažívaš jednotlivé prejavy.</p>
-
-          <div class="diag-scale-container">
-            <!-- Otázka 1: Hlasivky (Samohlásky) -->
-            <div class="diag-scale-card" id="cardLaryngeal" data-domain="laryngeal">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">🫁</span>
-                <span class="diag-scale-title">1. Hlasivky & Hrdlo (Glotálny kŕč)</span>
-              </div>
-              <div class="diag-scale-desc">Zaseknutie v hrdle a tvrdý úder na začiatku samohlások (Auto, Otec, Áno, Oko), pocit stiahnutých hlasiviek.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="laryngeal" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-
-            <!-- Otázka 2: Plozívy (Pery & Jazyk) -->
-            <div class="diag-scale-card" id="cardPlosives" data-domain="plosives">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">👄</span>
-                <span class="diag-scale-title">2. Pery & Jazyk (Plozívny artikulačný pretlak)</span>
-              </div>
-              <div class="diag-scale-desc">Silné tlačenie pier alebo jazyka pri tvrdých spoluhláskach (P, B, T, D, K, G), kým slovo s námahou nevystrelí.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="plosives" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-
-            <!-- Otázka 3: Prolongácie (Ťahanie zvukov) -->
-            <div class="diag-scale-card" id="cardProlongation" data-domain="prolongation">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">〰️</span>
-                <span class="diag-scale-title">3. Prolongácie (Ťahanie tónu a neplynulosť)</span>
-              </div>
-              <div class="diag-scale-desc">Dlhé ťahanie zvukov (Mmm, Sss, Zzz, Vvv) s ťažkosťou uvoľniť tón a prejsť do nasledujúcej hlásky.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="prolongation" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-
-            <!-- Otázka 4: Klonické opakovania & Rýchle tempo -->
-            <div class="diag-scale-card" id="cardClonic" data-domain="clonic">
-              <div class="diag-scale-header">
-                <span class="diag-scale-icon">⚡</span>
-                <span class="diag-scale-title">4. Klonické opakovania & Rýchle tempo</span>
-              </div>
-              <div class="diag-scale-desc">Nekontrolované zrýchlenie reči, strata dychu a rýchle opakovanie slabík (K-k-kto) pri hovorení viet.</div>
-              <div class="diag-scale-rating-row">
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-                <button type="button" class="diag-scale-point" data-domain="clonic" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-              </div>
-            </div>
-          </div>
-
-          <button class="btn-primary full sm" id="diagNext1" type="button" disabled style="margin-top: 16px;">
-            <span>Pokračovať na sociálny stres ➔</span>
-          </button>
-        </div>
-
-        <!-- Krok 2: Sociálny stres a cieľ -->
-        <div class="diag-step-view" id="diagStep2" style="display:none;">
-          <h2 class="diag-step-title">Sociálny stres & Prioritný cieľ</h2>
-          <p class="diag-step-desc">Zaradíme ti najstresujúcejšiu situáciu do SOS Drilu a prispôsobíme akustický DAF asistent.</p>
-
-          <!-- Otázka 5: Sociálna úzkosť na škále 1-5 -->
-          <div class="diag-scale-card" id="cardSocial" data-domain="social" style="margin-bottom: 14px;">
-            <div class="diag-scale-header">
-              <span class="diag-scale-icon">👥</span>
-              <span class="diag-scale-title">5. Sociálna úzkosť a obavy z hodnotenia</span>
-            </div>
-            <div class="diag-scale-desc">Intenzita stresu, paniky a vyhýbania sa slovám pri telefonovaní, predstavovaní sa menom či v práci.</div>
-            <div class="diag-scale-rating-row">
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="1"><span class="point-num">1</span><span class="point-lbl">Vôbec</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="2"><span class="point-num">2</span><span class="point-lbl">Mierne</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="3"><span class="point-num">3</span><span class="point-lbl">Stredne</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="4"><span class="point-num">4</span><span class="point-lbl">Často</span></button>
-              <button type="button" class="diag-scale-point" data-domain="social" data-val="5"><span class="point-num">5</span><span class="point-lbl">Silne</span></button>
-            </div>
-          </div>
-
-          <h3 style="font-size:0.90rem; font-weight:800; color:#252341; margin: 12px 0 8px 0;">Ktorá konkrétna situácia ťa trápi najviac?</h3>
-          <div class="diag-options-grid" id="diagSituationGrid">
-            <button type="button" class="diag-opt-btn" data-situation="calls">
-              <span class="opt-icon">📞</span>
-              <span class="opt-text">Telefonovanie & Nečakané hovory</span>
-            </button>
-            <button type="button" class="diag-opt-btn" data-situation="shop">
-              <span class="opt-icon">🛒</span>
-              <span class="opt-text">Platenie v obchode & Objednávanie jedla</span>
-            </button>
-            <button type="button" class="diag-opt-btn" data-situation="work">
-              <span class="opt-icon">💼</span>
-              <span class="opt-text">Prezentácie v práci & Porady</span>
-            </button>
-            <button type="button" class="diag-opt-btn" data-situation="name">
-              <span class="opt-icon">👤</span>
-              <span class="opt-text">Predstavovanie sa vlastným menom</span>
-            </button>
-          </div>
-
-          <div class="diag-nav-row" style="margin-top: 18px;">
-            <button class="btn-secondary sm" id="diagBack2" type="button"><span>⬅ Späť</span></button>
-            <button class="btn-primary full" id="diagFinishBtn" type="button" disabled style="flex: 1;">
-              <span>Dokončiť diagnostiku ➔</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Krok 3: Vyhodnotenie a personalizácia cesty -->
-        <div class="diag-step-view" id="diagStepResult">
-          <div id="diagStep3" style="display:none;"></div>
-          <div class="diag-result-icon">🎯</div>
-          <h2 class="diag-step-title">Tvoj Osobný Neuro-profil Reči</h2>
-          <p class="diag-step-desc" id="diagResultSub">Na základe tvojich odpovedí sme prispôsobili krivku náročnosti a odporúčame ti štartovací svet:</p>
-
-          <div class="diag-summary-cards">
-            <div class="dsc-item">
-              <span class="dsc-label">DOMINANTNÝ PREJAV BALBUTIZMU</span>
-              <div class="dsc-val" id="diagSummaryTension">Plozívny artikulačný pretlak</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">ODPORÚČANÝ ŠTARTOVACÍ SVET</span>
-              <div class="dsc-val highlight" id="diagSummaryWorld">Svet 3: Plozívy a zhluky</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">CELKOVÉ SKÓRE ZÁVAŽNOSTI</span>
-              <div class="dsc-val" id="diagSummarySeverity">17 / 25 bodov</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">PRIORITNÁ SOCIÁLNA SITUÁCIA</span>
-              <div class="dsc-val" id="diagSummarySituation">Telefonovanie & Hovory</div>
-            </div>
-            <div class="dsc-item">
-              <span class="dsc-label">DAF ASISTENT NASTAVENIE</span>
-              <div class="dsc-val" id="diagSummaryDaf">Delay 90 ms • Pitch Shift +1.5 st</div>
-            </div>
-          </div>
-
-          <div class="diag-nav-row" style="margin-top: 18px;">
-            <button class="btn-secondary sm" id="diagBack3" type="button"><span>⬅ Upraviť</span></button>
-            <button class="btn-primary full" id="diagEnterAppBtn" type="button" style="flex: 1;">
-              <span>🚀 Začať odporúčaným Svetom</span>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 </div>
 
+<!-- ==================================================================== -->
+<!-- 2. OFICIÁLNY FIGMA VÝSKUMNÝ DOTAZNÍK (MODÁL PO PRVOM PRIHLÁSENÍ)      -->
+<!-- ==================================================================== -->
+<div class="modal-backdrop-overlay" id="figmaQuestionnaireModal" style="display:none;">
+  <div class="questionnaire-modal-card">
+    <div class="questionnaire-top">
+      <div>
+        <p class="eyebrow">VÝSKUMNÝ DOTAZNÍK</p>
+        <h1 class="q-main-title">Tvoja skúsenosť s rečou<span>.</span></h1>
+      </div>
+      <span class="questionnaire-count" id="qCountText" style="display:none;">1 / 4</span>
+    </div>
+
+    <div class="questionnaire-progress" id="qProgressWrap" aria-label="Priebeh dotazníka">
+      <span id="qProgressBar" style="width: 0%;"></span>
+    </div>
+
+    <!-- KROK 0: UVÍTACIA OBRAZOVKA S INFORMÁCIAMI A SÚHLASOM -->
+    <section class="questionnaire-welcome" id="qStep0">
+      <div class="research-intro">
+        <span class="research-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg>
+        </span>
+        <span class="section-kicker">PRED ZAČIATKOM</span>
+        <h2>Nejde o test plynulosti ani o diagnózu.</h2>
+        <p>
+          Tento dotazník mapuje, ako zajakavosť ovplyvňuje tvoje rozprávanie, prežívanie a každodenný život. Vyplnenie trvá približne 4 minúty.
+        </p>
+      </div>
+
+      <div class="research-points">
+        <article>
+          <span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3 8-10V5l-8-3-8 3v7c0 7 8 10 8 10Z" /></svg>
+          </span>
+          <div>
+            <strong>Odpovede zostávajú v tomto zariadení</strong>
+            <p>Nikam sa neodosielajú bez tvojho vedomia. Slúžia na personalizáciu tréningu mäkkého nábehu.</p>
+          </div>
+        </article>
+        <article>
+          <span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7h.01" /></svg>
+          </span>
+          <div>
+            <strong>Vedecky podložené oblasti</strong>
+            <p>Obsah vychádza z medzinárodných logopedických rámcov OASES-A, WASSP a ICF.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="research-consent">
+        <label class="consent-check">
+          <input type="checkbox" id="qAdultCheck" />
+          <span>Mám 18 rokov alebo viac.</span>
+        </label>
+        <label class="consent-check">
+          <input type="checkbox" id="qConsentCheck" />
+          <span>Rozumiem účelu dotazníka a dobrovoľne súhlasím s vyplnením.</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- KROK 1: SKÚSENOSŤ S ROZPRÁVANÍM -->
+    <section class="questionnaire-form" id="qStep1" style="display:none;">
+      <header>
+        <span class="section-kicker">ČASŤ 1 Z 3</span>
+        <h2>Skúsenosť s rozprávaním</h2>
+        <p>Ako často si za posledné dva týždne zažíval/a nasledujúce situácie?</p>
+      </header>
+
+      <div class="question-list">
+        <article class="question-item">
+          <p class="question-text">Mám pocit, že nemám kontrolu nad tým, kedy sa reč zasekne.</p>
+          <div class="answer-scale" data-qid="speech-control">
+            <label><input type="radio" name="speech-control" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="speech-control" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="speech-control" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="speech-control" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="speech-control" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+
+        <article class="question-item">
+          <p class="question-text">Hovorenie odo mňa vyžaduje výraznú fyzickú námahu alebo napätie v hrdle.</p>
+          <div class="answer-scale" data-qid="speech-effort">
+            <label><input type="radio" name="speech-effort" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="speech-effort" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="speech-effort" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="speech-effort" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="speech-effort" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+
+        <article class="question-item">
+          <p class="question-text">Zajakavosť prichádza nečakane aj pri slovách, ktoré bežne zvládam.</p>
+          <div class="answer-scale" data-qid="speech-unpredictable">
+            <label><input type="radio" name="speech-unpredictable" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="speech-unpredictable" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="speech-unpredictable" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="speech-unpredictable" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="speech-unpredictable" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- KROK 2: MYŠLIENKY A POCITY -->
+    <section class="questionnaire-form" id="qStep2" style="display:none;">
+      <header>
+        <span class="section-kicker">ČASŤ 2 Z 3</span>
+        <h2>Myšlienky a pocity</h2>
+        <p>Neexistuje správna odpoveď. Vyber to, čo najlepšie vystihuje tvoju skúsenosť.</p>
+      </header>
+
+      <div class="question-list">
+        <article class="question-item">
+          <p class="question-text">Cítim obavy alebo napätie už pred tým, ako začnem rozprávať.</p>
+          <div class="answer-scale" data-qid="feeling-worry">
+            <label><input type="radio" name="feeling-worry" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="feeling-worry" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="feeling-worry" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="feeling-worry" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="feeling-worry" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+
+        <article class="question-item">
+          <p class="question-text">Mením slová, vyhýbam sa určitým hláskam alebo radšej mlčím.</p>
+          <div class="answer-scale" data-qid="feeling-avoid">
+            <label><input type="radio" name="feeling-avoid" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="feeling-avoid" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="feeling-avoid" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="feeling-avoid" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="feeling-avoid" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+
+        <article class="question-item">
+          <p class="question-text">Po rozhovore premýšľam nad tým, ako som znel/a a čo si mysleli ostatní.</p>
+          <div class="answer-scale" data-qid="feeling-after">
+            <label><input type="radio" name="feeling-after" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="feeling-after" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="feeling-after" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="feeling-after" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="feeling-after" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- KROK 3: ÚČASŤ V KAŽDODENNOM ŽIVOTE -->
+    <section class="questionnaire-form" id="qStep3" style="display:none;">
+      <header>
+        <span class="section-kicker">ČASŤ 3 Z 3</span>
+        <h2>Účasť v každodennom živote</h2>
+        <p>Zamysli sa nad prácou, školou, vzťahmi aj bežnými povinnosťami.</p>
+      </header>
+
+      <div class="question-list">
+        <article class="question-item">
+          <p class="question-text">Zajakavosť ovplyvňuje moje sebavedomie v práci, škole alebo pri prezentáciách.</p>
+          <div class="answer-scale" data-qid="impact-work">
+            <label><input type="radio" name="impact-work" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="impact-work" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="impact-work" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="impact-work" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="impact-work" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+
+        <article class="question-item">
+          <p class="question-text">Odmietam alebo obmedzujem spoločenské situácie kvôli obavám z reči.</p>
+          <div class="answer-scale" data-qid="impact-social">
+            <label><input type="radio" name="impact-social" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="impact-social" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="impact-social" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="impact-social" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="impact-social" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+
+        <article class="question-item">
+          <p class="question-text">Je pre mňa náročné vybaviť bežné veci (telefonát, objednávka, nákup).</p>
+          <div class="answer-scale" data-qid="impact-tasks">
+            <label><input type="radio" name="impact-tasks" value="0" /><span>Nikdy</span></label>
+            <label><input type="radio" name="impact-tasks" value="1" /><span>Zriedka</span></label>
+            <label><input type="radio" name="impact-tasks" value="2" /><span>Občas</span></label>
+            <label><input type="radio" name="impact-tasks" value="3" /><span>Často</span></label>
+            <label><input type="radio" name="impact-tasks" value="4" /><span>Takmer vždy</span></label>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- KROK 4: DOPLŇUJÚCI KONTEXT -->
+    <section class="questionnaire-form context-step" id="qStep4" style="display:none;">
+      <header>
+        <span class="section-kicker">DOPLŇUJÚCI KONTEXT</span>
+        <h2>Kde je rozprávanie najnáročnejšie?</h2>
+        <p>Môžeš vybrať viac možností alebo tento krok preskočiť.</p>
+      </header>
+
+      <div class="situation-grid" id="qSituationGrid">
+        <button type="button" class="situation-btn" data-sit="Telefonovanie"><span></span>Telefonovanie</button>
+        <button type="button" class="situation-btn" data-sit="Objednávanie jedla a nákupy"><span></span>Objednávanie & Nákupy</button>
+        <button type="button" class="situation-btn" data-sit="Práca, porady a prezentácie"><span></span>Práca & Porady</button>
+        <button type="button" class="situation-btn" data-sit="Predstavovanie sa vlastným menom"><span></span>Predstavovanie sa menom</button>
+        <button type="button" class="situation-btn" data-sit="Rozhovory s autoritami"><span></span>Rozhovory s autoritami</button>
+        <button type="button" class="situation-btn" data-sit="Neznámi ľudia"><span></span>Neznámi ľudia</button>
+      </div>
+
+      <label class="questionnaire-note">
+        <span>Chceš niečo doplniť? <small>nepovinné</small></span>
+        <textarea id="qNoteInput" placeholder="Napíš vlastnými slovami, čo je pre teba dôležité…" maxlength="500"></textarea>
+        <small id="qNoteCount">0 / 500</small>
+      </label>
+    </section>
+
+    <!-- KROK 5: VÝSLEDKY A ZHRNUTIE -->
+    <section class="questionnaire-results" id="qStep5" style="display:none;">
+      <div class="complete-icon">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>
+      </div>
+      <span class="section-kicker">DOTAZNÍK DOKONČENÝ</span>
+      <h2>Ďakujeme za tvoju otvorenosť.</h2>
+      <p>
+        Tvoje odpovede pomohli prispôsobiť citlivosť soft onset detektora a nastavenie sluchového DAF asistenta.
+      </p>
+
+      <div class="result-domains">
+        <article class="domain-card">
+          <header>
+            <span class="domain-label">Skúsenosť s rozprávaním</span>
+            <span class="domain-val" id="domainRes0">stredná záťaž</span>
+          </header>
+          <div class="domain-bar"><span id="domainBar0" style="width: 50%;"></span></div>
+        </article>
+
+        <article class="domain-card">
+          <header>
+            <span class="domain-label">Myšlienky a pocity</span>
+            <span class="domain-val" id="domainRes1">stredná záťaž</span>
+          </header>
+          <div class="domain-bar"><span id="domainBar1" style="width: 50%;"></span></div>
+        </article>
+
+        <article class="domain-card">
+          <header>
+            <span class="domain-label">Účasť v živote</span>
+            <span class="domain-val" id="domainRes2">stredná záťaž</span>
+          </header>
+          <div class="domain-bar"><span id="domainBar2" style="width: 50%;"></span></div>
+        </article>
+      </div>
+
+      <div class="result-context" id="qResultContext" style="display:none; margin-top: 16px;">
+        <span class="context-label">Najviac náročné situácie:</span>
+        <div class="context-chips" id="qResultSituationChips"></div>
+      </div>
+
+      <button class="btn-primary full lg" id="qFinishEnterBtn" type="button" style="margin-top: 24px;">
+        <span>Vstúpiť do aplikácie a začať tréning →</span>
+      </button>
+    </section>
+
+    <!-- SPODNÁ NAVIGÁCIA DOTAZNÍKA -->
+    <footer class="questionnaire-actions" id="qActionsFooter">
+      <button class="btn-secondary sm" id="qBackBtn" type="button" style="visibility:hidden;">
+        Späť
+      </button>
+      <button class="btn-primary sm" id="qNextBtn" type="button" disabled>
+        <span id="qNextBtnText">Začať dotazník</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+      </button>
+    </footer>
+  </div>
+</div>
+
+<!-- ==================================================================== -->
+<!-- HLAVNÁ APLIKÁCIA (APP SHELL S DESKTOP SIDEBAROM)                    -->
+<!-- ==================================================================== -->
 <div class="app-shell-container">
-  <!-- DESKTOP SIDEBAR (Viditeľný iba na obrazovkách > 768px) -->
+
+  <!-- DESKTOP SIDEBAR (Viditeľný iba na obrazovkách > 768px, BEZ DOTAZNÍKA) -->
   <aside class="desktop-sidebar" id="desktopSidebar">
     <div class="sidebar-brand" id="sidebarBrandBtn">
       <div class="brand-soundwave">
@@ -402,111 +439,109 @@
     </div>
   </aside>
 
+  <!-- HLAVNÉ TELO OBSAHU -->
   <div class="app-layout" id="appLayout">
 
-  <!-- ==================================================================== -->
-  <!-- HORNÝ HUD (Viditeľný na mobile a v záhlaví)                          -->
-  <!-- ==================================================================== -->
-  <header class="duo-header" id="mainHeader">
-    <div class="header-inner">
-      <div class="brand-badge" id="brandLogoBtn" title="Glide Biofeedback">
-        <div class="brand-soundwave">
-          <span class="sw-col c1"></span>
-          <span class="sw-col c2"></span>
-          <span class="sw-col c3"></span>
-        </div>
-        <span class="brand-name">glide</span>
-      </div>
-
-      <div class="hud-metrics">
-        <!-- Streak -->
-        <div class="hud-pill fire" id="hudStreakPill" title="Denná séria tréningu">
-          <span class="hud-icon">🔥</span>
-          <span class="hud-val" id="streakVal">1</span>
+    <!-- HORNÝ HUD (Viditeľný na mobile aj na desktope v záhlaví) -->
+    <header class="duo-header" id="mainHeader">
+      <div class="header-inner">
+        <div class="brand-badge" id="brandLogoBtn" title="Glide Biofeedback">
+          <div class="brand-soundwave">
+            <span class="sw-col c1"></span>
+            <span class="sw-col c2"></span>
+            <span class="sw-col c3"></span>
+          </div>
+          <span class="brand-name">glide</span>
         </div>
 
-        <!-- XP -->
-        <div class="hud-pill xp" id="hudXpPill" title="Celkové body XP">
-          <span class="hud-icon">⚡</span>
-          <span class="hud-val" id="xpVal">0</span>
-        </div>
+        <div class="hud-metrics">
+          <!-- Streak -->
+          <div class="hud-pill fire" id="hudStreakPill" title="Denná séria tréningu">
+            <span class="hud-icon">🔥</span>
+            <span class="hud-val" id="streakVal">1</span>
+          </div>
 
-        <!-- Srdiečka / Životy -->
-        <div class="hud-pill hearts" id="hudHeartsPill" title="Životy na lekciu">
-          <span class="hud-icon">❤️</span>
-          <span class="hud-val" id="heartsVal">5</span>
-        </div>
+          <!-- XP -->
+          <div class="hud-pill xp" id="hudXpPill" title="Celkové body XP">
+            <span class="hud-icon">⚡</span>
+            <span class="hud-val" id="xpVal">0</span>
+          </div>
 
-        <!-- Rank Odznak -->
-        <div class="rank-badge" id="hudRankBadge" title="Tvoja aktuálna úroveň plynulosti">
-          <span class="rank-icon">👑</span>
-          <span class="rank-title-short" id="rankTitle">Začiatočník</span>
-        </div>
+          <!-- Srdiečka / Životy -->
+          <div class="hud-pill hearts" id="hudHeartsPill" title="Životy na lekciu">
+            <span class="hud-icon">❤️</span>
+            <span class="hud-val" id="heartsVal">5</span>
+          </div>
 
-        <!-- Profil Tlačidlo -->
-        <button class="header-profile-btn" id="headerProfileBtn" type="button" title="Používateľský profil & Cloud synchronizácia">
-          <div class="header-avatar-circle" id="headerAvatarCircle">AB</div>
-          <span class="profile-name-short" id="headerProfileName">Profil</span>
-        </button>
-      </div>
-    </div>
-  </header>
+          <!-- Rank Odznak -->
+          <div class="rank-badge" id="hudRankBadge" title="Tvoja aktuálna úroveň plynulosti">
+            <span class="rank-icon">👑</span>
+            <span class="rank-title-short" id="rankTitle">Začiatočník</span>
+          </div>
 
-  <!-- ==================================================================== -->
-  <!-- HLAVNÝ OBSAH (4 STRIKTNE ODDELENÉ ZÁLOŽKY)                          -->
-  <!-- ==================================================================== -->
-  <main class="main-content-viewport">
-
-    <!-- ------------------------------------------------------------------ -->
-    <!-- ZÁLOŽKA 1: 🗺️ CESTA (KAMPAŇ / HLAVNÁ HRA)                          -->
-    <!-- ------------------------------------------------------------------ -->
-    <section class="tab-pane active" id="tabCesta">
-      
-      <!-- HERO UVÍTANIE (Figma Vela: YOUR DAILY SPACE) -->
-      <div class="daily-space-hero">
-        <span class="hero-overline">TVOJ KAŽDODENNÝ PRIESTOR</span>
-        <h1 class="hero-greeting" id="dailyGreetingHeading">Dobré ráno, Alex.</h1>
-        <p class="hero-subline">Nadýchni sa. Žiadny zhon, žiadne hodnotenie.</p>
-      </div>
-
-      <!-- KARTA DNEŠNÉHO ZAMERANIA (Figma Vela: TODAY'S FOCUS) -->
-      <div class="todays-focus-card">
-        <div class="focus-card-left">
-          <div class="focus-eyebrow">✦ DNEŠNÉ ZAMERANIE</div>
-          <h2 class="focus-title">Rozohrej svoj hlas jemne.</h2>
-          <p class="focus-description" id="dailyQuestText">Tri krátke cvičenia, ktoré ti pomôžu cítiť sa pokojne a pripraviť sa na deň.</p>
-          <button class="focus-cta-btn" id="continuePathBtn" type="button">
-            <span>Spustiť tréning</span>
-            <span class="cta-arrow">→</span>
+          <!-- Profil Tlačidlo -->
+          <button class="header-profile-btn" id="headerProfileBtn" type="button" title="Používateľský profil & Cloud synchronizácia">
+            <div class="header-avatar-circle" id="headerAvatarCircle">AB</div>
+            <span class="profile-name-short" id="headerProfileName">Profil</span>
           </button>
         </div>
-        <div class="focus-card-visual">
-          <div class="breathing-capsule-widget">
-            <div class="breathing-ring-pulse"></div>
-            <div class="breathing-circle-core">
-              <span class="bc-label" id="stageBreathLabel">Nádych</span>
-              <span class="bc-num" id="stageBreathNum">4</span>
-              <span class="bc-unit">sekundy</span>
-              <span id="wbBreathLabel" style="display:none;"></span>
-              <span id="wbBreathNum" style="display:none;"></span>
+      </div>
+    </header>
+
+    <!-- HLAVNÝ OBSAH (4 ZÁLOŽKY) -->
+    <main class="main-content-viewport">
+
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ZÁLOŽKA 1: 🗺️ CESTA (KAMPAŇ / HLAVNÁ HRA)                        -->
+      <!-- ---------------------------------------------------------------- -->
+      <section class="tab-pane active" id="tabCesta">
+        
+        <!-- HERO KARTA (Figma Vela: YOUR DAILY SPACE) -->
+        <div class="daily-space-hero">
+          <span class="hero-overline">TVOJ KAŽDODENNÝ PRIESTOR</span>
+          <h1 class="hero-greeting" id="dailyGreetingHeading">Dobré ráno, Alex.</h1>
+          <p class="hero-subline">Nadýchni sa. Žiadny zhon, žiadne hodnotenie.</p>
+        </div>
+
+        <!-- KARTA DNEŠNÉHO ZAMERANIA (Figma Vela: TODAY'S FOCUS) -->
+        <div class="todays-focus-card">
+          <div class="focus-card-left">
+            <div class="focus-eyebrow">✦ DNEŠNÉ ZAMERANIE</div>
+            <h2 class="focus-title">Rozohrej svoj hlas jemne.</h2>
+            <p class="focus-description" id="dailyQuestText">Tri krátke cvičenia, ktoré ti pomôžu cítiť sa pokojne a pripraviť sa na deň.</p>
+            <button class="focus-cta-btn" id="continuePathBtn" type="button">
+              <span>Spustiť tréning</span>
+              <span class="cta-arrow">→</span>
+            </button>
+          </div>
+          <div class="focus-card-visual">
+            <div class="breathing-capsule-widget">
+              <div class="breathing-ring-pulse"></div>
+              <div class="breathing-circle-core">
+                <span class="bc-label" id="stageBreathLabel">Nádych</span>
+                <span class="bc-num" id="stageBreathNum">4</span>
+                <span class="bc-unit">sekundy</span>
+                <span id="wbBreathLabel" style="display:none;"></span>
+                <span id="wbBreathNum" style="display:none;"></span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- SEKCIA REČOVÉHO PLÁNU (5 SVETOV) -->
-      <div class="curriculum-section-header">
-        <div class="curriculum-badge">TVOJ REČOVÝ PLÁN</div>
-        <h3 class="curriculum-title">5 Svetov neuro-tréningu plynulosti</h3>
-      </div>
+        <!-- SEKCIA REČOVÉHO PLÁNU (5 SVETOV) -->
+        <div class="curriculum-section-header">
+          <div class="curriculum-badge">TVOJ REČOVÝ PLÁN</div>
+          <h3 class="curriculum-title">5 Svetov neuro-tréningu plynulosti</h3>
+        </div>
 
-      <!-- 5 Svetov s lineárnym stromom úrovní (GAMIFIKÁCIA) -->
-      <div class="worlds-wrapper" id="worldsWrapper">
-        <!-- Dynamicky vygenerované z gamification-engine.js -->
-      </div>
+        <!-- 5 Svetov s lineárnym stromom úrovní (GAMIFIKÁCIA) -->
+        <div class="worlds-wrapper" id="worldsWrapper">
+          <!-- Dynamicky vygenerované z gamification-engine.js -->
+        </div>
 
-      <div class="tab-bottom-spacer"></div>
-    </section>
+        <div class="tab-bottom-spacer"></div>
+      </section>
+
 <section class="tab-pane" id="tabDril">
       <div class="sandbox-container">
         
@@ -1651,9 +1686,11 @@
 </div>
 
 <!-- Skripty -->
-</div><!-- /#appLayout -->
+
+  </div><!-- /#appLayout -->
 </div><!-- /.app-shell-container -->
 
+<!-- Skripty enginov -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./questions-and-voices.js"></script>
 <script src="./dsp-core.js"></script>
@@ -1670,37 +1707,6 @@
         .catch(err => console.warn('[PWA] Service Worker registrácia zlyhala:', err));
     });
   }
-
-  // PWA Install prompt listener
-  let deferredPrompt = null;
-  const pwaInstallBtn = document.getElementById('pwaInstallBtn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (pwaInstallBtn) pwaInstallBtn.style.display = 'block';
-  });
-
-  if (pwaInstallBtn) {
-    pwaInstallBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) {
-        alert('Aplikáciu môžeš nainštalovať cez ponuku prehliadača: Zdieľať (alebo ⋮) -> Pridať na plochu.');
-        return;
-      }
-      deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        console.log('[PWA] Používateľ prijal inštaláciu');
-      }
-      deferredPrompt = null;
-      pwaInstallBtn.style.display = 'none';
-    });
-  }
-
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] Glide bola úspešne nainštalovaná!');
-    if (pwaInstallBtn) pwaInstallBtn.style.display = 'none';
-  });
 
   // Material 3 Compact Player Wire-up
   (function initM3CompactPlayer() {
@@ -1724,7 +1730,6 @@
       });
     }
 
-    // Pozorovanie zmien na DAF asistenta
     var assistantBtn = document.getElementById('assistantToggle');
     if (assistantBtn) {
       assistantBtn.addEventListener('click', function() {
@@ -1767,7 +1772,6 @@
     if (sScience && openScienceBtn) sScience.addEventListener('click', () => openScienceBtn.click());
     if (sProfile && headerProfileBtn) sProfile.addEventListener('click', () => headerProfileBtn.click());
 
-    // Pozorovanie zmien na aktívny tab a aktualizácia sidebaru
     const navItems = [
       { tab: 'tabCesta', side: sCesta },
       { tab: 'tabDril', side: sDril },
@@ -1790,7 +1794,6 @@
       btn.addEventListener('click', () => setTimeout(updateSidebarActive, 50));
     });
 
-    // Synchronizácia mena a iniciálok do sidebaru
     setInterval(() => {
       const hAvatar = document.getElementById('headerAvatarCircle');
       const sAvatar = document.getElementById('sidebarAvatarCircle');
@@ -1799,6 +1802,204 @@
       if (hAvatar && sAvatar && hAvatar.textContent) sAvatar.textContent = hAvatar.textContent;
       if (hName && sName && hName.textContent && hName.textContent !== 'Profil') sName.textContent = hName.textContent;
     }, 1000);
+  })();
+
+  // ==========================================================================
+  // OVLÁDANIE FIGMA VÝSKUMNÉHO DOTAZNÍKA (KROKY 0 AŽ 5)
+  // ==========================================================================
+  (function initFigmaQuestionnaireStepper() {
+    let qStep = 0;
+    const qModal = document.getElementById('figmaQuestionnaireModal');
+    const qAdultCheck = document.getElementById('qAdultCheck');
+    const qConsentCheck = document.getElementById('qConsentCheck');
+    const qNextBtn = document.getElementById('qNextBtn');
+    const qBackBtn = document.getElementById('qBackBtn');
+    const qNextBtnText = document.getElementById('qNextBtnText');
+    const qCountText = document.getElementById('qCountText');
+    const qProgressBar = document.getElementById('qProgressBar');
+    const qNoteInput = document.getElementById('qNoteInput');
+    const qNoteCount = document.getElementById('qNoteCount');
+    const qActionsFooter = document.getElementById('qActionsFooter');
+    const qFinishEnterBtn = document.getElementById('qFinishEnterBtn');
+
+    const answers = {};
+    const situations = new Set();
+
+    function updateQuestionnaireUI() {
+      for (let i = 0; i <= 5; i++) {
+        const el = document.getElementById('qStep' + i);
+        if (el) el.style.display = (i === qStep) ? 'block' : 'none';
+      }
+
+      if (qStep === 0) {
+        if (qCountText) qCountText.style.display = 'none';
+        if (qProgressBar) qProgressBar.style.width = '0%';
+        if (qBackBtn) qBackBtn.style.visibility = 'hidden';
+        if (qNextBtnText) qNextBtnText.textContent = 'Začať dotazník';
+        if (qNextBtn) qNextBtn.disabled = !(qAdultCheck && qAdultCheck.checked && qConsentCheck && qConsentCheck.checked);
+        if (qActionsFooter) qActionsFooter.style.display = 'flex';
+      } else if (qStep >= 1 && qStep <= 3) {
+        if (qCountText) {
+          qCountText.style.display = 'block';
+          qCountText.textContent = qStep + ' / 3';
+        }
+        if (qProgressBar) qProgressBar.style.width = ((qStep / 4) * 100) + '%';
+        if (qBackBtn) qBackBtn.style.visibility = 'visible';
+        if (qNextBtnText) qNextBtnText.textContent = 'Pokračovať';
+        if (qActionsFooter) qActionsFooter.style.display = 'flex';
+
+        // Overenie, či sú zodpovedané otázky
+        let secAnswers = 0;
+        const currentStepEl = document.getElementById('qStep' + qStep);
+        if (currentStepEl) {
+          const scales = currentStepEl.querySelectorAll('.answer-scale');
+          scales.forEach(scale => {
+            const qid = scale.dataset.qid;
+            if (answers[qid] !== undefined) secAnswers++;
+          });
+          if (qNextBtn) qNextBtn.disabled = (secAnswers < scales.length);
+        }
+      } else if (qStep === 4) {
+        if (qCountText) {
+          qCountText.style.display = 'block';
+          qCountText.textContent = 'Kontext';
+        }
+        if (qProgressBar) qProgressBar.style.width = '90%';
+        if (qBackBtn) qBackBtn.style.visibility = 'visible';
+        if (qNextBtnText) qNextBtnText.textContent = 'Zobraziť zhrnutie';
+        if (qNextBtn) qNextBtn.disabled = false;
+        if (qActionsFooter) qActionsFooter.style.display = 'flex';
+      } else if (qStep === 5) {
+        if (qCountText) qCountText.style.display = 'none';
+        if (qProgressBar) qProgressBar.style.width = '100%';
+        if (qActionsFooter) qActionsFooter.style.display = 'none';
+        calculateResults();
+      }
+      const modalCard = document.querySelector('.questionnaire-modal-card');
+      if (modalCard) modalCard.scrollTop = 0;
+    }
+
+    if (qAdultCheck) qAdultCheck.addEventListener('change', updateQuestionnaireUI);
+    if (qConsentCheck) qConsentCheck.addEventListener('change', updateQuestionnaireUI);
+
+    document.querySelectorAll('.answer-scale input[type="radio"]').forEach(r => {
+      r.addEventListener('change', () => {
+        answers[r.name] = parseInt(r.value, 10);
+        updateQuestionnaireUI();
+      });
+    });
+
+    document.querySelectorAll('#qSituationGrid .situation-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sit = btn.dataset.sit;
+        if (situations.has(sit)) {
+          situations.delete(sit);
+          btn.classList.remove('selected');
+          const iconSpan = btn.querySelector('span');
+          if (iconSpan) iconSpan.innerHTML = '';
+        } else {
+          situations.add(sit);
+          btn.classList.add('selected');
+          const iconSpan = btn.querySelector('span');
+          if (iconSpan) iconSpan.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-9" /></svg>';
+        }
+      });
+    });
+
+    if (qNoteInput && qNoteCount) {
+      qNoteInput.addEventListener('input', () => {
+        qNoteCount.textContent = qNoteInput.value.length + ' / 500';
+      });
+    }
+
+    if (qNextBtn) {
+      qNextBtn.addEventListener('click', () => {
+        if (qStep < 5) {
+          qStep++;
+          updateQuestionnaireUI();
+        }
+      });
+    }
+
+    if (qBackBtn) {
+      qBackBtn.addEventListener('click', () => {
+        if (qStep > 0) {
+          qStep--;
+          updateQuestionnaireUI();
+        }
+      });
+    }
+
+    function getDesc(avg) {
+      if (avg < 1.35) return 'nižšia záťaž';
+      if (avg < 2.7) return 'stredná záťaž';
+      return 'vyššia záťaž';
+    }
+
+    function calculateResults() {
+      const q1 = [answers['speech-control'] || 0, answers['speech-effort'] || 0, answers['speech-unpredictable'] || 0];
+      const q2 = [answers['feeling-worry'] || 0, answers['feeling-avoid'] || 0, answers['feeling-after'] || 0];
+      const q3 = [answers['impact-work'] || 0, answers['impact-social'] || 0, answers['impact-tasks'] || 0];
+
+      const avg1 = (q1[0] + q1[1] + q1[2]) / 3;
+      const avg2 = (q2[0] + q2[1] + q2[2]) / 3;
+      const avg3 = (q3[0] + q3[1] + q3[2]) / 3;
+
+      const res0 = document.getElementById('domainRes0');
+      const res1 = document.getElementById('domainRes1');
+      const res2 = document.getElementById('domainRes2');
+      const bar0 = document.getElementById('domainBar0');
+      const bar1 = document.getElementById('domainBar1');
+      const bar2 = document.getElementById('domainBar2');
+
+      if (res0) res0.textContent = getDesc(avg1);
+      if (res1) res1.textContent = getDesc(avg2);
+      if (res2) res2.textContent = getDesc(avg3);
+
+      if (bar0) bar0.style.width = Math.round((avg1 / 4) * 100) + '%';
+      if (bar1) bar1.style.width = Math.round((avg2 / 4) * 100) + '%';
+      if (bar2) bar2.style.width = Math.round((avg3 / 4) * 100) + '%';
+
+      const sitWrap = document.getElementById('qResultContext');
+      const sitChips = document.getElementById('qResultSituationChips');
+      if (sitWrap && sitChips) {
+        if (situations.size > 0) {
+          sitWrap.style.display = 'block';
+          sitChips.innerHTML = '';
+          situations.forEach(s => {
+            const sp = document.createElement('span');
+            sp.className = 'sit-pill';
+            sp.textContent = s;
+            sitChips.appendChild(sp);
+          });
+        } else {
+          sitWrap.style.display = 'none';
+        }
+      }
+    }
+
+    // Dokončenie dotazníka a vstup do aplikácie
+    if (qFinishEnterBtn) {
+      qFinishEnterBtn.addEventListener('click', () => {
+        localStorage.setItem('fl_onboarding_completed', '1');
+        localStorage.setItem('fl_figma_answers', JSON.stringify({ answers, situations: Array.from(situations) }));
+        if (qModal) qModal.style.display = 'none';
+        if (typeof duoSfx !== 'undefined' && duoSfx.playLevelComplete) {
+          duoSfx.playLevelComplete();
+        }
+      });
+    }
+
+    // Export globálnej funkcie na otvorenie dotazníka
+    window.openFigmaQuestionnaire = function(reset = false) {
+      if (reset) {
+        qStep = 0;
+        updateQuestionnaireUI();
+      }
+      if (qModal) qModal.style.display = 'flex';
+    };
+
+    updateQuestionnaireUI();
   })();
 </script>
 </body>
