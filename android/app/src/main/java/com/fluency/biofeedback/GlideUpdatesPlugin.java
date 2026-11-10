@@ -128,6 +128,11 @@ public class GlideUpdatesPlugin extends Plugin {
     }
 
     @Override
+    protected void handleOnPause() {
+        notifyListeners("pause", new JSObject());
+    }
+
+    @Override
     protected void handleOnDestroy() {
         network.shutdownNow();
     }

@@ -3,6 +3,7 @@ import markup from "./glide/markup.html?raw";
 
 const runtime = window as typeof window & {
   glideEngineReady?: Promise<void>;
+  fluencyAuthReady?: Promise<void>;
 };
 
 function loadEngine() {
@@ -16,6 +17,7 @@ function loadEngine() {
   if (!host) {
     host = document.createElement("div");
     host.id = "glide-runtime";
+    host.inert = true;
     host.innerHTML = markup;
     document.body.appendChild(host);
   }
@@ -40,7 +42,15 @@ function loadEngine() {
         document.body.appendChild(script);
       });
     }
+    // Allow a fast stored-session restore before revealing the interface, while
+    // keeping startup usable if the connection or auth server is unavailable.
+    await Promise.race([
+      runtime.fluencyAuthReady?.catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]);
+    host.inert = false;
     document.documentElement.dataset.engine = "ready";
+    document.getElementById("appLoadingScreen")?.remove();
     if (import.meta.env.PROD && "serviceWorker" in navigator) {
       void navigator.serviceWorker
         .register("/sw.js")
@@ -70,7 +80,10 @@ export default function App() {
   useEffect(() => {
     document.title = "Glide – Tvoj hlas, tvoje tempo";
     document.documentElement.lang = "sk";
-    void loadEngine().catch((err: Error) => setError(err.message));
+    void loadEngine().catch((err: Error) => {
+      document.getElementById("appLoadingScreen")?.remove();
+      setError(err.message);
+    });
   }, []);
 
   return (

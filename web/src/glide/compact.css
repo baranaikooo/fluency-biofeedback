@@ -1,0 +1,113 @@
+/* Primary actions stay close; optional explanations expand on demand. */
+.compact-extra, .questionnaire-extra { border: 1px solid var(--surface-border); border-radius: 14px; background: var(--surface); min-width: 0; }
+.compact-extra > summary, .questionnaire-extra > summary { padding: 12px 14px; min-height: 44px; cursor: pointer; color: var(--purple); font-size: 13px; font-weight: 600; }
+.compact-extra[open] > :not(summary), .questionnaire-extra[open] > :not(summary) { margin: 0 12px 12px; }
+.sos-chips-label { display: none; }
+.world-chapters-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.world-chapters-nav button { min-height: 44px; border: 1px solid var(--surface-border); border-radius: 12px; background: var(--surface); color: var(--purple); font-weight: 600; }
+.world-chapters-nav button[aria-pressed=true] { background: var(--purple); color: white; }
+.world-section[hidden], .question-item[hidden] { display: none !important; }
+.worlds-wrapper { display: block; margin-top: 12px; overflow: clip; }
+.world-nodes-track { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: start; padding: 24px 0 10px; }
+.world-nodes-track::before, .world-nodes-track::after { display: none; }
+.path-node-wrapper { min-width: 0; transform: none !important; text-align: center; }
+.path-node-btn { width: clamp(44px, 11vw, 68px); height: clamp(44px, 11vw, 68px); flex-shrink: 0; }
+.node-label-sub { max-width: 100%; font-size: 10px; line-height: 1.3; overflow-wrap: anywhere; }
+.curriculum-section-header { margin: 20px 0 10px; }
+.curriculum-title { font-size: 25px; }
+.questionnaire-modal-card { display: flex; flex-direction: column; padding: 18px; max-width: 560px; max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px); overflow: hidden; }
+.questionnaire-modal-card .questionnaire-top { flex-shrink: 0; margin: 0 0 10px; padding-right: 60px; gap: 10px; }
+.questionnaire-modal-card .modal-dismiss { position: absolute; top: 8px; right: 10px; padding: 8px; margin: 0; }
+.questionnaire-modal-card .q-main-title { font-size: 24px; line-height: 1.15; }
+.questionnaire-count { color: var(--purple); background: var(--lavender-soft); white-space: nowrap; }
+.questionnaire-progress { flex-shrink: 0; margin-bottom: 14px; height: 4px; }
+.questionnaire-modal-card > section { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.questionnaire-modal-card .questionnaire-actions { flex-shrink: 0; margin-top: 12px; padding-top: 10px; gap: 12px; flex-wrap: nowrap; }
+.questionnaire-actions button { min-height: 44px; }
+.questionnaire-actions .btn-secondary { background: var(--lavender-soft); color: var(--purple); }
+.questionnaire-modal-card[data-phase=questions] .questionnaire-actions { margin-top: 8px; padding-top: 8px; }
+.questionnaire-modal-card[data-phase=questions] .q-main-title { display: none; }
+.questionnaire-modal-card[data-phase=questions] .section-kicker { display: none; }
+.questionnaire-form > header h2 { font-size: 23px; line-height: 1.15; margin: 0 0 6px; }
+.questionnaire-form > header p { font-size: 12px; line-height: 1.4; margin: 0; }
+.questionnaire-modal-card .question-list { margin: 12px 0 0; gap: 0; }
+.questionnaire-modal-card .question-item { padding: 14px; }
+.questionnaire-modal-card .question-text { font-size: 16px; line-height: 1.35; margin-bottom: 12px; }
+.questionnaire-modal-card .answer-scale { grid-template-columns: 1fr; gap: 5px; }
+.questionnaire-modal-card .answer-scale label { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 8px 12px; min-height: 44px; text-align: left; }
+.questionnaire-modal-card .answer-scale label span { font-size: 14px; margin: 0; }
+.questionnaire-modal-card input[type=radio], .questionnaire-modal-card input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--purple); }
+.questionnaire-welcome .research-intro { padding: 14px; margin-bottom: 10px; }
+.research-intro .research-icon { display: none; }
+.research-intro h2 { font-size: 20px; line-height: 1.2; }
+.research-intro p { font-size: 13px; }
+.questionnaire-extra { margin-bottom: 12px; }
+.research-consent { gap: 12px; margin-bottom: 0; }
+.consent-check { font-size: 13px; line-height: 1.4; }
+.questionnaire-results .complete-icon { width: 44px; height: 44px; margin: 0 auto 10px; }
+.questionnaire-results h2 { font-size: 24px; }
+.questionnaire-results > p { font-size: 12px; line-height: 1.4; }
+.questionnaire-results .result-domains { gap: 8px; margin: 12px 0; }
+.questionnaire-results .domain-card { padding: 12px; }
+.questionnaire-results #qFinishEnterBtn { margin-top: 12px !important; min-height: 44px; }
+.questionnaire-note textarea { min-height: 70px; }
+.context-step .situation-grid { gap: 8px; margin: 12px 0; }
+.context-step .situation-btn { min-height: 44px; padding: 8px; font-size: 12px; }
+.context-step .motor-profile { margin: 12px 0; padding: 12px; }
+.compact-extra > .telemetry-card { width: auto; }
+.tab-bottom-spacer { height: 0; }
+@media (max-width: 768px) {
+  .m3-compact-player { display: none; }
+  .app-layout { padding-bottom: calc(88px + var(--safe-bottom)); }
+  .duo-header { margin-bottom: 12px; }
+  .daily-space-hero { margin: 4px 0 12px; }
+  .hero-overline { font-size: 9px; }
+  .hero-greeting { font-size: clamp(27px, 7vw, 34px); }
+  .hero-subline { font-size: 12px; }
+  .training-disclaimer { padding: 0; margin: 0 0 6px; }
+  .todays-focus-card { min-height: 0; margin: 0; padding: 16px; gap: 16px; flex-wrap: nowrap; }
+  .focus-card-left { flex: 1 1 0; min-width: 0; }
+  .focus-title { font-size: 26px; }
+  .focus-description { font-size: 12px; margin: 8px 0; }
+  .focus-card-visual { flex: 0 0 80px; width: 80px; height: 80px; margin: 0; }
+  .breath-circle { width: 80px; height: 80px; }
+  .breathing-capsule-widget { width: 80px; height: 80px; }
+  .breathing-ring-pulse { inset: 0; }
+  .curriculum-title { font-size: 23px; }
+  .world-header-banner { padding: 12px 14px; }
+  .world-banner-title { font-size: 22px; }
+  .world-banner-sub { font-size: 11px; }
+  .sandbox-container, .assistant-container, .telemetry-container { gap: 12px; }
+  .sandbox-title, .assistant-title { font-size: 28px; }
+  .sandbox-hero-card, .assistant-hero-card { padding: 0; margin: 0; }
+  .sandbox-sub, .assistant-sub { font-size: 12px; }
+  .sandbox-input-card, .sandbox-mode-card, .assistant-controls-card, .telemetry-card, .telemetry-hero-card { padding: 16px; }
+  .sandbox-input-card .compact-extra { margin-top: 12px; }
+  .mode-card-inner { padding: 12px; min-height: 64px; }
+  .mode-select-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mode-card-title { font-size: 13px; }
+  .sandbox-action-wrap button { width: 100%; }
+  .sandbox-action-wrap { width: 100%; }
+  .mode-card-desc { display: none; }
+  .assistant-visual-card { padding: 10px 14px; margin: 0; }
+  .assistant-visual-card .pulse-wrapper { display: flex; align-items: center; gap: 12px; }
+  .assistant-pulse-circle { width: 44px; height: 44px; flex-shrink: 0; margin: 0; }
+  .assistant-pulse-circle .pulse-icon { font-size: 20px; }
+  .pulse-status-text { margin: 0; text-align: left; font-size: 12px; }
+  .assistant-toggle-card { margin: 0; padding: 0; }
+  .assistant-headphone-alert { margin-top: 10px; padding: 8px 12px; }
+  .control-row-group { margin-bottom: 12px; padding-bottom: 0; }
+  .slider-track-container { margin-top: 6px; }
+  .telemetry-intro h1 { font-size: 30px; }
+  .telemetry-intro p { font-size: 12px; }
+}
+@media (max-height: 640px) {
+  .questionnaire-modal-card { padding: 14px; }
+  .questionnaire-modal-card .questionnaire-top { margin-bottom: 6px; }
+  .questionnaire-progress { margin-bottom: 8px; }
+  .questionnaire-form > header h2 { font-size: 20px; }
+  .questionnaire-form > header p { font-size: 11px; }
+  .questionnaire-modal-card .question-item { padding: 10px; }
+  .questionnaire-modal-card .question-text { font-size: 14px; margin-bottom: 8px; }
+  .questionnaire-modal-card .answer-scale label { min-height: 44px; padding: 6px 10px; }
+}

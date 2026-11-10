@@ -60,6 +60,32 @@
     }
   };
   // Keep deeper explanations available, without making every screen an essay.
+  const researchPoints = document.querySelector('.research-points');
+  if (researchPoints) {
+    const details = document.createElement('details');
+    details.className = 'questionnaire-extra';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Viac o dotazníku a odpovediach';
+    researchPoints.before(details);
+    details.append(summary, researchPoints);
+  }
+  // Optional material stays one tap away, while the primary controls stay near the top.
+  for (const [selector, title] of [
+    ['.sandbox-input-card .preset-chips', 'Príklady slov a viet'],
+    ['#fearedWordsCard', 'Tvoje uložené slová'],
+    ['.questionnaire-note', 'Doplniť poznámku (nepovinné)'],
+    ['#scienceEntryCard', 'Ako funguje tréning'],
+    ['#telemetryDiagnosticCard', 'Tréningový profil'],
+  ]) {
+    const content = document.querySelector(selector);
+    if (!content) continue;
+    const details = document.createElement('details');
+    details.className = 'compact-extra';
+    const summary = document.createElement('summary');
+    summary.textContent = title;
+    content.before(details);
+    details.append(summary, content);
+  }
   document.querySelectorAll(".tab-pane p").forEach((paragraph) => {
     if (paragraph.textContent.trim().length < 180) return;
     const detail = document.createElement("details");
@@ -98,7 +124,7 @@
       label.append(span, select);
       profile.appendChild(label);
     }
-    context.insertBefore(profile, context.querySelector(".questionnaire-note"));
+    context.insertBefore(profile, context.querySelector(".questionnaire-note").closest('details'));
   }
   const release = () => window.releaseGlideAudio?.();
   document.querySelectorAll(".nav-tab").forEach((button) => {

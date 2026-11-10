@@ -18,6 +18,9 @@
   let currentUser = null;
   let currentProfile = null;
   let syncDebounceTimer = null;
+  let profileRequest = null;
+  let profileRequestUser = null;
+  let restorePromise = null;
 
   // Stav odpovedí dotazníka
   const diagnosticAnswers = {
@@ -327,10 +330,12 @@
 
   // Po úspešnom overení používateľa
   async function onAuthSuccess(user) {
-    await fetchProfile(user);
-
+    currentUser = user;
+    sessionStorage.removeItem("fl_guest_mode");
     hideWelcomeOverlay();
     updateUI();
+    await fetchProfile(user);
+    if (currentUser?.id !== user.id) return;
 
     // Dotazník nasleduje hneď po prihlásení, ak ho tento účet ešte nevyplnil.
     if (!isDiagnosticCompleted()) {
@@ -349,7 +354,9 @@
   async function signOut() {
     if (!initSupabase()) return;
     try {
-      await client.auth.signOut();
+      const { error } = await client.auth.signOut({ scope: "local" });
+      if (error) throw error;
+      clearTimeout(syncDebounceTimer);
       currentUser = null;
       currentProfile = null;
       sessionStorage.removeItem("fl_guest_mode");
@@ -365,7 +372,17 @@
   }
 
   // 4. Načítanie profilu a aplikovanie progresu
-  async function fetchProfile(user) {
+  function fetchProfile(user) {
+    if (profileRequest && profileRequestUser === user?.id) return profileRequest;
+    profileRequestUser = user?.id;
+    const request = fetchProfileData(user).finally(() => {
+      if (profileRequest === request) profileRequest = null;
+    });
+    profileRequest = request;
+    return request;
+  }
+
+  async function fetchProfileData(user) {
     if (!client || !user) return;
     try {
       const { data, error } = await client
@@ -379,6 +396,7 @@
         return;
       }
 
+      if (currentUser?.id !== user.id) return;
       currentProfile = data;
 
       // Aplikovanie progresu do gamifikačného enginu
@@ -424,9 +442,11 @@
   // 5. Automatická synchronizácia progresu do Supabase cloudu
   async function syncCloudProgress(state) {
     if (!client || !currentUser || !state) return;
+    const userId = currentUser.id;
 
     clearTimeout(syncDebounceTimer);
     syncDebounceTimer = setTimeout(async () => {
+      if (currentUser?.id !== userId) return;
       try {
         const savedDiag = getSavedDiagnostic();
         const payload = {
@@ -448,10 +468,11 @@
         let { data: updated, error } = await client
           .from("profiles")
           .update(payload)
-          .eq("id", currentUser.id)
+          .eq("id", userId)
           .select("id");
         if (!error && (!updated || updated.length === 0)) {
-          ({ error } = await client.from("profiles").insert({ id: currentUser.id, ...payload }));
+          if (currentUser?.id !== userId) return;
+          ({ error } = await client.from("profiles").insert({ id: userId, ...payload }));
         }
 
         const syncBadge = document.getElementById("profileSyncText");
@@ -893,6 +914,72 @@
     // Starý dotazník bol nahradený oficiálnym Figma dotazníkom riadeným cez window.openFigmaQuestionnaire
   }
 
+  function applySession(session) {
+    if (!session?.user) return;
+    currentUser = session.user;
+    sessionStorage.removeItem("fl_guest_mode");
+    hideWelcomeOverlay();
+    updateUI();
+  }
+
+  function restoreSession() {
+    if (restorePromise) return restorePromise;
+    restorePromise = (async () => {
+      try {
+        const { data: { session }, error } = await client.auth.getSession();
+        if (error) throw error;
+        if (session?.user) {
+          applySession(session);
+          void fetchProfile(session.user);
+        }
+        return session;
+      } catch (_) {
+        // A connection failure must not erase a stored session or trigger logout.
+        console.warn("[Supabase Auth] Obnovenie relácie čaká na pripojenie.");
+        return null;
+      } finally {
+        restorePromise = null;
+      }
+    })();
+    return restorePromise;
+  }
+
+  function watchSession() {
+    // Subscribe before handling any initial/deep-link session. Do not await a
+    // Supabase request while its auth event callback holds the session lock.
+    client.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        const changedUser = currentUser?.id !== session.user.id;
+        applySession(session);
+        if (event !== "TOKEN_REFRESHED" && (changedUser || !currentProfile)) {
+          setTimeout(() => {
+            if (currentUser?.id === session.user.id) void fetchProfile(session.user);
+          }, 0);
+        }
+      } else if (event === "SIGNED_OUT") {
+        clearTimeout(syncDebounceTimer);
+        currentUser = null;
+        currentProfile = null;
+        updateUI();
+        hideWelcomeOverlay();
+      }
+    });
+    const native = window.Capacitor?.getPlatform?.() === "android";
+    const foreground = () => {
+      if (native) void client.auth.startAutoRefresh();
+      void restoreSession();
+    };
+    const background = () => { if (native) void client.auth.stopAutoRefresh(); };
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) background();
+      else foreground();
+    });
+    window.addEventListener("online", foreground);
+    window.Capacitor?.Plugins?.GlideUpdates?.addListener("resume", foreground);
+    window.Capacitor?.Plugins?.GlideUpdates?.addListener("pause", background);
+    if (native) void client.auth.startAutoRefresh();
+  }
+
   // 9. Inicializácia pri štarte aplikácie (Tiché auto-prihlásenie)
   async function init() {
     if (!initSupabase()) {
@@ -901,17 +988,20 @@
     }
 
     setupAuthEvents();
+    watchSession();
+    hideWelcomeOverlay();
+    updateUI();
 
     // Kontrola prijatého natívneho Deep Linku pri štarte
     if (window.__pendingDeepLink) {
       const pending = window.__pendingDeepLink;
       window.__pendingDeepLink = null;
-      window.handleNativeDeepLink(pending);
+      await window.handleNativeDeepLink(pending);
       return;
     }
 
     if (window.location.hash && window.location.hash.indexOf("access_token=") !== -1) {
-      window.handleNativeDeepLink(window.location.href);
+      await window.handleNativeDeepLink(window.location.href);
       return;
     }
 
@@ -919,16 +1009,12 @@
     hideWelcomeOverlay();
     updateUI();
     try {
-      const {
-        data: { session },
-      } = await client.auth.getSession();
-      if (session?.user) {
-        currentUser = session.user;
-        await fetchProfile(currentUser);
-      } else {
+      const session = await restoreSession();
+      if (!session?.user && !currentUser) {
         sessionStorage.setItem("fl_guest_mode", "1");
         // Úvodná obrazovka sa ukáže len pri úplne prvom spustení; dá sa zavrieť.
-        if (!localStorage.getItem("fl_welcome_seen") && !isDiagnosticCompleted()) {
+        const hasStoredSession = !!localStorage.getItem("sb-valdfrjvcvxosjtxhqqb-auth-token");
+        if (!hasStoredSession && !localStorage.getItem("fl_welcome_seen") && !isDiagnosticCompleted()) {
           localStorage.setItem("fl_welcome_seen", "1");
           showWelcomeOverlay();
         }
@@ -939,26 +1025,6 @@
       updateUI();
     }
 
-    // Reagovanie na zmeny stavu autentifikácie (napr. návrat z Google OAuth)
-    client.auth.onAuthStateChange((event, session) => {
-      // Profile requests must run after the auth callback releases its session lock.
-      setTimeout(async () => {
-        console.log("[Supabase Auth] Auth state change:", event);
-        if (session && session.user) {
-          currentUser = session.user;
-          sessionStorage.removeItem("fl_guest_mode");
-          await fetchProfile(currentUser);
-
-          hideWelcomeOverlay();
-          updateUI();
-        } else if (event === "SIGNED_OUT") {
-          currentUser = null;
-          currentProfile = null;
-          updateUI();
-          hideWelcomeOverlay();
-        }
-      }, 0);
-    });
   }
 
   window.fluencyAuth = {
@@ -983,11 +1049,14 @@
     syncCloudProgress,
     getCurrentUser: () => currentUser,
     getCurrentProfile: () => currentProfile,
+    restoreSession,
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    window.fluencyAuthReady = new Promise((resolve) => {
+      document.addEventListener("DOMContentLoaded", () => { void init().then(resolve); }, { once: true });
+    });
   } else {
-    init();
+    window.fluencyAuthReady = init();
   }
 })();

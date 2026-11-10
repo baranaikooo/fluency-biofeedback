@@ -782,6 +782,17 @@ window.duoState = duoState;
 class DuoPathRenderer {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
+    this.selectedWorld = null;
+  }
+
+  selectWorld(worldId) {
+    this.selectedWorld = Number(worldId);
+    this.container.querySelectorAll('.world-section').forEach((section) => {
+      section.hidden = section.id !== `world-section-${this.selectedWorld}`;
+    });
+    document.querySelectorAll('#worldChaptersNav button').forEach((button) => {
+      button.setAttribute('aria-pressed', String(Number(button.dataset.world) === this.selectedWorld));
+    });
   }
 
   scrollToWorld(worldId) {
@@ -790,6 +801,7 @@ class DuoPathRenderer {
       document.getElementById(`world-section-${id}`) ||
       document.getElementById(`world-section-${worldId}`);
     if (el) {
+      this.selectWorld(id);
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
@@ -797,8 +809,28 @@ class DuoPathRenderer {
   render() {
     if (!this.container) return;
     this.container.innerHTML = "";
+    let navigation = document.getElementById('worldChaptersNav');
+    if (!navigation) {
+      navigation = document.createElement('nav');
+      navigation.id = 'worldChaptersNav';
+      navigation.className = 'world-chapters-nav';
+      navigation.setAttribute('aria-label', 'Kapitoly tréningu');
+      this.container.before(navigation);
+    }
+    navigation.replaceChildren();
+    if (!this.selectedWorld) {
+      const next = WORLDS_DATA.find((world) => world.levels.some((level) => duoState.isUnlocked(level.id) && !duoState.isCompleted(level.id)));
+      this.selectedWorld = next?.id || 1;
+    }
 
     WORLDS_DATA.forEach((world) => {
+      const chapter = document.createElement('button');
+      chapter.type = 'button';
+      chapter.dataset.world = world.id;
+      chapter.textContent = String(world.id);
+      chapter.setAttribute('aria-label', `Kapitola ${world.id}: ${world.title}`);
+      chapter.addEventListener('click', () => this.selectWorld(world.id));
+      navigation.appendChild(chapter);
       const worldEl = document.createElement("div");
       worldEl.id = `world-section-${world.id}`;
       worldEl.className = "world-section";
@@ -894,6 +926,7 @@ class DuoPathRenderer {
       worldEl.appendChild(trackEl);
       this.container.appendChild(worldEl);
     });
+    this.selectWorld(this.selectedWorld);
   }
 
   handleNodeClick(level, world, btnElement) {
@@ -1091,6 +1124,7 @@ class DuoLessonController {
       continuePathBtn.addEventListener("click", () => {
         const activeNode = document.querySelector(".path-node-btn.current");
         if (activeNode) {
+          duoPath.selectWorld(activeNode.dataset.levelId.split('.')[0]);
           activeNode.click();
         } else {
           const firstUnlocked = document.querySelector(".path-node-btn.unlocked");

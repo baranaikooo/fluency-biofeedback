@@ -3,3 +3,4 @@
 @import "./glide/structure.css" layer(base);
 @import "./glide/theme.css";
 @import "./glide/mobile.css";
+@import "./glide/compact.css";

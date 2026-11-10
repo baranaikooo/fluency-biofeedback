@@ -21,18 +21,15 @@ async function completeQuestionnaire(page) {
   await page.locator("#qAdultCheck").check();
   await page.locator("#qConsentCheck").check();
   await page.locator("#qNextBtn").click();
-  for (let step = 1; step <= 3; step++) {
-    const scales = page.locator(`#qStep${step} .answer-scale`);
-    for (let i = 0; i < (await scales.count()); i++) {
-      await scales.nth(i).locator('input[type="radio"]').nth(2).check();
-    }
+  for (let question = 0; question < 9; question++) {
+    await page.locator('.question-item:not([hidden]) input[type="radio"]').nth(2).check();
     await page.locator("#qNextBtn").click();
   }
   await page.locator("#qNextBtn").click();
   await page.locator("#qFinishEnterBtn").click();
 }
 
-test("mobile questionnaire keeps the selected answer in view", async ({ page }) => {
+test("mobile questionnaire keeps one question and its actions visible", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
@@ -40,14 +37,15 @@ test("mobile questionnaire keeps the selected answer in view", async ({ page }) 
   await page.locator("#qAdultCheck").check();
   await page.locator("#qConsentCheck").check();
   await page.locator("#qNextBtn").click();
-  const answer = page.locator('#qStep1 .answer-scale').last().locator('input').nth(2);
-  await answer.scrollIntoViewIfNeeded();
-  const before = await page.locator('.questionnaire-modal-card').evaluate(el => el.scrollTop);
-  expect(before).toBeGreaterThan(50);
+  const answer = page.locator('.question-item:not([hidden]) input').nth(2);
+  await expect(page.locator('.question-item:visible')).toHaveCount(1);
   await answer.check();
   await expect(answer).toBeChecked();
-  const after = await page.locator('.questionnaire-modal-card').evaluate(el => el.scrollTop);
-  expect(Math.abs(after - before)).toBeLessThan(5);
+  await expect(page.locator('#qNextBtn')).toBeInViewport();
+  await page.locator('#qNextBtn').click();
+  await expect(page.locator('#qCountText')).toHaveText('2 / 9');
+  await page.locator('#qBackBtn').click();
+  await expect(page.locator('.question-item:not([hidden]) input').nth(2)).toBeChecked();
 });
 
 test("natural consonant transitions pass all three phrase attempts; silence and clipping fail", async ({ page }) => {
@@ -167,6 +165,7 @@ test("the welcome screen and name prompt never block the app", async ({ page }) 
   await expect(page.locator("#tabDril")).toHaveClass(/active/);
   await page.locator("#wordInput").fill("Objednávka");
   await page.locator("#sidebarTabTelemetria").click();
+  await page.locator("details:has(#reopenDiagnosticBtn) > summary").click();
   await page.locator("#reopenDiagnosticBtn").click();
   await expect(page.locator("#figmaQuestionnaireModal")).toBeVisible();
   await completeQuestionnaire(page);
@@ -217,6 +216,7 @@ test("all original worlds, navigation, vault and persistence work without iframe
   await page.locator("#sidebarTabDril").click();
   await expect(page.locator("#tabDril")).toHaveClass(/active/);
   const word = '<img src=x onerror="window.injected=true">Test';
+  await page.getByText('Tvoje uložené slová', { exact: true }).click();
   await page.locator("#vaultWordInput").fill(word);
   await page.locator("#vaultAddBtn").click();
   await expect(page.locator(".vault-item-word").filter({ hasText: word })).toBeVisible();
@@ -224,6 +224,7 @@ test("all original worlds, navigation, vault and persistence work without iframe
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
   await page.locator("#sidebarTabDril").click();
+  await page.getByText('Tvoje uložené slová', { exact: true }).click();
   await expect(page.locator(".vault-item-word").filter({ hasText: word })).toBeVisible();
   await page.locator("#sidebarTabTelemetria").click();
   await expect(page.locator("#tabTelemetria")).toHaveClass(/active/);
@@ -322,17 +323,15 @@ test("questionnaire consent, all sections and completion are reachable", async (
   await page.locator("#qAdultCheck").check();
   await page.locator("#qConsentCheck").check();
   await page.locator("#qNextBtn").click();
-  for (let step = 1; step <= 3; step++) {
-    const scales = page.locator(`#qStep${step} .answer-scale`);
-    for (let i = 0; i < (await scales.count()); i++) {
-      await scales.nth(i).locator('input[type="radio"]').nth(2).check();
-    }
+  for (let question = 0; question < 9; question++) {
+    await page.locator('.question-item:not([hidden]) input[type="radio"]').nth(2).check();
     await page.locator("#qNextBtn").click();
   }
   await page.locator(".motor-profile summary").click();
   for (const key of ["laryngeal", "plosives", "prolongation", "clonic", "social"]) {
     await page.locator(`[data-profile-score="${key}"]`).selectOption(key === "clonic" ? "5" : "1");
   }
+  await page.getByText("Doplniť poznámku (nepovinné)", { exact: true }).click();
   await page.locator("#qNoteInput").fill("Moja poznámka k tréningu.");
   await page.locator("#qNextBtn").click();
   await expect(page.locator("#qStep5")).toBeVisible();
@@ -502,6 +501,7 @@ test("phone safe areas protect the header, navigation, dialogs and lesson contro
   expect(auth.y + auth.height).toBeLessThanOrEqual(640 - 34);
   await page.locator("#closeAuthBtn").click();
   await page.locator("#navTabTelemetria").click();
+  await page.locator("details:has(#reopenDiagnosticBtn) > summary").click();
   await page.locator("#reopenDiagnosticBtn").click();
   await expectWithinScreen(page, "#figmaQuestionnaireModal");
   await page.locator("#qAdultCheck").check();
@@ -510,6 +510,7 @@ test("phone safe areas protect the header, navigation, dialogs and lesson contro
   await expect(page.locator("#qStep1")).toBeVisible();
   await expectWithinScreen(page, "#figmaQuestionnaireModal");
   await page.locator("#closeQuestionnaireBtn").click();
+  await page.locator('details:has(#openScienceModalBtn) > summary').click();
   await page.locator("#openScienceModalBtn").click();
   await expectWithinScreen(page, "#scienceModalBackdrop");
   await page.locator("#scienceModalCloseBtn").click();
@@ -552,12 +553,14 @@ test("telemetry only includes requested training cards and drill controls stay o
     await expect(page.locator("#" + id)).toHaveCount(0);
   }
   await page.locator("#sidebarTabDril").click();
+  await page.getByText('Príklady slov a viet', { exact: true }).click();
   await page.locator('.chip[data-word="Kartou, prosím"]').click();
   await expect(page.locator("#wordInput")).toHaveValue("Kartou, prosím");
   await page.locator("#clearWordBtn").click();
   await expect(page.locator("#wordInput")).toHaveValue("");
   await page.locator('input[name="sandboxMode"][value="guillotine"]').check();
   await expect(page.locator('input[name="sandboxMode"][value="guillotine"]')).toBeChecked();
+  await page.getByText('Tvoje uložené slová', { exact: true }).click();
   await page.locator("#vFilterTraining").click();
   await expect(page.locator("#vFilterTraining")).toHaveClass(/active/);
   expect(errors).toEqual([]);
@@ -625,11 +628,8 @@ test("sign-up is followed by the questionnaire and the profile row is created in
   await page.locator("#qAdultCheck").check();
   await page.locator("#qConsentCheck").check();
   await page.locator("#qNextBtn").click();
-  for (let step = 1; step <= 3; step++) {
-    const scales = page.locator(`#qStep${step} .answer-scale`);
-    for (let i = 0; i < (await scales.count()); i++) {
-      await scales.nth(i).locator('input[type="radio"]').nth(2).check();
-    }
+  for (let question = 0; question < 9; question++) {
+    await page.locator('.question-item:not([hidden]) input[type="radio"]').nth(2).check();
     await page.locator("#qNextBtn").click();
   }
   await page.locator(".motor-profile summary").click();
@@ -643,4 +643,9 @@ test("sign-up is followed by the questionnaire and the profile row is created in
   await expect(page.locator("#firstNameDialog")).toHaveCount(0);
   await expect.poll(() => requests.includes("POST /rest/v1/profiles")).toBe(true);
   expect(requests).toContain("PATCH /rest/v1/profiles");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
+  await expect.poll(() => page.evaluate(() => window.fluencyAuth.getCurrentUser()?.id)).toBe(user.id);
+  await expect(page.locator("#welcomeAuthOverlay")).toBeHidden();
+  expect(requests.filter(request => request === 'POST /auth/v1/token')).toHaveLength(1);
 });

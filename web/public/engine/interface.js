@@ -118,9 +118,14 @@
 
   const answers = {};
   const situations = new Set();
+  const questionItems = Array.from(qModal.querySelectorAll('.question-item'));
+  let questionIndex = 0;
 
   let displayedStep = -1;
   function updateQuestionnaireUI() {
+    const modalCard = qModal.querySelector('.questionnaire-modal-card');
+    modalCard.dataset.phase = qStep >= 1 && qStep <= 3 ? 'questions' : 'other';
+    questionItems.forEach((item, index) => { item.hidden = index !== questionIndex; });
     for (let i = 0; i <= 5; i++) {
       const el = document.getElementById("qStep" + i);
       if (el) el.style.display = i === qStep ? "block" : "none";
@@ -142,24 +147,15 @@
     } else if (qStep >= 1 && qStep <= 3) {
       if (qCountText) {
         qCountText.style.display = "block";
-        qCountText.textContent = qStep + " / 3";
+        qCountText.textContent = `${questionIndex + 1} / ${questionItems.length}`;
       }
-      if (qProgressBar) qProgressBar.style.width = (qStep / 4) * 100 + "%";
+      if (qProgressBar) qProgressBar.style.width = ((questionIndex + 1) / (questionItems.length + 1)) * 90 + "%";
       if (qBackBtn) qBackBtn.style.visibility = "visible";
       if (qNextBtnText) qNextBtnText.textContent = "Pokračovať";
       if (qActionsFooter) qActionsFooter.style.display = "flex";
 
-      // Overenie, či sú zodpovedané otázky
-      let secAnswers = 0;
-      const currentStepEl = document.getElementById("qStep" + qStep);
-      if (currentStepEl) {
-        const scales = currentStepEl.querySelectorAll(".answer-scale");
-        scales.forEach((scale) => {
-          const qid = scale.dataset.qid;
-          if (answers[qid] !== undefined) secAnswers++;
-        });
-        if (qNextBtn) qNextBtn.disabled = secAnswers < scales.length;
-      }
+      const qid = questionItems[questionIndex].querySelector('.answer-scale').dataset.qid;
+      if (qNextBtn) qNextBtn.disabled = answers[qid] === undefined;
     } else if (qStep === 4) {
       if (qCountText) {
         qCountText.style.display = "block";
@@ -176,9 +172,12 @@
       if (qActionsFooter) qActionsFooter.style.display = "none";
       calculateResults();
     }
-    const modalCard = document.querySelector(".questionnaire-modal-card");
-    if (modalCard && displayedStep !== qStep) modalCard.scrollTop = 0;
-    displayedStep = qStep;
+    const pageKey = `${qStep}:${questionIndex}`;
+    if (displayedStep !== pageKey) {
+      modalCard.scrollTop = 0;
+      qModal.querySelector(`#qStep${qStep}`)?.scrollTo(0, 0);
+    }
+    displayedStep = pageKey;
   }
 
   if (qAdultCheck) qAdultCheck.addEventListener("change", updateQuestionnaireUI);
@@ -219,7 +218,12 @@
   if (qNextBtn) {
     qNextBtn.addEventListener("click", () => {
       if (qStep < 5) {
-        qStep++;
+        if (qStep >= 1 && qStep <= 3 && questionIndex < questionItems.length - 1) {
+          questionIndex++;
+          qStep = Math.floor(questionIndex / 3) + 1;
+        } else {
+          qStep++;
+        }
         updateQuestionnaireUI();
       }
     });
@@ -228,7 +232,12 @@
   if (qBackBtn) {
     qBackBtn.addEventListener("click", () => {
       if (qStep > 0) {
-        qStep--;
+        if (qStep >= 1 && qStep <= 3 && questionIndex > 0) {
+          questionIndex--;
+          qStep = Math.floor(questionIndex / 3) + 1;
+        } else {
+          qStep--;
+        }
         updateQuestionnaireUI();
       }
     });
@@ -333,6 +342,7 @@
   window.openFigmaQuestionnaire = function (reset = false) {
     if (reset) {
       qStep = 0;
+      questionIndex = 0;
       Object.keys(answers).forEach((key) => delete answers[key]);
       situations.clear();
       document
