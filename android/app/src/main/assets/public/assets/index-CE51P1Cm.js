@@ -1345,13 +1345,15 @@ Error generating stack: `+e.message+`
     <!-- ==================================================================== -->\r
     <section class="lesson-screen" id="lessonScreen">\r
       <!-- Horná lišta lekcie -->\r
+      <div class="lesson-brandline"><div class="lesson-brand"><span class="lesson-brand-wave" aria-hidden="true"><i></i><i></i><i></i></span><span>glide</span></div><span class="lesson-brand-note">Chvíľa pre tvoj hlas</span></div>
       <div class="lesson-topbar">\r
-        <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu">✕</button>\r
+        <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu" aria-label="Opustiť lekciu">✕</button>\r
 \r
-        <div class="lesson-progress-track">\r
+        <div class="lesson-progress-track" role="progressbar" aria-label="Postup lekciou" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">\r
           <div class="lesson-progress-fill" id="lessonProgressFill" style="width: 0%"></div>\r
         </div>\r
 \r
+        <span class="lesson-step-count" id="lessonStepCount">1 / 4</span>
         <div class="lesson-hearts" hidden id="lessonHearts">\r
           <span>❤️</span>\r
           <span id="lessonHeartsVal">5</span>\r
@@ -1359,7 +1361,8 @@ Error generating stack: `+e.message+`
       </div>\r
 \r
       <!-- Minimalistické tréningové javisko počas reči -->\r
-      <div class="lesson-stage">\r
+      <div class="lesson-stage">
+        <div class="lesson-eyebrow">VLASTNÝM TEMPOM</div>\r
         <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->\r
         <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none">\r
           <div class="ld-speaker-badge">\r
@@ -1381,20 +1384,20 @@ Error generating stack: `+e.message+`
         <!-- Veľký dominantný terč slova -->\r
         <div class="target-word-container">\r
           <h1 class="target-word" id="targetWord">AUTO</h1>\r
-          <div class="target-meta" id="targetMeta">\r
+          <details class="lesson-hint"><summary>Tip k cvičeniu</summary><div class="target-meta" id="targetMeta">\r
             Klasifikácia: Samohláska (A) – cieľ VRT 45–160 ms\r
-          </div>\r
+          </div></details>\r
         </div>\r
 \r
         <!-- Zen Dýchací Kruh (Pacer) -->\r
         <div class="pacer-wrapper">\r
-          <div\r
+          <button type="button"\r
             class="pacer-circle"\r
             id="pacerCircle"\r
             title="Klikni sem pre okamžité predčasné vyhodnotenie!"\r
           >\r
             <span class="pacer-text" id="pacerText">Priprav sa</span>\r
-          </div>\r
+          </button>\r
         </div>\r
 \r
         <!-- Stavové hlásenie pod kruhom -->\r
@@ -1409,7 +1412,7 @@ Error generating stack: `+e.message+`
 \r
         <!-- Prepínače stresorov -->\r
         <div class="lesson-toggles">\r
-          <label class="toggle-pill" title="Použiť reálne MP3 hlasy zo štúdia (/audio)">\r
+          <label class="toggle-pill" title="Prehrávať hlasové otázky">\r
             <input type="checkbox" id="voicePromptToggle" checked />\r
             <span>🔊 Hlasové otázky</span>\r
           </label>\r
@@ -1501,7 +1504,7 @@ Error generating stack: `+e.message+`
           <!-- Tlačidlo Pokračovať -->\r
           <div class="drawer-action-row">\r
             <button class="btn-3d full" id="drawerContinueBtn">\r
-              <span>POKRAČOVAŤ (Enter)</span>\r
+              <span>Pokračovať</span>\r
             </button>\r
           </div>\r
         </div>\r

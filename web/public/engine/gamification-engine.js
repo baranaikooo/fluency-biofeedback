@@ -1617,7 +1617,12 @@ class DuoLessonController {
     if (hearts) hearts.textContent = duoState.state.lives;
 
     const progressPct = Math.min(100, (this.completedItemsCount / this.initialWordCount) * 100);
-    if (fill) fill.style.width = `${progressPct}%`;
+    if (fill) {
+      fill.style.width = `${progressPct}%`;
+      fill.parentElement.setAttribute("aria-valuenow", String(Math.round(progressPct)));
+    }
+    const count = document.getElementById("lessonStepCount");
+    if (count) count.textContent = `${Math.min(this.initialWordCount, this.completedItemsCount + 1)} / ${this.initialWordCount}`;
 
     if (context && this.currentLevel) {
       const remaining = this.lessonQueue.length;
@@ -1710,7 +1715,7 @@ class DuoLessonController {
       if (iconEl) iconEl.textContent = "✓";
       if (continueBtn) {
         continueBtn.className = "btn-3d green full";
-        continueBtn.innerHTML = "<span>POKRAČOVAŤ (Enter)</span>";
+        continueBtn.innerHTML = "<span>Pokračovať</span>";
       }
 
       if (result.freeReply) {
@@ -1741,7 +1746,7 @@ class DuoLessonController {
       if (iconEl) iconEl.textContent = "!";
       if (continueBtn) {
         continueBtn.className = "btn-3d amber full";
-        continueBtn.innerHTML = "<span>ROZUMIEM, SKÚSIM ĎALEJ</span>";
+        continueBtn.innerHTML = "<span>Skúsiť ďalej</span>";
       }
 
       if (result.meta?.freeReply) {

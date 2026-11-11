@@ -1337,13 +1337,15 @@
     <!-- ==================================================================== -->
     <section class="lesson-screen" id="lessonScreen">
       <!-- Horná lišta lekcie -->
+      <div class="lesson-brandline"><div class="lesson-brand"><span class="lesson-brand-wave" aria-hidden="true"><i></i><i></i><i></i></span><span>glide</span></div><span class="lesson-brand-note">Chvíľa pre tvoj hlas</span></div>
       <div class="lesson-topbar">
-        <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu">✕</button>
+        <button class="lesson-exit-btn" id="exitLessonBtn" title="Opustiť lekciu" aria-label="Opustiť lekciu">✕</button>
 
-        <div class="lesson-progress-track">
+        <div class="lesson-progress-track" role="progressbar" aria-label="Postup lekciou" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="lesson-progress-fill" id="lessonProgressFill" style="width: 0%"></div>
         </div>
 
+        <span class="lesson-step-count" id="lessonStepCount">1 / 4</span>
         <div class="lesson-hearts" hidden id="lessonHearts">
           <span>❤️</span>
           <span id="lessonHeartsVal">5</span>
@@ -1352,6 +1354,7 @@
 
       <!-- Minimalistické tréningové javisko počas reči -->
       <div class="lesson-stage">
+        <div class="lesson-eyebrow">VLASTNÝM TEMPOM</div>
         <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->
         <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none">
           <div class="ld-speaker-badge">
@@ -1373,20 +1376,20 @@
         <!-- Veľký dominantný terč slova -->
         <div class="target-word-container">
           <h1 class="target-word" id="targetWord">AUTO</h1>
-          <div class="target-meta" id="targetMeta">
+          <details class="lesson-hint"><summary>Tip k cvičeniu</summary><div class="target-meta" id="targetMeta">
             Klasifikácia: Samohláska (A) – cieľ VRT 45–160 ms
-          </div>
+          </div></details>
         </div>
 
         <!-- Zen Dýchací Kruh (Pacer) -->
         <div class="pacer-wrapper">
-          <div
+          <button type="button"
             class="pacer-circle"
             id="pacerCircle"
             title="Klikni sem pre okamžité predčasné vyhodnotenie!"
           >
             <span class="pacer-text" id="pacerText">Priprav sa</span>
-          </div>
+          </button>
         </div>
 
         <!-- Stavové hlásenie pod kruhom -->
@@ -1401,7 +1404,7 @@
 
         <!-- Prepínače stresorov -->
         <div class="lesson-toggles">
-          <label class="toggle-pill" title="Použiť reálne MP3 hlasy zo štúdia (/audio)">
+          <label class="toggle-pill" title="Prehrávať hlasové otázky">
             <input type="checkbox" id="voicePromptToggle" checked />
             <span>🔊 Hlasové otázky</span>
           </label>
@@ -1493,7 +1496,7 @@
           <!-- Tlačidlo Pokračovať -->
           <div class="drawer-action-row">
             <button class="btn-3d full" id="drawerContinueBtn">
-              <span>POKRAČOVAŤ (Enter)</span>
+              <span>Pokračovať</span>
             </button>
           </div>
         </div>

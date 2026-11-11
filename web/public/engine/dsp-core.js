@@ -249,13 +249,13 @@ document.querySelectorAll(".mode-tabs button").forEach((btn) => {
 
     const m1T = document.getElementById("m1Title");
     if (currentMode === "standard") {
-      if (startBtn) startBtn.textContent = "2. Štart pokusu (Pacer)";
+      if (startBtn) startBtn.textContent = "Začať pokus";
       if (m1T) m1T.textContent = "1. Reakčný čas (Tichý blok < 700 ms)";
     } else if (currentMode === "guillotine") {
-      if (startBtn) startBtn.textContent = "2. Pokladňa (Limit 550 ms)";
+      if (startBtn) startBtn.textContent = "Vypočuť otázku";
       if (m1T) m1T.textContent = "1. Časová gilotína (Štart < 550 ms)";
     } else if (currentMode === "ambush") {
-      if (startBtn) startBtn.textContent = "2. Aktivovať pascu hovoru";
+      if (startBtn) startBtn.textContent = "Pripraviť hovor";
       if (m1T) m1T.textContent = "1. Pohotovosť v hovore (< 750 ms)";
     }
   });
@@ -578,6 +578,8 @@ window.abortActiveDspSession = abortActiveDspSession;
 
 function setDspMode(mode) {
   currentMode = mode || "standard";
+  const lessonSurface = document.getElementById("lessonScreen");
+  if (lessonSurface) lessonSurface.dataset.mode = currentMode;
   if (ambushTimeout) {
     clearTimeout(ambushTimeout);
     ambushTimeout = null;
@@ -588,13 +590,13 @@ function setDspMode(mode) {
   const m1Title = document.getElementById("m1Title");
 
   if (currentMode === "standard") {
-    if (startBtn) startBtn.textContent = "2. Štart pokusu (Pacer)";
+    if (startBtn) startBtn.textContent = "Začať pokus";
     if (m1Title) m1Title.textContent = "1. Reakčný čas (Tichý blok < 1600 ms)";
   } else if (currentMode === "guillotine") {
-    if (startBtn) startBtn.textContent = "2. Pokladňa (Limit 600 ms)";
+    if (startBtn) startBtn.textContent = "Vypočuť otázku";
     if (m1Title) m1Title.textContent = "1. Časová gilotína (Štart < 600 ms)";
   } else if (currentMode === "ambush") {
-    if (startBtn) startBtn.textContent = "2. Aktivovať pascu hovoru";
+    if (startBtn) startBtn.textContent = "Pripraviť hovor";
     if (m1Title) m1Title.textContent = "1. Pohotovosť v hovore (< 1200 ms)";
   }
 }
@@ -750,7 +752,7 @@ function runStandardPacer(meta) {
   scheduleDspTimeout(() => {
     if (pacerCircle) {
       pacerCircle.style.transition = "transform 2.2s ease-out, border-color 0.3s";
-      pacerCircle.style.transform = "scale(1.55)";
+      pacerCircle.style.transform = "scale(1.16)";
       pacerCircle.style.borderColor = "#1cb0f6";
     }
     setPacerText("Nádych + sánka");
