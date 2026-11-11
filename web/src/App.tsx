@@ -25,6 +25,7 @@ function loadEngine() {
   runtime.glideEngineReady = (async () => {
     Object.assign(window, { supabase: await import("@supabase/supabase-js") });
     for (const file of [
+      "training-core",
       "questions-and-voices",
       "dsp-core",
       "gamification-engine",

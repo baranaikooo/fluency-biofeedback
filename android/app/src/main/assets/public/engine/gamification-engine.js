@@ -1699,10 +1699,10 @@ class DuoLessonController {
 
     if (passed) {
       duoSfx.playSuccess();
-      if (headEl) headEl.textContent = "Rečový pokus zaznamenaný";
-      if (subEl) subEl.textContent = "Odmena je za absolvovanie pokusu, nie za plynulosť.";
+      if (headEl) headEl.textContent = "✨ Ďalší krok za tebou!";
+      if (subEl) subEl.textContent = "Ideš ďalej vlastným tempom.";
       if (xpBadge) xpBadge.textContent = "+30 XP";
-      duoState.addXp(30);
+      duoState.addXp(window.GlideTrainingCore.reward({accepted:passed}));
 
       if (drawer) {
         drawer.className = "feedback-drawer active success";

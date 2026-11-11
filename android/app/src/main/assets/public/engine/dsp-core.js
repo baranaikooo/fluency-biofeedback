@@ -1047,7 +1047,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     return;
   }
 
-  if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < (meta.freeReply ? 200 : 40)) {
+  if (!window.GlideTrainingCore.capture({firstSound, nucleus, peakDb:maxFDb, minimumDb:fullVoiceMin, voicedMs:periodicHoldMs, freeReply:meta.freeReply, clipped:isClipped}).accepted) {
     banner.className = "badge-banner fail";
     banner.textContent = "Odpoveď sa nepodarilo zachytiť. Skús sa priblížiť k mikrofónu.";
     setRow(

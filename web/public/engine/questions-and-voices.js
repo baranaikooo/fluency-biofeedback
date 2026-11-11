@@ -855,8 +855,7 @@
 
       this.currentQuestion = question;
       if (question.audioVariants?.length) {
-        const choices = question.audioVariants.filter(v => v.speaker !== this.lastSpeaker);
-        const choice = choices[Math.floor(Math.random() * choices.length)] || question.audioVariants[0];
+        const choice = window.GlideTrainingCore.voiceVariant(question.audioVariants, this.lastSpeaker);
         this.lastSpeaker = choice.speaker;
         question = {...question, audioUrl:choice.url};
       }
