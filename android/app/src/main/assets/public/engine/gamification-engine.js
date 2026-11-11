@@ -1514,6 +1514,7 @@ class DuoLessonController {
     if (!this.currentLevel) return;
 
     this.isLessonActive = true;
+    this.voiceIntroPlayed = false;
     this.isSosDrill = false;
     if (typeof window.setDspMode === "function") {
       window.setDspMode(this.currentLevel.mode || "standard");
@@ -1566,6 +1567,7 @@ class DuoLessonController {
       document.querySelector('input[name="sandboxMode"]:checked')?.value || "standard";
 
     this.isLessonActive = true;
+    this.voiceIntroPlayed = false;
     this.isSosDrill = true;
     if (typeof window.setDspMode === "function") {
       window.setDspMode(selectedMode);

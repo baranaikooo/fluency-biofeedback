@@ -523,7 +523,9 @@ function playScenarioAudio(scenario, onDone) {
 // ============================================================================
 // CLEANUP A DYNAMICKÝ REŽIM DSP RELÁCIE
 // ============================================================================
+let dspStartGeneration = 0;
 function abortActiveDspSession() {
+  dspStartGeneration++;
   dspTimeouts.forEach(clearTimeout);
   dspTimeouts.clear();
   if (cancelCalibration) cancelCalibration();
@@ -674,6 +676,10 @@ function setPacerText(text) {
 
 if (startBtn) {
   startBtn.addEventListener("click", async () => {
+    if (startBtn.disabled) return;
+    startBtn.disabled = true;
+    const generation = dspStartGeneration;
+    const lesson = typeof duoLesson !== "undefined" ? duoLesson : null;
     try {
       if (!isCalibrated) {
         if (statusAlert)
@@ -687,7 +693,23 @@ if (startBtn) {
         await audioCtx.resume();
       }
     } catch (e) {
+      startBtn.disabled = false;
       console.warn("Audio setup/kalibrácia error:", e);
+      return;
+    }
+
+    if (generation !== dspStartGeneration) return;
+    const id = lesson?.currentLevel?.id;
+    const introId = id === 'sos' ? 'sos_intro' : /^[1-5]\.5$/.test(id || '') ? 'boss_' + id[0] : null;
+    const intro = window.TRAINING_VOICES?.find(q => q.id === introId);
+    if (lesson?.isLessonActive && intro && !lesson.voiceIntroPlayed && voicePromptToggle?.checked) {
+      lesson.voiceIntroPlayed = true;
+      if (statusAlert) statusAlert.textContent = intro.promptText;
+      playScenarioAudio(intro, () => {
+        if (generation !== dspStartGeneration) return;
+        startBtn.disabled = false;
+        startBtn.click();
+      });
       return;
     }
 
@@ -733,6 +755,14 @@ function runStandardPacer(meta) {
   }, 1800);
 }
 
+function lessonScenario() {
+  const lesson = typeof duoLesson !== 'undefined' ? duoLesson : null;
+  if (!lesson?.isLessonActive || lesson.isSosDrill) return null;
+  const ids = {'4.1':['pokladna_payment'],'4.2':['pokladna_2'],'4.3':['pokladna_4'],'4.4':['pokladna_4'],'4.5':['pokladna_payment','pokladna_2','pokladna_3','pokladna_goodbye'],'5.1':['kurier_intro'],'5.2':['lekar_appointment'],'5.3':['servis_intro'],'5.4':['kurier_confirm'],'5.5':['hovor_goodbye']}[lesson.currentLevel?.id];
+  const index = Math.max(0, lesson.currentLevel?.words?.indexOf(lesson.currentWordItem?.word) || 0);
+  return ids ? window.fluencyVoice?.rotator.getById(ids[index % ids.length]) : null;
+}
+
 function runGuillotineMode(meta) {
   if (startBtn) startBtn.disabled = true;
   if (targetWord) targetWord.classList.add("expose");
@@ -741,7 +771,7 @@ function runGuillotineMode(meta) {
 
   let cashierScenario;
   if (typeof fluencyVoice !== "undefined" && fluencyVoice && fluencyVoice.rotate) {
-    cashierScenario = fluencyVoice.rotate("pokladna");
+    cashierScenario = lessonScenario() || fluencyVoice.rotate("pokladna");
   } else {
     const scenarioIdx =
       typeof duoLesson !== "undefined" &&
@@ -789,7 +819,7 @@ function armAmbushCall(meta) {
         isDuoLesson && duoLesson.currentLevel && duoLesson.currentLevel.ambushCategory
           ? duoLesson.currentLevel.ambushCategory
           : "all";
-      scenario = fluencyVoice.rotate(cat);
+      scenario = lessonScenario() || fluencyVoice.rotate(cat);
     } else {
       const scenarioIdx =
         isDuoLesson && duoLesson.currentLevel && duoLesson.currentLevel.scenarioIndex !== undefined

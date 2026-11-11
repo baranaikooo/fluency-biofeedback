@@ -387,6 +387,310 @@
   // ==========================================================================
   // 2. INTELIGENTNÝ ROTÁTOR S HISTÓRIOU (LRU BUFFER)
   // ==========================================================================
+  const TRAINING_VOICES = [
+  {
+    "id": "pokladna_1",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "promptText": "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "pokladna_2",
+    "category": "pokladna",
+    "caller": "Predavač Martin",
+    "promptText": "Máte našu zákaznícku kartičku alebo aplikáciu v mobile?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "pokladna_3",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "promptText": "Bloček si prajete vytlačiť, alebo poslať na mail?",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "pokladna_4",
+    "category": "pokladna",
+    "caller": "Pokladníčka Alena",
+    "promptText": "Budete si priať aj papierovú tašku na nákup?",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "pokladna_5",
+    "category": "pokladna",
+    "caller": "Predavač Martin",
+    "promptText": "Máte to presne, alebo vám mám vydávať z dvadsiatky?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kurier_1",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "promptText": "Dobrý deň, tu je kuriér Packeta. Stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kurier_2",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "promptText": "Stojím dole pred bránou, viete zbehnúť na prízemie?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kurier_3",
+    "category": "kurier",
+    "caller": "Kuriér Igor (DPD)",
+    "promptText": "Zásielka je na meno Novák. Povedzte mi prosím overovací PIN kód.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kurier_4",
+    "category": "kurier",
+    "caller": "Kuriér Igor (DPD)",
+    "promptText": "Nezastihol som vás. Môžem vám nechať balík v susednom boxe?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "lekar_1",
+    "category": "lekar",
+    "caller": "Dr. Kováč (Všeobecný lekár)",
+    "promptText": "Dobrý, kvôli čomu ste prišli? A vaše meno poprosím ešte.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "lekar_2",
+    "category": "lekar",
+    "caller": "Sestrička Elena",
+    "promptText": "Prosím, pri telefóne, povedzte mi vaše celé meno a rodné číslo.",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "lekar_3",
+    "category": "lekar",
+    "caller": "Magistra Jana (Lekáreň)",
+    "promptText": "Dobrý deň v lekárni. Máte elektronický recept, alebo voľnopredajný liek?",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "lekar_4",
+    "category": "lekar",
+    "caller": "Dr. Kováč (Lekár)",
+    "promptText": "Kedy sa u vás tie príznaky objavili prvýkrát?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kaviaren_1",
+    "category": "kaviaren",
+    "caller": "Baristka Lucia",
+    "promptText": "Dobrý deň, čo vám môžem dnes ponúknuť na pitie?",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "kaviaren_2",
+    "category": "kaviaren",
+    "caller": "Baristka Lucia",
+    "promptText": "Kávu si prajete s klasickým mliekom, alebo bezlaktózovým?",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "kaviaren_3",
+    "category": "kaviaren",
+    "caller": "Čašník Tomáš",
+    "promptText": "Dobrý deň, máte u nás urobenú rezerváciu stola na meno?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kaviaren_4",
+    "category": "kaviaren",
+    "caller": "Čašník Tomáš",
+    "promptText": "Budete platiť dohromady, alebo si účet rozdelíte zvlášť?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "urad_1",
+    "category": "urad",
+    "caller": "Úradník JUDr. Molnár",
+    "promptText": "Klientske centrum, pri telefóne Molnár. V akej záležitosti voláte?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "urad_2",
+    "category": "urad",
+    "caller": "Pracovníčka banky Martina",
+    "promptText": "Z dôvodu bezpečnosti mi prosím nadiktujte vaše trvalé bydlisko.",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "urad_3",
+    "category": "urad",
+    "caller": "Úradník JUDr. Molnár",
+    "promptText": "Prajete si poslať potvrdenie na vašu poštovú adresu alebo email?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "servis_1",
+    "category": "servis",
+    "caller": "Miro (Automechanik)",
+    "promptText": "Autoservis, prosím? Čo presne sa stalo s vaším autom a kedy ho viete priniesť?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "servis_2",
+    "category": "servis",
+    "caller": "Miro (Automechanik)",
+    "promptText": "Kedy by vám vyhovovalo pristaviť vozidlo na diagnostiku?",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "servis_3",
+    "category": "servis",
+    "caller": "Dispečer Roman (Havarijná služba)",
+    "promptText": "Havarijná služba, uveďte presnú adresu, kde sa nachádzate.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "boss_1",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "promptText": "Čaká ťa samohláskový boss tréning. Uvoľni sánku a nechaj hlas začať jemne. Každé slovo povedz vlastným tempom.",
+    "voiceGender": "male",
+    "audioUrl": "/audio/coach/boss_1.mp3"
+  },
+  {
+    "id": "boss_2",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "promptText": "Vitaj v rezonančnom boss tréningu. Sústreď sa na plynulé spojenie hlások. Nemusíš sa ponáhľať.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "boss_3",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "promptText": "Čaká ťa boss tréning náročných spoluhlások. Uvoľni pery a jazyk. Začni ľahkým kontaktom a plynulo pokračuj.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "boss_4",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "promptText": "Teraz si vyskúšaš rozhovor pri pokladni. Vypočuj si otázku a potom odpovedz. Dôležitejší než rýchlosť je pokojný začiatok.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "boss_5",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "promptText": "Čaká ťa záverečná simulácia hovoru. Zdvihni telefón, vypočuj si volajúceho a odpovedz. Daj svojim prvým slovám priestor.",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "pokladna_payment",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "promptText": "Budete platiť v hotovosti alebo kartou?",
+    "suggestedResponse": "Kartou, prosím",
+    "voiceGender": "female",
+    "audioUrl": "/audio/scenarios/pokladna_payment.mp3"
+  },
+  {
+    "id": "pokladna_goodbye",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "promptText": "Ďakujem za nákup, dovidenia.",
+    "suggestedResponse": "Dovidenia",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "kurier_intro",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "promptText": "Dobrý deň, tu je kuriér. S kým hovorím?",
+    "suggestedResponse": "Dobrý deň, pri telefóne",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "kurier_confirm",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "promptText": "Dobrý deň, čakáte dnes zásielku?",
+    "suggestedResponse": "Áno, čakám balík, ďakujem",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "lekar_appointment",
+    "category": "lekar",
+    "caller": "Sestrička Elena",
+    "promptText": "Ambulancia, prosím. Povedzte mi vaše meno a s čím vám môžeme pomôcť.",
+    "suggestedResponse": "Peter Novák, volám kvôli termínu",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "servis_intro",
+    "category": "servis",
+    "caller": "Miro (Automechanik)",
+    "promptText": "Autoservis, pri telefóne Miro. V akej veci voláte?",
+    "suggestedResponse": "Dobrý deň, volám ohľadom auta",
+    "voiceGender": "male",
+    "audioUrl": null
+  },
+  {
+    "id": "hovor_goodbye",
+    "category": "urad",
+    "caller": "Pracovníčka klientskeho centra",
+    "promptText": "To je všetko. Ďakujem za zavolanie a prajem vám pekný deň.",
+    "suggestedResponse": "Ďakujem pekne za pomoc, prajem pekný deň",
+    "voiceGender": "female",
+    "audioUrl": null
+  },
+  {
+    "id": "sos_intro",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "promptText": "Vitaj v rýchlom drille. Čakajú ťa tri pokusy. Najprv sa nadýchni a potom povedz svoje slovo alebo vetu. Vlastným tempom.",
+    "voiceGender": "male",
+    "audioUrl": null
+  }
+];
+  for (const clip of TRAINING_VOICES.filter(q => q.category !== 'coach')) {
+    const existing = QUESTION_BANK.find(q => q.id === clip.id);
+    if (existing) { if (clip.audioUrl) existing.audioUrl = clip.audioUrl; }
+    else QUESTION_BANK.push(clip);
+  }
+  window.TRAINING_VOICES = TRAINING_VOICES;
+
   class QuestionRotator {
     constructor(bank, historySize = 6) {
       this.bank = bank;
@@ -443,6 +747,8 @@
       this.currentQuestion = this.rotator.getNext("pokladna");
       this.voices = [];
       this.activeAudio = null;
+      this.playbackGeneration = 0;
+      this.safetyTimer = null;
       this.isSpeaking = false;
       this.preferOriginalMp3 = true; // Použije MP3 ak existuje
 
@@ -518,8 +824,12 @@
     }
 
     stop() {
+      this.playbackGeneration++;
+      clearTimeout(this.safetyTimer);
       if (this.activeAudio) {
         try {
+          this.activeAudio.onended = null;
+          this.activeAudio.onerror = null;
           this.activeAudio.pause();
           this.activeAudio.currentTime = 0;
         } catch (_) {}
@@ -546,9 +856,10 @@
       this.currentQuestion = question;
       this.isSpeaking = true;
 
+      const generation = this.playbackGeneration;
       let finished = false;
       const finishOnce = () => {
-        if (finished) return;
+        if (finished || generation !== this.playbackGeneration) return;
         finished = true;
         this.isSpeaking = false;
         this.activeAudio = null;
@@ -560,11 +871,16 @@
         const audio = new Audio(question.audioUrl);
         this.activeAudio = audio;
         audio.onended = finishOnce;
+        let fallbackStarted = false;
         audio.onerror = () => {
+          if (generation !== this.playbackGeneration || fallbackStarted) return;
+          fallbackStarted = true;
+          audio.onended = audio.onerror = null;
+          audio.pause();
           // Fallback na syntézu ak MP3 zlyhá
           this.speakWithSynthesis(question, finishOnce);
         };
-        audio.play().catch(() => audio.onerror());
+        audio.play().catch(() => audio.onerror?.());
         return;
       }
 
@@ -574,7 +890,7 @@
 
     speakWithSynthesis(question, finishOnce) {
       if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-        setTimeout(finishOnce, 1200);
+        this.safetyTimer = setTimeout(finishOnce, 1200);
         return;
       }
 
@@ -595,7 +911,7 @@
 
         // Bezpečnostný timeout proti uviaznutiu v mobilnom Safari/Chrome
         const approxDurationMs = Math.max(1200, (question.promptText.length * 75) / utter.rate);
-        const safetyTimer = setTimeout(() => {
+        const safetyTimer = this.safetyTimer = setTimeout(() => {
           finishOnce();
         }, approxDurationMs + 1000);
 

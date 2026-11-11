@@ -1,0 +1,376 @@
+[
+  {
+    "id": "pokladna_1",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "prompt": "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/pokladna_1.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "pokladna_2",
+    "category": "pokladna",
+    "caller": "Predavač Martin",
+    "prompt": "Máte našu zákaznícku kartičku alebo aplikáciu v mobile?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/pokladna_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "pokladna_3",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "prompt": "Bloček si prajete vytlačiť, alebo poslať na mail?",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/pokladna_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "pokladna_4",
+    "category": "pokladna",
+    "caller": "Pokladníčka Alena",
+    "prompt": "Budete si priať aj papierovú tašku na nákup?",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/pokladna_4.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "pokladna_5",
+    "category": "pokladna",
+    "caller": "Predavač Martin",
+    "prompt": "Máte to presne, alebo vám mám vydávať z dvadsiatky?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/pokladna_5.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kurier_1",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "prompt": "Dobrý deň, tu je kuriér Packeta. Stojím pred vašou bytovkou, ale na bráne nevidím vaše meno a nefunguje zvonček. Viete mi prosím popísať, ktorý je to vchod a na ktorom poschodí vás nájdem?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kurier_1.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kurier_2",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "prompt": "Stojím dole pred bránou, viete zbehnúť na prízemie?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kurier_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kurier_3",
+    "category": "kurier",
+    "caller": "Kuriér Igor (DPD)",
+    "prompt": "Zásielka je na meno Novák. Povedzte mi prosím overovací PIN kód.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kurier_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kurier_4",
+    "category": "kurier",
+    "caller": "Kuriér Igor (DPD)",
+    "prompt": "Nezastihol som vás. Môžem vám nechať balík v susednom boxe?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kurier_4.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "lekar_1",
+    "category": "lekar",
+    "caller": "Dr. Kováč (Všeobecný lekár)",
+    "prompt": "Dobrý, kvôli čomu ste prišli? A vaše meno poprosím ešte.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/lekar_1.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "lekar_2",
+    "category": "lekar",
+    "caller": "Sestrička Elena",
+    "prompt": "Prosím, pri telefóne, povedzte mi vaše celé meno a rodné číslo.",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/lekar_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "lekar_3",
+    "category": "lekar",
+    "caller": "Magistra Jana (Lekáreň)",
+    "prompt": "Dobrý deň v lekárni. Máte elektronický recept, alebo voľnopredajný liek?",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/lekar_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "lekar_4",
+    "category": "lekar",
+    "caller": "Dr. Kováč (Lekár)",
+    "prompt": "Kedy sa u vás tie príznaky objavili prvýkrát?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/lekar_4.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kaviaren_1",
+    "category": "kaviaren",
+    "caller": "Baristka Lucia",
+    "prompt": "Dobrý deň, čo vám môžem dnes ponúknuť na pitie?",
+    "voiceId": "9Nd358gE1qQp0pDh8FgP",
+    "file": "scenarios/kaviaren_1.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kaviaren_2",
+    "category": "kaviaren",
+    "caller": "Baristka Lucia",
+    "prompt": "Kávu si prajete s klasickým mliekom, alebo bezlaktózovým?",
+    "voiceId": "9Nd358gE1qQp0pDh8FgP",
+    "file": "scenarios/kaviaren_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kaviaren_3",
+    "category": "kaviaren",
+    "caller": "Čašník Tomáš",
+    "prompt": "Dobrý deň, máte u nás urobenú rezerváciu stola na meno?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kaviaren_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kaviaren_4",
+    "category": "kaviaren",
+    "caller": "Čašník Tomáš",
+    "prompt": "Budete platiť dohromady, alebo si účet rozdelíte zvlášť?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kaviaren_4.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "urad_1",
+    "category": "urad",
+    "caller": "Úradník JUDr. Molnár",
+    "prompt": "Klientske centrum, pri telefóne Molnár. V akej záležitosti voláte?",
+    "voiceId": "cplwxUXg1o6YMGPOYRbt",
+    "file": "scenarios/urad_1.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "urad_2",
+    "category": "urad",
+    "caller": "Pracovníčka banky Martina",
+    "prompt": "Z dôvodu bezpečnosti mi prosím nadiktujte vaše trvalé bydlisko.",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/urad_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "urad_3",
+    "category": "urad",
+    "caller": "Úradník JUDr. Molnár",
+    "prompt": "Prajete si poslať potvrdenie na vašu poštovú adresu alebo email?",
+    "voiceId": "cplwxUXg1o6YMGPOYRbt",
+    "file": "scenarios/urad_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "servis_1",
+    "category": "servis",
+    "caller": "Miro (Automechanik)",
+    "prompt": "Autoservis, prosím? Čo presne sa stalo s vaším autom a kedy ho viete priniesť?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/servis_1.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "servis_2",
+    "category": "servis",
+    "caller": "Miro (Automechanik)",
+    "prompt": "Kedy by vám vyhovovalo pristaviť vozidlo na diagnostiku?",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/servis_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "servis_3",
+    "category": "servis",
+    "caller": "Dispečer Roman (Havarijná služba)",
+    "prompt": "Havarijná služba, uveďte presnú adresu, kde sa nachádzate.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/servis_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "boss_1",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "prompt": "Čaká ťa samohláskový boss tréning. Uvoľni sánku a nechaj hlas začať jemne. Každé slovo povedz vlastným tempom.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "coach/boss_1.mp3",
+    "audioUrl": "/audio/coach/boss_1.mp3",
+    "status": "generated"
+  },
+  {
+    "id": "boss_2",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "prompt": "Vitaj v rezonančnom boss tréningu. Sústreď sa na plynulé spojenie hlások. Nemusíš sa ponáhľať.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "coach/boss_2.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "boss_3",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "prompt": "Čaká ťa boss tréning náročných spoluhlások. Uvoľni pery a jazyk. Začni ľahkým kontaktom a plynulo pokračuj.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "coach/boss_3.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "boss_4",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "prompt": "Teraz si vyskúšaš rozhovor pri pokladni. Vypočuj si otázku a potom odpovedz. Dôležitejší než rýchlosť je pokojný začiatok.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "coach/boss_4.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "boss_5",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "prompt": "Čaká ťa záverečná simulácia hovoru. Zdvihni telefón, vypočuj si volajúceho a odpovedz. Daj svojim prvým slovám priestor.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "coach/boss_5.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "pokladna_payment",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "prompt": "Budete platiť v hotovosti alebo kartou?",
+    "suggestedResponse": "Kartou, prosím",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/pokladna_payment.mp3",
+    "additional": true,
+    "audioUrl": "/audio/scenarios/pokladna_payment.mp3",
+    "status": "generated"
+  },
+  {
+    "id": "pokladna_goodbye",
+    "category": "pokladna",
+    "caller": "Pokladníčka Zuzana",
+    "prompt": "Ďakujem za nákup, dovidenia.",
+    "suggestedResponse": "Dovidenia",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/pokladna_goodbye.mp3",
+    "additional": true,
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kurier_intro",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "prompt": "Dobrý deň, tu je kuriér. S kým hovorím?",
+    "suggestedResponse": "Dobrý deň, pri telefóne",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kurier_intro.mp3",
+    "additional": true,
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "kurier_confirm",
+    "category": "kurier",
+    "caller": "Kuriér Marek",
+    "prompt": "Dobrý deň, čakáte dnes zásielku?",
+    "suggestedResponse": "Áno, čakám balík, ďakujem",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/kurier_confirm.mp3",
+    "additional": true,
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "lekar_appointment",
+    "category": "lekar",
+    "caller": "Sestrička Elena",
+    "prompt": "Ambulancia, prosím. Povedzte mi vaše meno a s čím vám môžeme pomôcť.",
+    "suggestedResponse": "Peter Novák, volám kvôli termínu",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/lekar_appointment.mp3",
+    "additional": true,
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "servis_intro",
+    "category": "servis",
+    "caller": "Miro (Automechanik)",
+    "prompt": "Autoservis, pri telefóne Miro. V akej veci voláte?",
+    "suggestedResponse": "Dobrý deň, volám ohľadom auta",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "scenarios/servis_intro.mp3",
+    "additional": true,
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "hovor_goodbye",
+    "category": "urad",
+    "caller": "Pracovníčka klientskeho centra",
+    "prompt": "To je všetko. Ďakujem za zavolanie a prajem vám pekný deň.",
+    "suggestedResponse": "Ďakujem pekne za pomoc, prajem pekný deň",
+    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "file": "scenarios/hovor_goodbye.mp3",
+    "additional": true,
+    "audioUrl": null,
+    "status": "pending"
+  },
+  {
+    "id": "sos_intro",
+    "category": "coach",
+    "caller": "Sprievodca tréningom",
+    "prompt": "Vitaj v rýchlom drille. Čakajú ťa tri pokusy. Najprv sa nadýchni a potom povedz svoje slovo alebo vetu. Vlastným tempom.",
+    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "file": "coach/sos_intro.mp3",
+    "audioUrl": null,
+    "status": "pending"
+  }
+]
