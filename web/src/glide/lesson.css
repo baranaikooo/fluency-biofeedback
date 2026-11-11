@@ -96,3 +96,4 @@
 .lesson-screen[data-task-kind="sentence"] .target-word {font-family:"DM Sans",sans-serif;font-size:clamp(20px,4vw,28px);line-height:1.3;font-weight:500;}
 @media(max-height:680px) {.lesson-screen #lessonPause {margin-top:2px;padding:4px 8px;font-size:11px;}.lesson-round-dialog{padding:22px;}}
 .node-popover .popover-meta {display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.lesson-screen #scenarioReadyBtn {margin-top:12px;min-height:44px;font-size:12px;border-radius:12px;}

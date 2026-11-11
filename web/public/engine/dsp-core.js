@@ -477,6 +477,23 @@ function stopRinging() {
 }
 
 function playScenarioAudio(scenario, onDone) {
+  let canSynthesize = false;
+  try { canSynthesize = !!window.speechSynthesis?.getVoices().some(v => /^(sk|cs)(-|_|$)/i.test(v.lang || "")); } catch (_) {}
+  const textOnly = !voicePromptToggle.checked || (!scenario.audioUrl && !canSynthesize);
+  if (textOnly && scenario.category !== "coach" && (scenario.promptText || scenario.fallbackPrompt)) {
+    const generation = dspStartGeneration;
+    document.getElementById("scenarioReadyBtn")?.remove();
+    if (typeof duoLesson !== "undefined") duoLesson.showDialogueBubble(scenario);
+    const ready = document.createElement("button");
+    ready.id = "scenarioReadyBtn";
+    ready.type = "button";
+    ready.className = "btn-3d green full";
+    ready.textContent = "Môžem odpovedať";
+    ready.onclick = () => {ready.remove(); if (generation === dspStartGeneration) onDone();};
+    document.getElementById("lessonDialogueCard").append(ready);
+    if (statusAlert) statusAlert.textContent = "Prečítaj si otázku. Pokus spustíš, keď budeš pripravený/á.";
+    return;
+  }
   if (!voicePromptToggle.checked) {
     onDone();
     return;
@@ -525,6 +542,7 @@ function playScenarioAudio(scenario, onDone) {
 // ============================================================================
 let dspStartGeneration = 0;
 function abortActiveDspSession() {
+  document.getElementById("scenarioReadyBtn")?.remove();
   dspStartGeneration++;
   dspTimeouts.forEach(clearTimeout);
   dspTimeouts.clear();

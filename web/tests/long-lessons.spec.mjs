@@ -175,3 +175,11 @@ test('own sentence task controls fit a small phone', async ({ page }) => {
  await expect(page.locator('#lessonPause')).toBeInViewport({ratio:1});
  await expect(page.locator('#targetWord')).toContainText('vlastnej vete');
 });
+test('text-only question waits for readiness and cannot continue after cancellation',async({page})=>{
+ await open(page);await launch(page,'4.1');
+ await page.evaluate(()=>{document.getElementById('voicePromptToggle').checked=false;window.readinessCallbacks=0;const question=lessonScenario();playScenarioAudio(question,()=>window.readinessCallbacks++);});
+ await expect(page.locator('#scenarioReadyBtn')).toBeVisible();expect(await page.evaluate(()=>window.readinessCallbacks)).toBe(0);
+ await page.locator('#scenarioReadyBtn').click();expect(await page.evaluate(()=>window.readinessCallbacks)).toBe(1);
+ await page.evaluate(()=>{playScenarioAudio(lessonScenario(),()=>window.readinessCallbacks++);window.lateReady=document.getElementById('scenarioReadyBtn').onclick;window.abortActiveDspSession();window.lateReady();});
+ await expect(page.locator('#scenarioReadyBtn')).toHaveCount(0);expect(await page.evaluate(()=>window.readinessCallbacks)).toBe(1);
+});

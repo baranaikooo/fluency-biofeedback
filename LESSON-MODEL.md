@@ -13,3 +13,4 @@
 - Počty úloh sú produktový návrh, nie vedecky stanovená dávka terapie. Individuálna nahrávaná odpoveď má naďalej existujúci limit merania; možno ju ukončiť skôr kliknutím na kruh.
 
 Overovanie: automatické kontroly všetkých 25 lekcií a dvoch dĺžok, rôznorodosť obsahu, míľniky, prerušenie, obnovenie bez opakovanej odmeny, oddelenie účtov, paralelné uloženie krátkej/plnej verzie a zobrazenie na malom mobile.
+Pri nedostupnej syntéze a chýbajúcej nahrávke alebo pri vypnutých hlasových otázkach zostane otázka zobrazená. Používateľ sám potvrdí, že môže odpovedať; meranie nezačína počas čítania.
