@@ -854,6 +854,12 @@
       }
 
       this.currentQuestion = question;
+      if (question.audioVariants?.length) {
+        const choices = question.audioVariants.filter(v => v.speaker !== this.lastSpeaker);
+        const choice = choices[Math.floor(Math.random() * choices.length)] || question.audioVariants[0];
+        this.lastSpeaker = choice.speaker;
+        question = {...question, audioUrl:choice.url};
+      }
       this.isSpeaking = true;
 
       const generation = this.playbackGeneration;
@@ -940,6 +946,13 @@
       return this.currentQuestion;
     }
   }
+
+  const payment = QUESTION_BANK.find(q => q.id === 'pokladna_payment');
+  if (payment) payment.caller = "Pokladňa";
+  if (payment) payment.audioVariants = [
+    {url:'/audio/scenarios/pokladna_payment.mp3',speaker:'Suzie'},
+    {url:'/audio/scenarios/pokladna_payment_jaro.mp3',speaker:'Jaro'}
+  ];
 
   // Vytvorenie globálnej inštancie
   const fluencyVoiceEngine = new FluencyVoiceEngine();

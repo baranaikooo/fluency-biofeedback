@@ -372,5 +372,15 @@
     "file": "coach/sos_intro.mp3",
     "audioUrl": null,
     "status": "pending"
+  },
+  {
+    "id": "pokladna_payment_jaro",
+    "category": "pokladna",
+    "caller": "Predavač Jaro",
+    "prompt": "Budete platiť v hotovosti alebo kartou?",
+    "voiceId": "DXwrzy2wtKORwDTbsMwk",
+    "file": "scenarios/pokladna_payment_jaro.mp3",
+    "audioUrl": "/audio/scenarios/pokladna_payment_jaro.mp3",
+    "status": "generated"
   }
 ]

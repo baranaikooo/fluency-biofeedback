@@ -731,6 +731,12 @@ if (startBtn) {
 }
 
 function runStandardPacer(meta) {
+  if (window.glidePractice?.settings().technique === "none") {
+    if (startBtn) startBtn.disabled = true;
+    if (targetWord) targetWord.classList.add("expose");
+    triggerGoSignal(meta, 1600);
+    return;
+  }
   if (startBtn) startBtn.disabled = true;
 
   if (targetWord) targetWord.classList.add("expose");
@@ -803,7 +809,7 @@ function armAmbushCall(meta) {
   if (startBtn) startBtn.disabled = true;
 
   const isDuoLesson = typeof duoLesson !== "undefined" && duoLesson.isLessonActive;
-  const randomDelay = isDuoLesson ? 800 : Math.floor(Math.random() * 8000) + 3500;
+  const randomDelay = window.glidePractice?.settings().surprise ? (isDuoLesson ? 800 : Math.floor(Math.random() * 8000) + 3500) : 0;
 
   setPacerText("Pasca aktívna");
   if (pacerCircle) pacerCircle.style.borderColor = "#ce82ff";
@@ -836,7 +842,7 @@ function armAmbushCall(meta) {
     }
 
     if (callOverlay) callOverlay.classList.add("active");
-    startRinging();
+    if (window.glidePractice?.settings().surprise) startRinging();
 
     if (answerCallBtn) {
       answerCallBtn.onclick = () => {
@@ -889,7 +895,7 @@ function triggerGoSignal(meta, maxLatencyAllowedMs) {
     pacerCircle.style.borderColor = "#58cc02";
     pacerCircle.textContent = "HOVOR!";
     targetWord.className = "target-word go";
-    statusAlert.textContent = meta.freeReply ? "Odpovedz vlastnými slovami. Po odpovedi klikni na kruh." : `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, limit štartu ${maxLatencyAllowedMs} ms) – klikni na kruh pre rýchle vyhodnotenie!`;
+    statusAlert.textContent = meta.freeReply ? "Odpovedz vlastnými slovami. Po odpovedi klikni na kruh." : `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, ${window.glidePractice?.settings().pressure ? `orientačný cieľ ${maxLatencyAllowedMs} ms` : "bez časového cieľa"}) – klikni na kruh pre rýchle vyhodnotenie!`;
 
     captureAndAudit(meta, maxLatencyAllowedMs, captureMs);
   }, 110);
@@ -1043,7 +1049,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
 
   if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < (meta.freeReply ? 200 : 40)) {
     banner.className = "badge-banner fail";
-    banner.textContent = "❌ NEÚSPEŠNÝ POKUS: Príliš tichý hlas / šepot alebo úplný tichý blok.";
+    banner.textContent = "Odpoveď sa nepodarilo zachytiť. Skús sa priblížiť k mikrofónu.";
     setRow(
       "m1",
       firstSound === -1
@@ -1051,7 +1057,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
         : `${frames[firstSound].t.toFixed(0)} ms`,
       false,
     );
-    setRow("m2", "Chýba plná fonácia", false);
+    setRow("m2", "Nedostatok hlasového signálu", false);
     setRow("m3", "-", false);
     setRow("m4", "-", false);
     setRow("m5", "-", false);
@@ -1085,8 +1091,8 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
 
   // Pravidlo 1: Reakčná latencia (Tichý štartovací blok)
   const latency = frames[firstSound].t;
-  const p1 = latency <= maxLatencyAllowedMs;
-  setRow("m1", `${latency.toFixed(0)} ms (limit ${maxLatencyAllowedMs} ms)`, p1);
+  const p1 = !window.glidePractice?.settings().pressure || latency <= maxLatencyAllowedMs;
+  setRow("m1", window.glidePractice?.settings().pressure ? `${latency.toFixed(0)} ms (orientačný cieľ ${maxLatencyAllowedMs} ms)` : `${latency.toFixed(0)} ms (bez časového cieľa)`, p1);
 
   // Pravidlo 2: Anticheat na znelú barličku ("Eee..." / "Mmm...") pred neznelou spoluhláskou
   let p2 = true,
@@ -1107,7 +1113,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     }
     if (preVoicingCount >= 8) {
       p2 = false;
-      p2Text = 'Chyba: Znelá barlička ("Eee") pred neznelou hláskou';
+      p2Text = 'Zachytená znelosť ("Eee") pred neznelou hláskou';
     }
   }
   setRow("m2", p2Text, p2);
@@ -1172,9 +1178,9 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
       p4Text += " (Rýchly nábeh; skús jemnejší štart)";
     } else if (vrt > 340) {
       p4 = false;
-      p4Text += " (Príliš oneskorený dychový únik > 340 ms)";
+      p4Text += " (nábeh > 340 ms)";
     } else {
-      p4Text += vrt >= 45 && vrt <= 180 ? " (🌟 PERFECT mäkký nábeh)" : " (Plynulý nábeh)";
+      p4Text += vrt >= 45 && vrt <= 180 ? " (orientačné pásmo)" : " (Plynulý nábeh)";
     }
   } else {
     // Po spoluhláskach je rýchly nábeh hlasiviek (10–40 ms) fyziologicky normálny.
@@ -1182,7 +1188,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
       p4Text += " (Prirodzený rýchly prechod po spoluhláske)";
     } else if (vrt > 340) {
       p4 = false;
-      p4Text += " (Zamknutý prechod do samohlásky > 340 ms)";
+      p4Text += " (prechod > 340 ms)";
     } else {
       p4Text += " (Plynulý artikulačný kontakt)";
     }
@@ -1218,23 +1224,23 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   const p5 = !clonicDetected;
   let p5Text = "Plynulá (bez výpadku)";
   if (clonicDetected) {
-    p5Text = 'Chyba: Klonická repetícia slabiky ("K-k-kto")';
+    p5Text = 'Krátke opakovanie v signáli ("K-k-kto")';
   }
   setRow("m5", p5Text, p5);
 
   drawEnvelopeGraph(frames, sThresh, t20, t80, totalDurationMs);
 
-  const passed = p1 && p2 && p3 && p4 && p5;
-  const isPerfect =
-    (meta.type === "vowel" ? vrt >= 45 && vrt <= 180 : vrt >= 15 && vrt <= 100) && latency <= 700;
+  const acousticWithinGuide = p1 && p2 && p3 && p4 && p5;
+  const passed = true; // A captured spoken attempt counts; acoustic ranges are descriptive.
+  const isPerfect = false;
   if (passed) {
     banner.className = "badge-banner success";
     banner.textContent = isPerfect
-      ? "🌟 PERFECT ZÁSAH (+50 XP) – Dokonale uvoľnený štart hlasiviek!"
-      : "✅ ÚSPEŠNÝ POKUS (+30 XP) – Plynulý nástup bez bloku!";
+      ? "Reč zachytená."
+      : "✅ Reč zachytená (+30 XP za absolvovanie).";
   } else {
     banner.className = "badge-banner fail";
-    banner.textContent = "❌ DETEGOVANÝ BLOK ALEBO KŔČ – Skontroluj červené metriky nižšie.";
+    banner.textContent = "❌ Signál sa nepodarilo spoľahlivo vyhodnotiť.";
   }
   statusAlert.textContent = "Vyhodnotenie dokončené.";
 
@@ -1250,6 +1256,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
         isPerfect,
         vrt,
         latency,
+        acousticWithinGuide,
         p1,
         p2,
         p3,
@@ -1324,5 +1331,5 @@ function setRow(id, text, pass) {
   const el = document.getElementById(id);
   if (!el) return;
   el.textContent = text;
-  el.className = "metric-val " + (pass ? "ok" : "err");
+  el.className = "metric-val";
 }

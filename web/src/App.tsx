@@ -33,6 +33,7 @@ function loadEngine() {
       "supabase-auth",
       "lifecycle",
       "updates",
+      "practice",
     ]) {
       await new Promise<void>((resolve, reject) => {
         const script = document.createElement("script");

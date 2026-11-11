@@ -21,7 +21,7 @@ const WORLDS_DATA = [
       {
         id: "1.1",
         title: "Úvod do A a O",
-        desc: "Jemný nábeh samohlások A a O bez tvrdého glotálneho úderu v hrtane.",
+        desc: "Voliteľne si vyskúšaj jemný začiatok samohlások A a O.",
         mode: "standard",
         words: ["Auto", "Otec", "Áno", "Oko"],
         xp: 30,
@@ -142,7 +142,7 @@ const WORLDS_DATA = [
       {
         id: "3.2",
         title: "Tvrdá velára K a digraf CH",
-        desc: "Najčastejšie spúšťače laryngeálneho kŕča – ľahký dotyk.",
+        desc: "Vyskúšaj ľahký kontakt pri tvorení spoluhlások.",
         mode: "standard",
         words: ["Káva", "Chlieb", "Kľúč", "Chlapec"],
         xp: 40,
@@ -266,7 +266,7 @@ const WORLDS_DATA = [
       {
         id: "5.2",
         title: "Boss 2: Zdravotná sestra / Ambulancia",
-        desc: "Hovor do ambulancie: povedz svoje meno a požiadavku bez kŕča.",
+        desc: "Hovor do ambulancie: povedz podľa seba, čo potrebuješ.",
         mode: "ambush",
         scenarioIndex: 2, // Doctor
         ambushCategory: "lekar",
@@ -761,7 +761,7 @@ class DuoStateManager {
             </div>
             <div class="h-badge-col">
               <span class="h-status-badge ${item.passed ? (item.isPerfect ? "perfect" : "ok") : "err"}">
-                ${item.passed ? (item.isPerfect ? "🌟 DOKONALÉ" : "✓ SPRÁVNE") : "✕ BLOK"}
+                ${item.passed ? (item.isPerfect ? "ZAZNAMENANÉ" : "ZAZNAMENANÉ") : "NEISTÝ SIGNÁL"}
               </span>
             </div>
           </div>
@@ -854,7 +854,7 @@ class DuoPathRenderer {
                   : 2);
           if (world.id === recWorldId) {
             diagBadge =
-              '<div class="world-recommended-badge">🎯 Odporúčaný štart podľa tvojej diagnostiky</div>';
+              '<div class="world-recommended-badge">🎯 Návrh štartu podľa tvojho dotazníka</div>';
           }
         }
       } catch (_) {}
@@ -932,7 +932,7 @@ class DuoPathRenderer {
   handleNodeClick(level, world, btnElement) {
     const isUnlocked = duoState.isUnlocked(level.id);
     if (!isUnlocked) {
-      duoSfx.playMistake();
+      // Capture errors are retriable and never penalized.
       alert("Tento level je zatiaľ zamknutý. Najprv dokonči predchádzajúce úrovne v príbehu!");
       return;
     }
@@ -1294,7 +1294,7 @@ class DuoLessonController {
           <div class="vault-item-meta">
             <span class="vault-item-cat">${escapeHtml(item.category || "Všeobecné")}</span>
             <span class="vault-item-score ${item.isMastered ? "mastered" : ""}">
-              ${item.isMastered ? "🏆 ODBLOKOVANÉ" : `${item.successes || 0}/3 pokusov bez kŕča`}
+              ${item.isMastered ? "🏆 PRECVIČENÉ" : `${item.successes || 0}/3 absolvovaných pokusov`}
             </span>
           </div>
         </div>
@@ -1674,7 +1674,8 @@ class DuoLessonController {
 
   handleAttemptResult(result) {
     this.totalAttemptsCount++;
-    const { passed, isPerfect, vrt, latency } = result;
+    const { passed, vrt, latency } = result;
+    const isPerfect = false;
 
     const word = this.currentWordItem ? this.currentWordItem.word : "Slovo";
 
@@ -1697,21 +1698,11 @@ class DuoLessonController {
     const continueBtn = document.getElementById("drawerContinueBtn");
 
     if (passed) {
-      if (isPerfect) {
-        duoSfx.playPerfect();
-        if (headEl) headEl.textContent = "🌟 Dokonalý mäkký nábeh!";
-        if (subEl)
-          subEl.textContent = `Hlasivky naskočili uvoľnene v sweet-spote (VRT ${vrt ? vrt.toFixed(1) : "70"} ms).`;
-        if (xpBadge) xpBadge.textContent = "+50 XP";
-        duoState.addXp(50);
-      } else {
-        duoSfx.playSuccess();
-        if (headEl) headEl.textContent = "✅ Úspešný pokus!";
-        if (subEl)
-          subEl.textContent = `Plynulý štart reči bez tonického kŕča (VRT ${vrt ? vrt.toFixed(1) : "85"} ms).`;
-        if (xpBadge) xpBadge.textContent = "+30 XP";
-        duoState.addXp(30);
-      }
+      duoSfx.playSuccess();
+      if (headEl) headEl.textContent = "Rečový pokus zaznamenaný";
+      if (subEl) subEl.textContent = "Odmena je za absolvovanie pokusu, nie za plynulosť.";
+      if (xpBadge) xpBadge.textContent = "+30 XP";
+      duoState.addXp(30);
 
       if (drawer) {
         drawer.className = "feedback-drawer active success";
@@ -1734,14 +1725,14 @@ class DuoLessonController {
       }
     } else {
       duoSfx.playMistake();
-      this.mistakesCount++;
+      // Keep completion rewards independent of fluency.
 
       if (typeof navigator !== "undefined" && navigator.vibrate) {
         navigator.vibrate([40, 60, 40]);
       }
 
-      if (headEl) headEl.textContent = "⚡ Zaznamenaný tvrdý úder alebo blok";
-      if (subEl) subEl.textContent = "Nevadí! Uvoľni sánku, zopakujeme si toto slovo na konci. ❤️";
+      if (headEl) headEl.textContent = "Signál sa nepodarilo zachytiť";
+      if (subEl) subEl.textContent = "Môžeš skúsiť mikrofón znova alebo opraviť hodnotenie.";
       if (xpBadge) xpBadge.textContent = "+0 XP";
 
       if (drawer) {
@@ -1763,11 +1754,7 @@ class DuoLessonController {
       failed.attempts = (failed.attempts || 0) + 1;
       this.lessonQueue.push(failed);
 
-      if (duoState.state.lives > 0) {
-        duoState.state.lives = Math.max(1, duoState.state.lives - 1);
-        duoState.save();
-        duoState.renderHud();
-      }
+      // No loss of lives for speech differences or capture errors.
     }
 
     this.updateLessonProgress();
@@ -1782,6 +1769,7 @@ class DuoLessonController {
 
   completeCurrentLesson() {
     this.isLessonActive = false;
+    window.dispatchEvent(new CustomEvent("glide-practice-complete"));
     if (typeof duoSfx !== "undefined" && duoSfx.playFanfare) {
       duoSfx.playFanfare();
     }
@@ -1794,7 +1782,7 @@ class DuoLessonController {
       ),
     );
     const baseReward = this.currentLevel.xp || 40;
-    const finalXp = baseReward + (accuracy >= 90 ? 20 : 0);
+    const finalXp = baseReward;
 
     // Ak ide o úroveň v príbehu, zapíš do kampane
     if (!this.isSosDrill && this.currentLevel.id !== "sos") {
@@ -1818,11 +1806,11 @@ class DuoLessonController {
     if (title) title.textContent = this.isSosDrill ? "SOS Dril Dokončený!" : "Lekcia Dokončená!";
     if (sub)
       sub.textContent = this.isSosDrill
-        ? "Hlasivky sú uvoľnené a pripravené na reálnu konverzáciu v teréne."
-        : "Tvoj mozog prepísal ďalšiu kŕčovú dráhu na plynulý nábeh.";
+        ? "Tréning je dokončený. Ako sa ti dnes hovorilo?"
+        : "Dokončil/a si tréning. Pokrok zahŕňa aj ochotu komunikovať.";
 
     if (xpRecap) xpRecap.textContent = `+${finalXp} XP`;
-    if (accRecap) accRecap.textContent = `${accuracy}%`;
+    if (accRecap) accRecap.textContent = "Hotovo";
     if (streakRecap) streakRecap.textContent = `🔥 ${duoState.state.streak} dní`;
 
     if (modal) modal.classList.add("active");
