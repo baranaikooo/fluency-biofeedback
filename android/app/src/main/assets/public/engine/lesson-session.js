@@ -39,18 +39,33 @@
       s.seenRounds.every((r) => r === 1 || r === 2)
     );
   }
-  function saved(level, size) {
-    const candidates = Object.values(read()).filter(
-      (s) => valid(s, level) && (!size || s.size === size),
-    );
-    return candidates.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0] || null;
+  function saved(level) {
+    const candidates = Object.values(read()).filter((s) => valid(s, level));
+    const full = candidates
+      .filter((s) => s.size === "full")
+      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0];
+    if (full) return full;
+    const old = candidates
+      .filter((s) => s.size === "short")
+      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0];
+    if (!old) return null;
+    // Retain participation credit from an older short checkpoint; no extra reward.
+    const plan = root.GlideLessonPlan.build(level, root.QUESTION_BANK || [], () => 0);
+    const completed = Math.min(old.completed, plan.tasks.length);
+    return {
+      ...old,
+      size: "full",
+      total: plan.tasks.length,
+      completed,
+      queue: plan.tasks.slice(completed),
+    };
   }
   function prepare(level) {
     owner = key();
-    const size = document.getElementById("lessonLength")?.value === "short" ? "short" : "full";
-    const checkpoint = saved(level, size);
+    const size = "full";
+    const checkpoint = saved(level);
     if (checkpoint) return checkpoint;
-    const plan = root.GlideLessonPlan.build(level, size === "short", root.QUESTION_BANK || []);
+    const plan = root.GlideLessonPlan.build(level, root.QUESTION_BANK || []);
     return {
       version: 1,
       levelId: level.id,
@@ -67,7 +82,10 @@
     if (!c.isLessonActive || c.isSosDrill || !c.pathSession) return true;
     if (owner !== key()) return false;
     const all = read();
-    all[c.currentLevel.id + ":" + c.pathSession.size] = {
+    for (const [slot, value] of Object.entries(all)) {
+      if (value?.levelId === c.currentLevel.id && value.size === "short") delete all[slot];
+    }
+    all[c.currentLevel.id + ":full"] = {
       version: 1,
       updatedAt: Date.now(),
       levelId: c.currentLevel.id,
@@ -107,18 +125,16 @@
     c.exitFocusMode();
   }
   function describe(level) {
-    const select = document.getElementById("lessonLength"),
-      count = document.getElementById("popoverWordCount"),
-      start = document.getElementById("startLessonBtn");
-    const size = select.value;
-    const s = saved(level, size);
-    const total = size === "short" ? 6 : root.GlideLessonPlan.isBoss(level) ? 16 : 12;
-    count.textContent =
-      s && s.size === size
-        ? `${s.completed} / ${s.total} hotovo · uložené`
-        : `${total} úloh · 3 kolá`;
-    start.querySelector("span").textContent =
-      s && s.size === size ? "POKRAČOVAŤ V LEKCII" : "SPUSTIŤ TRÉNING";
+    const count = document.getElementById("popoverWordCount");
+    const start = document.getElementById("startLessonBtn");
+    const checkpoint = saved(level);
+    const total = root.GlideLessonPlan.isBoss(level) ? 16 : 12;
+    count.textContent = checkpoint
+      ? `${checkpoint.completed} / ${checkpoint.total} hotovo · uložené`
+      : `${total} úloh · 3 kolá`;
+    start.querySelector("span").textContent = checkpoint
+      ? "POKRAČOVAŤ V LEKCII"
+      : "SPUSTIŤ TRÉNING";
   }
   const roundDialog = document.createElement("dialog");
   roundDialog.id = "lessonRoundDialog";
@@ -135,17 +151,6 @@
   repeat.textContent = "Zopakovať pre seba (+1 úloha)";
   document.getElementById("drawerContinueBtn")?.insertAdjacentElement("beforebegin", repeat);
   repeat.hidden = true;
-  const select = document.createElement("select");
-  select.id = "lessonLength";
-  select.setAttribute("aria-label", "Dĺžka lekcie");
-  select.innerHTML =
-    '<option value="full">Celá lekcia · 12 úloh</option><option value="short">Krátka verzia · 6 úloh</option>';
-  document
-    .getElementById("popoverWordCount")
-    ?.parentElement.insertAdjacentElement("afterend", select);
-  select.addEventListener("change", () => {
-    if (duoLesson.currentLevel) describe(duoLesson.currentLevel);
-  });
   const pauseButton = document.createElement("button");
   pauseButton.id = "lessonPause";
   pauseButton.type = "button";
@@ -173,10 +178,7 @@
   const open = model.openLevelPopover.bind(model);
   model.openLevelPopover = function (...args) {
     open(...args);
-    const level = args[0],
-      s = saved(level);
-    select.options[0].textContent = `Celá lekcia · ${level.isBoss ? 16 : 12} úloh`;
-    select.value = s?.size || "full";
+    const level = args[0];
     describe(level);
   };
   const next = model.loadNextItem.bind(model);

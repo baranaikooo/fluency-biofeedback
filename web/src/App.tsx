@@ -37,6 +37,7 @@ function loadEngine() {
       "lifecycle",
       "updates",
       "practice",
+      "selects",
     ]) {
       await new Promise<void>((resolve, reject) => {
         const script = document.createElement("script");

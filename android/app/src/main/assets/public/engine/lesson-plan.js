@@ -184,9 +184,9 @@
     return level.isBoss === true || /^Boss\b/i.test(level.title || "");
   }
   const ROUND_NAMES = ["Rozohriatie", "Hlavná výzva", "Vlastnými slovami"];
-  function build(level, short = false, bank = [], random = Math.random) {
+  function build(level, bank = [], random = Math.random) {
     const boss = isBoss(level);
-    const counts = short ? [2, 2, 2] : boss ? [3, 8, 5] : [3, 6, 3];
+    const counts = boss ? [3, 8, 5] : [3, 6, 3];
     const tasks = [];
     const isScene = ["guillotine", "ambush"].includes(level.mode);
     const base = [...level.words];
@@ -255,7 +255,7 @@
         }
         tasks.push({
           ...task,
-          id: `${level.id}-${short ? "short" : "full"}-${cursor++}`,
+          id: `${level.id}-full-${cursor++}`,
           round,
           attempts: 0,
         });
@@ -264,7 +264,7 @@
     return {
       version: 1,
       levelId: level.id,
-      size: short ? "short" : "full",
+      size: "full",
       tasks,
       roundNames: ROUND_NAMES.slice(),
       counts,

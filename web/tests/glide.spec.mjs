@@ -329,7 +329,7 @@ test("questionnaire consent, all sections and completion are reachable", async (
   }
   await page.locator(".motor-profile summary").click();
   for (const key of ["laryngeal", "plosives", "prolongation", "clonic", "social"]) {
-    await page.locator(`[data-profile-score="${key}"]`).selectOption(key === "clonic" ? "5" : "1");
+    await page.locator(`[data-profile-score="${key}"]`).selectOption(key === "clonic" ? "5" : "1", {force:true});
   }
   await page.getByText("Doplniť poznámku (nepovinné)", { exact: true }).click();
   await page.locator("#qNoteInput").fill("Moja poznámka k tréningu.");
@@ -634,7 +634,7 @@ test("sign-up is followed by the questionnaire and the profile row is created in
   }
   await page.locator(".motor-profile summary").click();
   for (const key of ["laryngeal", "plosives", "prolongation", "clonic", "social"]) {
-    await page.locator(`[data-profile-score="${key}"]`).selectOption("2");
+    await page.locator(`[data-profile-score="${key}"]`).selectOption("2", {force:true});
   }
   await page.locator("#qNextBtn").click();
   await page.locator("#qFinishEnterBtn").click();

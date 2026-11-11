@@ -8,18 +8,18 @@ async function open(page) {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
 }
-async function launch(page, level = "1.1", short = false) {
+async function launch(page, level = "1.1") {
   await page.evaluate(
-    ({ level, short }) => {
+    ({ level }) => {
       const world = WORLDS_DATA.find((w) => w.levels.some((l) => l.id === level));
       duoLesson.openLevelPopover(
         world.levels.find((l) => l.id === level),
         world,
       );
-      document.getElementById("lessonLength").value = short ? "short" : "full";
+
       duoLesson.launchLesson();
     },
-    { level, short },
+    { level },
   );
 }
 async function answer(page) {
@@ -47,12 +47,12 @@ test("full lesson has twelve tasks and pausable round breaks", async ({ page }) 
   expect(await page.evaluate(() => duoLesson.lessonQueue[0].round)).toBe(1);
   await expect(page.locator("#lessonRoundDialog")).not.toBeVisible();
 });
-test("short lesson completes six tasks and clears checkpoint", async ({ page }) => {
+test("lesson completes twelve tasks and clears checkpoint", async ({ page }) => {
   await open(page);
-  await launch(page, "1.1", true);
-  for (let i = 0; i < 6; i++) {
+  await launch(page, "1.1");
+  for (let i = 0; i < 12; i++) {
     await answer(page);
-    if (i === 1 || i === 3) {
+    if (i === 2 || i === 8) {
       await expect(page.locator("#lessonRoundDialog")).toBeVisible();
       await page.locator("#lessonRoundContinue").click();
     }
@@ -131,28 +131,45 @@ test("checkpoints stay isolated across accounts", async ({ page }) => {
     }),
   ).toBe(null);
 });
-test("short and full checkpoints do not overwrite each other", async ({ page }) => {
+test("older short checkpoint keeps participation credit in the single lesson", async ({ page }) => {
   await open(page);
-  await launch(page);
-  await page.evaluate(() =>
-    window.dispatchEvent(
-      new CustomEvent("dsp-evaluation-complete", {
-        detail: { passed: true, vrt: 50, latency: 500 },
+  const xp = await page.evaluate(() => duoState.state.xp);
+  await page.evaluate(() => {
+    const level = WORLDS_DATA[0].levels[0];
+    const tasks = window.GlideLessonPlan.build(level, window.QUESTION_BANK).tasks;
+    localStorage.setItem(
+      "glide_path_sessions_v1_guest",
+      JSON.stringify({
+        "1.1:short": {
+          version: 1,
+          levelId: "1.1",
+          size: "short",
+          queue: tasks.slice(2, 6),
+          total: 6,
+          completed: 2,
+          attempts: 2,
+          seenRounds: [1],
+          voiceIntroPlayed: true,
+        },
       }),
+    );
+  });
+  await launch(page);
+  await expect(page.locator("#lessonStepCount")).toHaveText("3 / 12");
+  expect(await page.evaluate(() => duoState.state.xp)).toBe(xp);
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("glide_path_sessions_v1_guest"))["1.1:short"],
     ),
-  );
-  await page.locator("#lessonPause").click();
-  await launch(page, "1.1", true);
-  await page.locator("#lessonPause").click();
-  await launch(page, "1.1", false);
-  await expect(page.locator("#lessonStepCount")).toHaveText("2 / 12");
+  ).toBeUndefined();
 });
-test("continue path opens the saved lesson and length", async ({ page }) => {
+
+test("continue path opens the saved lesson without a length selector", async ({ page }) => {
   await open(page);
   await launch(page, "1.1", true);
   await page.locator("#lessonPause").click();
   await page.locator("#continuePathBtn").click();
-  await expect(page.locator("#lessonLength")).toHaveValue("short");
+  await expect(page.locator("#lessonLength")).toHaveCount(0);
   await expect(page.locator("#startLessonBtn")).toContainText("POKRAČOVAŤ");
 });
 test("invalid checkpoint is ignored and a fresh lesson remains usable", async ({ page }) => {
@@ -168,18 +185,40 @@ test("invalid checkpoint is ignored and a fresh lesson remains usable", async ({
   await launch(page);
   await expect(page.locator("#lessonStepCount")).toHaveText("1 / 12");
 });
-test('own sentence task controls fit a small phone', async ({ page }) => {
- await page.setViewportSize({width:320,height:568}); await open(page); await launch(page);
- await page.evaluate(()=>{duoLesson.lessonQueue=duoLesson.lessonQueue.filter(t=>t.round===2);duoLesson.completedItemsCount=9;duoLesson.loadNextItem();});
- await expect(page.locator('#startBtn')).toBeInViewport({ratio:1});
- await expect(page.locator('#lessonPause')).toBeInViewport({ratio:1});
- await expect(page.locator('#targetWord')).toContainText('vlastnej vete');
+test("own sentence task controls fit a small phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await open(page);
+  await launch(page);
+  await page.evaluate(() => {
+    duoLesson.lessonQueue = duoLesson.lessonQueue.filter((t) => t.round === 2);
+    duoLesson.completedItemsCount = 9;
+    duoLesson.loadNextItem();
+  });
+  await expect(page.locator("#startBtn")).toBeInViewport({ ratio: 1 });
+  await expect(page.locator("#lessonPause")).toBeInViewport({ ratio: 1 });
+  await expect(page.locator("#targetWord")).toContainText("vlastnej vete");
 });
-test('text-only question waits for readiness and cannot continue after cancellation',async({page})=>{
- await open(page);await launch(page,'4.1');
- await page.evaluate(()=>{document.getElementById('voicePromptToggle').checked=false;window.readinessCallbacks=0;const question=lessonScenario();playScenarioAudio(question,()=>window.readinessCallbacks++);});
- await expect(page.locator('#scenarioReadyBtn')).toBeVisible();expect(await page.evaluate(()=>window.readinessCallbacks)).toBe(0);
- await page.locator('#scenarioReadyBtn').click();expect(await page.evaluate(()=>window.readinessCallbacks)).toBe(1);
- await page.evaluate(()=>{playScenarioAudio(lessonScenario(),()=>window.readinessCallbacks++);window.lateReady=document.getElementById('scenarioReadyBtn').onclick;window.abortActiveDspSession();window.lateReady();});
- await expect(page.locator('#scenarioReadyBtn')).toHaveCount(0);expect(await page.evaluate(()=>window.readinessCallbacks)).toBe(1);
+test("text-only question waits for readiness and cannot continue after cancellation", async ({
+  page,
+}) => {
+  await open(page);
+  await launch(page, "4.1");
+  await page.evaluate(() => {
+    document.getElementById("voicePromptToggle").checked = false;
+    window.readinessCallbacks = 0;
+    const question = lessonScenario();
+    playScenarioAudio(question, () => window.readinessCallbacks++);
+  });
+  await expect(page.locator("#scenarioReadyBtn")).toBeVisible();
+  expect(await page.evaluate(() => window.readinessCallbacks)).toBe(0);
+  await page.locator("#scenarioReadyBtn").click();
+  expect(await page.evaluate(() => window.readinessCallbacks)).toBe(1);
+  await page.evaluate(() => {
+    playScenarioAudio(lessonScenario(), () => window.readinessCallbacks++);
+    window.lateReady = document.getElementById("scenarioReadyBtn").onclick;
+    window.abortActiveDspSession();
+    window.lateReady();
+  });
+  await expect(page.locator("#scenarioReadyBtn")).toHaveCount(0);
+  expect(await page.evaluate(() => window.readinessCallbacks)).toBe(1);
 });

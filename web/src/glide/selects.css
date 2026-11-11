@@ -1,0 +1,30 @@
+/* Shared cream/lavender choice controls; no native Android option sheet. */
+.glide-select {display:inline-flex;width:100%;min-width:0;vertical-align:middle;}
+button.glide-select-trigger {display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:10px 13px;border:1px solid #ded8e9;border-radius:12px;background:var(--surface);color:var(--ink);text-align:left;font:500 13px/1.5 "DM Sans",sans-serif;cursor:pointer;}
+.glide-select-caption {min-width:0;overflow-wrap:anywhere;}
+.glide-select-chevron {flex-shrink:0;font-size:20px;line-height:1;color:var(--purple);}
+button.glide-select-trigger[aria-expanded="true"] {border-color:var(--purple);box-shadow:0 0 0 3px var(--lavender-soft);}
+button.glide-select-trigger:disabled {opacity:.5;cursor:default;}
+.glide-choice-dialog {margin:auto;width:min(92vw,420px);max-height:80dvh;padding:20px;border:1px solid var(--surface-border);border-radius:24px;background:var(--surface);color:var(--ink);box-shadow:0 16px 60px #30234124;overflow:auto;font-family:"DM Sans",sans-serif;}
+.glide-choice-dialog::backdrop {background:#25234155;backdrop-filter:blur(4px);}
+.glide-choice-heading {display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.glide-choice-heading h2 {flex:1;font:500 26px/1.2 "Newsreader",serif;margin:0;}
+#glideChoiceClose {flex:0 0 36px;width:36px;height:36px;border:1px solid var(--surface-border);border-radius:12px;background:var(--bg);color:var(--text-muted);font-size:18px;cursor:pointer;}
+#glideChoiceList {display:flex;flex-direction:column;gap:7px;}
+button.glide-choice-option {display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:12px 14px;border:1px solid transparent;border-radius:13px;background:var(--bg);color:var(--ink);text-align:left;font:500 14px/1.5 "DM Sans",sans-serif;cursor:pointer;}
+button.glide-choice-option[aria-selected="true"] {background:var(--lavender-soft);border-color:#d8cff1;color:var(--purple-hover);}
+.glide-choice-mark {flex:0 0 20px;color:var(--purple);font-weight:700;}
+button.glide-choice-option:hover {background:#f0ebfa;}
+button.glide-choice-option:disabled {opacity:.45;cursor:default;}
+.glide-select-trigger:focus-visible,.glide-choice-dialog button:focus-visible {outline:3px solid #b6a9e6;outline-offset:2px;}
+#practiceDialog.practice-light {background:var(--surface);color:var(--ink);border-color:var(--surface-border);box-shadow:0 16px 60px #30234124;}
+#practiceDialog.practice-light::backdrop {background:#25234155;}
+#practiceDialog.practice-light input:not([type=checkbox]),#practiceDialog.practice-light textarea {background:var(--bg);color:var(--ink);border:1px solid #ded8e9;border-radius:12px;}
+#practiceDialog.practice-light button {background:var(--lavender-soft);border-color:#ded8e9;color:var(--purple-hover);}
+#practiceDialog.practice-light button.glide-select-trigger {background:var(--surface);color:var(--ink);}
+#practiceDialog.practice-light a {color:var(--purple-hover);}
+#practiceDialog.practice-light h2 {font:500 26px/1.2 "Newsreader",serif;}
+#practiceDialog.practice-light input[type=checkbox] {accent-color:var(--purple);}
+button.practice-button {background:var(--lavender-soft);border:1px solid #ded8e9;color:var(--purple-hover);}
+.vault-add-row .glide-select {flex:1 1 130px;}
+@media(prefers-reduced-motion:reduce){.glide-choice-dialog{scroll-behavior:auto;}}
