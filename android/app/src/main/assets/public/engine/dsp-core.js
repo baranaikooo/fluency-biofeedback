@@ -720,7 +720,7 @@ if (startBtn) {
 
     const w = wordInput && wordInput.value.trim() ? wordInput.value.trim() : "Peter Novák";
     const meta = analyzePhonetics(w);
-    meta.freeReply = currentMode === "guillotine" || currentMode === "ambush";
+    meta.freeReply = !!lesson?.currentWordItem?.freeReply || currentMode === "guillotine" || currentMode === "ambush";
 
     if (currentMode === "standard") {
       runStandardPacer(meta);
@@ -767,6 +767,7 @@ function runStandardPacer(meta) {
 function lessonScenario() {
   const lesson = typeof duoLesson !== 'undefined' ? duoLesson : null;
   if (!lesson?.isLessonActive || lesson.isSosDrill) return null;
+  if (lesson.currentWordItem?.questionId) return window.fluencyVoice?.rotator.getById(lesson.currentWordItem.questionId);
   const ids = {'4.1':['pokladna_payment'],'4.2':['pokladna_2'],'4.3':['pokladna_3'],'4.4':['pokladna_4'],'4.5':['pokladna_payment','pokladna_2','pokladna_3','pokladna_goodbye'],'5.1':['kurier_intro'],'5.2':['lekar_appointment'],'5.3':['servis_intro'],'5.4':['kurier_confirm'],'5.5':['hovor_goodbye']}[lesson.currentLevel?.id];
   const index = Math.max(0, lesson.currentLevel?.words?.indexOf(lesson.currentWordItem?.word) || 0);
   return ids ? window.fluencyVoice?.rotator.getById(ids[index % ids.length]) : null;

@@ -1524,11 +1524,14 @@ class DuoLessonController {
     this.totalAttemptsCount = 0;
 
     // Inicializácia fronty slov (Duolingo Queue)
-    this.lessonQueue = this.currentLevel.words.map((w) => ({
-      word: w,
-      attempts: 0,
-    }));
-    this.initialWordCount = this.lessonQueue.length;
+    const checkpoint = window.GlideLessons.prepare(this.currentLevel);
+    this.pathSession = {size:checkpoint.size};
+    this.lessonQueue = checkpoint.queue;
+    this.initialWordCount = checkpoint.total;
+    this.completedItemsCount = checkpoint.completed;
+    this.totalAttemptsCount = checkpoint.attempts;
+    this.seenRounds = checkpoint.seenRounds || [];
+    this.voiceIntroPlayed = checkpoint.voiceIntroPlayed;
 
     // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
     this.enterFocusMode();
@@ -1558,6 +1561,7 @@ class DuoLessonController {
   }
 
   launchSosDrill() {
+    this.pathSession = null;
     const wordInputEl = document.getElementById("wordInput");
     const chosenWord =
       wordInputEl && wordInputEl.value.trim() ? wordInputEl.value.trim() : "Peter Novák";
@@ -1755,9 +1759,8 @@ class DuoLessonController {
       }
 
       // ROTÁCIA CHÝB (Duolingo Mistake Rotation)
-      const failed = this.lessonQueue.shift();
+      const failed = this.lessonQueue[0];
       failed.attempts = (failed.attempts || 0) + 1;
-      this.lessonQueue.push(failed);
 
       // No loss of lives for speech differences or capture errors.
     }
@@ -1773,6 +1776,7 @@ class DuoLessonController {
   }
 
   completeCurrentLesson() {
+    if (!this.isSosDrill && this.pathSession) window.GlideLessons.clear(this);
     this.isLessonActive = false;
     window.dispatchEvent(new CustomEvent("glide-practice-complete"));
     if (typeof duoSfx !== "undefined" && duoSfx.playFanfare) {
