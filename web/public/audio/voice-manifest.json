@@ -6,8 +6,8 @@
     "prompt": "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?",
     "voiceId": "azfErS4stIFaZiJsTHZo",
     "file": "scenarios/pokladna_1.mp3",
-    "audioUrl": null,
-    "status": "pending"
+    "audioUrl": "/audio/scenarios/pokladna_1.mp3",
+    "status": "generated"
   },
   {
     "id": "pokladna_2",
@@ -246,8 +246,8 @@
     "prompt": "Vitaj v rezonančnom boss tréningu. Sústreď sa na plynulé spojenie hlások. Nemusíš sa ponáhľať.",
     "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
     "file": "coach/boss_2.mp3",
-    "audioUrl": null,
-    "status": "pending"
+    "audioUrl": "/audio/coach/boss_2.mp3",
+    "status": "generated"
   },
   {
     "id": "boss_3",

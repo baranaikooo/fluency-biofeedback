@@ -718,6 +718,7 @@ if (startBtn) {
 
     const w = wordInput && wordInput.value.trim() ? wordInput.value.trim() : "Peter Novák";
     const meta = analyzePhonetics(w);
+    meta.freeReply = currentMode === "guillotine" || currentMode === "ambush";
 
     if (currentMode === "standard") {
       runStandardPacer(meta);
@@ -758,7 +759,7 @@ function runStandardPacer(meta) {
 function lessonScenario() {
   const lesson = typeof duoLesson !== 'undefined' ? duoLesson : null;
   if (!lesson?.isLessonActive || lesson.isSosDrill) return null;
-  const ids = {'4.1':['pokladna_payment'],'4.2':['pokladna_2'],'4.3':['pokladna_4'],'4.4':['pokladna_4'],'4.5':['pokladna_payment','pokladna_2','pokladna_3','pokladna_goodbye'],'5.1':['kurier_intro'],'5.2':['lekar_appointment'],'5.3':['servis_intro'],'5.4':['kurier_confirm'],'5.5':['hovor_goodbye']}[lesson.currentLevel?.id];
+  const ids = {'4.1':['pokladna_payment'],'4.2':['pokladna_2'],'4.3':['pokladna_3'],'4.4':['pokladna_4'],'4.5':['pokladna_payment','pokladna_2','pokladna_3','pokladna_goodbye'],'5.1':['kurier_intro'],'5.2':['lekar_appointment'],'5.3':['servis_intro'],'5.4':['kurier_confirm'],'5.5':['hovor_goodbye']}[lesson.currentLevel?.id];
   const index = Math.max(0, lesson.currentLevel?.words?.indexOf(lesson.currentWordItem?.word) || 0);
   return ids ? window.fluencyVoice?.rotator.getById(ids[index % ids.length]) : null;
 }
@@ -871,6 +872,7 @@ function armAmbushCall(meta) {
 }
 
 function getCaptureDurationMs(meta, mode = currentMode) {
+  if (meta.freeReply) return 15000;
   const minimum = mode === "ambush" ? 7000 : mode === "guillotine" || meta.wordCount > 1 ? 5500 : 2800;
   return Math.min(30000, Math.max(minimum, 2000 + (meta.textLength || 0) * 180));
 }
@@ -887,7 +889,7 @@ function triggerGoSignal(meta, maxLatencyAllowedMs) {
     pacerCircle.style.borderColor = "#58cc02";
     pacerCircle.textContent = "HOVOR!";
     targetWord.className = "target-word go";
-    statusAlert.textContent = `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, limit štartu ${maxLatencyAllowedMs} ms) – klikni na kruh pre rýchle vyhodnotenie!`;
+    statusAlert.textContent = meta.freeReply ? "Odpovedz vlastnými slovami. Po odpovedi klikni na kruh." : `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, limit štartu ${maxLatencyAllowedMs} ms) – klikni na kruh pre rýchle vyhodnotenie!`;
 
     captureAndAudit(meta, maxLatencyAllowedMs, captureMs);
   }, 110);
@@ -1039,7 +1041,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     return;
   }
 
-  if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < 40) {
+  if (firstSound === -1 || nucleus === -1 || maxFDb < fullVoiceMin || periodicHoldMs < (meta.freeReply ? 200 : 40)) {
     banner.className = "badge-banner fail";
     banner.textContent = "❌ NEÚSPEŠNÝ POKUS: Príliš tichý hlas / šepot alebo úplný tichý blok.";
     setRow(
@@ -1066,6 +1068,18 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
         },
       }),
     );
+    return;
+  }
+
+  if (meta.freeReply) {
+    const latency = frames[firstSound].t;
+    setRow("m1", "Reč zachytená", true);
+    for (const row of ["m2", "m3", "m4", "m5"]) setRow(row, "Voľná odpoveď", true);
+    banner.className = "badge-banner success";
+    banner.textContent = "✅ Odpoveď zaznamenaná. Obsah odpovede je na tebe.";
+    if (statusAlert) statusAlert.textContent = "Odpoveď zaznamenaná.";
+    drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
+    window.dispatchEvent(new CustomEvent("dsp-evaluation-complete", {detail: {passed:true, isPerfect:false, vrt:0, latency, freeReply:true, meta}}));
     return;
   }
 

@@ -189,7 +189,7 @@ const WORLDS_DATA = [
       {
         id: "4.1",
         title: "'Hotovosť alebo karta?'",
-        desc: "Odpovedz okamžite po skončení vety predavačky bez bloku.",
+        desc: "Vypočuj si otázku a odpovedz vlastnými slovami.",
         mode: "guillotine",
         scenarioIndex: 1, // Cashier
         ambushCategory: "pokladna",
@@ -211,7 +211,7 @@ const WORLDS_DATA = [
       {
         id: "4.3",
         title: "'Bloček si prosíte?'",
-        desc: "Prirodzená odpoveď so zachovaním mäkkého nábehu samohlásky Á.",
+        desc: "Na otázku o bločku odpovedz podľa seba.",
         mode: "guillotine",
         scenarioIndex: 1,
         ambushCategory: "pokladna",
@@ -222,7 +222,7 @@ const WORLDS_DATA = [
       {
         id: "4.4",
         title: "'Budete chcieť aj tašku?'",
-        desc: "Jasné 'Nie' bez zaseknutia jazyka na podnebí.",
+        desc: "Rozhodni sa podľa seba a odpovedz vlastnými slovami.",
         mode: "guillotine",
         scenarioIndex: 1,
         ambushCategory: "pokladna",
@@ -1650,7 +1650,7 @@ class DuoLessonController {
       wordInputEl.value = word;
       if (typeof refreshMeta === "function") refreshMeta();
     }
-    if (targetWordEl) targetWordEl.textContent = word.toUpperCase();
+    if (targetWordEl) targetWordEl.textContent = ["guillotine", "ambush"].includes(this.currentLevel?.mode) ? "ODPOVEDZ VLASTNÝMI SLOVAMI" : word.toUpperCase();
 
     if (pacerEl) {
       pacerEl.style.transform = "scale(1)";
@@ -1687,7 +1687,7 @@ class DuoLessonController {
       latency: latency || 0,
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     });
-    this.updateVaultProgress(word, passed);
+    if (!result.freeReply) this.updateVaultProgress(word, passed);
 
     const drawer = document.getElementById("feedbackDrawer");
     const iconEl = document.getElementById("drawerStatusIcon");
@@ -1722,6 +1722,10 @@ class DuoLessonController {
         continueBtn.innerHTML = "<span>POKRAČOVAŤ (Enter)</span>";
       }
 
+      if (result.freeReply) {
+        if (headEl) headEl.textContent = "✅ Odpoveď zaznamenaná";
+        if (subEl) subEl.textContent = "Odpovedal/a si vlastnými slovami. Pokračuj, keď budeš pripravený/á.";
+      }
       this.lessonQueue.shift();
       this.completedItemsCount++;
 
@@ -1747,6 +1751,11 @@ class DuoLessonController {
       if (continueBtn) {
         continueBtn.className = "btn-3d amber full";
         continueBtn.innerHTML = "<span>ROZUMIEM, SKÚSIM ĎALEJ</span>";
+      }
+
+      if (result.meta?.freeReply) {
+        if (headEl) headEl.textContent = "Odpoveď sa nepodarilo zachytiť";
+        if (subEl) subEl.textContent = "Skús prehovoriť do mikrofónu. Obsah odpovede je na tebe.";
       }
 
       // ROTÁCIA CHÝB (Duolingo Mistake Rotation)

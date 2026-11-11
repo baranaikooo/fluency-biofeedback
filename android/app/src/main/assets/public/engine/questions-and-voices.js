@@ -394,7 +394,7 @@
     "caller": "Pokladníčka Zuzana",
     "promptText": "Tento výrobok mi systém nevie načítať a chýba na ňom cenovka. Viete mi prosím povedať, z ktorého regálu ste ho zobrali a aká tam bola uvedená cena?",
     "voiceGender": "female",
-    "audioUrl": null
+    "audioUrl": "/audio/scenarios/pokladna_1.mp3"
   },
   {
     "id": "pokladna_2",
@@ -586,7 +586,7 @@
     "caller": "Sprievodca tréningom",
     "promptText": "Vitaj v rezonančnom boss tréningu. Sústreď sa na plynulé spojenie hlások. Nemusíš sa ponáhľať.",
     "voiceGender": "male",
-    "audioUrl": null
+    "audioUrl": "/audio/coach/boss_2.mp3"
   },
   {
     "id": "boss_3",

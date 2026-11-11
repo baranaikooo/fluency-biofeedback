@@ -1,4 +1,4 @@
-const CACHE = "glide-light-v6";
+const CACHE = "glide-light-v7";
 const ASSETS = [
   "/",
   "/manifest.json",
@@ -15,6 +15,8 @@ const ASSETS = [
   "/engine/updates.js",
   "/audio/voice-manifest.json",
   "/audio/coach/boss_1.mp3",
+  "/audio/coach/boss_2.mp3",
+  "/audio/scenarios/pokladna_1.mp3",
   "/audio/scenarios/pokladna_payment.mp3",
   "/audio/courier.mp3",
   "/audio/cashier.mp3",

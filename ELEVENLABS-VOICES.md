@@ -7,3 +7,5 @@ ElevenLabs nahrávky sú pribalené k aplikácii a fungujú bez pripojenia:
 Zvyšných 34 textov používa dočasne syntézu hlasu zariadenia. Generovanie ďalších nahrávok blokovala vyťažená služba; nie sú označené ako dokončené. Presný stav a texty sú v web/public/audio/voice-manifest.json. Vlastné slová používateľa sa neposielajú ElevenLabs.
 
 Úvod sa spúšťa raz na tréning až po kalibrácii. Meraný pokus začne po skončení hlasu. Vypnutie hlasových otázok preskočí aj úvod. Odchod z tréningu zruší prehrávanie aj nadväzujúce callbacky. Otázky kampane zodpovedajú požadovanej odpovedi.
+
+Aktualizácia: pribudli boss_2 a pokladna_1 (spolu 4 nahrávky). Simulácie pokladne a hovoru vyžadujú zachytenú reč, obsah, reakčný čas ani úvodná hláska neurčujú úspech. Konkrétne slová zostávajú iba v slovných cvičeniach. Zvyšných 32 nahrávok čaká na generovanie.
