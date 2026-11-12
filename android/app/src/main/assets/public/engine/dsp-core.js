@@ -109,6 +109,7 @@ function analyzePhonetics(word) {
       clusterLen: 0,
       wordCount: words.length,
       textLength: clean.length,
+      targetText: clean,
       label: `Samohláska (${first.toUpperCase()}) – cieľ VRT 45–160 ms (Gentle Onset)`,
     };
   } else if (first === "ch" || VOICELESS_SINGLE.has(first)) {
@@ -118,6 +119,7 @@ function analyzePhonetics(word) {
       clusterLen,
       wordCount: words.length,
       textLength: clean.length,
+      targetText: clean,
       label: `Neznelá spoluhláska (${first.toUpperCase()}, počiatočný zhluk: ${clusterLen})`,
     };
   } else {
@@ -127,6 +129,7 @@ function analyzePhonetics(word) {
       clusterLen,
       wordCount: words.length,
       textLength: clean.length,
+      targetText: clean,
       label: `Znelá spoluhláska (${first.toUpperCase()}, počiatočný zhluk: ${clusterLen})`,
     };
   }
@@ -541,9 +544,12 @@ function playScenarioAudio(scenario, onDone) {
 // CLEANUP A DYNAMICKÝ REŽIM DSP RELÁCIE
 // ============================================================================
 let dspStartGeneration = 0;
+let phraseCapture = null;
 function abortActiveDspSession() {
   document.getElementById("scenarioReadyBtn")?.remove();
   dspStartGeneration++;
+  phraseCapture?.cancel();
+  phraseCapture = null;
   dspTimeouts.forEach(clearTimeout);
   dspTimeouts.clear();
   if (cancelCalibration) cancelCalibration();
@@ -741,6 +747,8 @@ if (startBtn) {
     meta.freeReply = !!lesson?.currentWordItem?.freeReply || currentMode === "guillotine" || currentMode === "ambush";
 
     if (currentMode === "standard") {
+      if (meta.targetText && !meta.freeReply) await window.GlidePhrase.prepare(audioCtx);
+      if (generation !== dspStartGeneration) return;
       runStandardPacer(meta);
     } else if (currentMode === "guillotine") {
       runGuillotineMode(meta);
@@ -900,8 +908,8 @@ function armAmbushCall(meta) {
 
 function getCaptureDurationMs(meta, mode = currentMode) {
   if (meta.freeReply) return 15000;
-  const minimum = mode === "ambush" ? 7000 : mode === "guillotine" || meta.wordCount > 1 ? 5500 : 2800;
-  return Math.min(30000, Math.max(minimum, 2000 + (meta.textLength || 0) * 180));
+  const minimum = mode === "ambush" ? 7000 : mode === "guillotine" || meta.wordCount > 1 ? 10000 : 2800;
+  return Math.min(30000, Math.max(minimum, 2000 + (meta.textLength || 0) * 180, (meta.wordCount || 1) * 1400));
 }
 
 function triggerGoSignal(meta, maxLatencyAllowedMs) {
@@ -916,7 +924,7 @@ function triggerGoSignal(meta, maxLatencyAllowedMs) {
     pacerCircle.style.borderColor = "#58cc02";
     pacerCircle.textContent = "HOVOR!";
     targetWord.className = "target-word go";
-    statusAlert.textContent = meta.freeReply ? "Odpovedz vlastnými slovami. Po odpovedi klikni na kruh." : `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, ${window.glidePractice?.settings().pressure ? `orientačný cieľ ${maxLatencyAllowedMs} ms` : "bez časového cieľa"}) – klikni na kruh pre rýchle vyhodnotenie!`;
+    statusAlert.textContent = meta.freeReply ? "Odpovedz vlastnými slovami. Po odpovedi klikni na kruh." : meta.wordCount > 1 ? "Povedz celý text vlastným tempom. Keď skončíš, ťukni na kruh." : `Snímam hlas (${(captureMs / 1000).toFixed(1)}s, ${window.glidePractice?.settings().pressure ? `orientačný cieľ ${maxLatencyAllowedMs} ms` : "bez časového cieľa"}) – klikni na kruh pre rýchle vyhodnotenie!`;
 
     captureAndAudit(meta, maxLatencyAllowedMs, captureMs);
   }, 110);
@@ -924,6 +932,11 @@ function triggerGoSignal(meta, maxLatencyAllowedMs) {
 
 function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
   const frames = [];
+  const generation = dspStartGeneration;
+  const recording = meta.targetText && !meta.freeReply
+    ? window.GlidePhrase.capture(audioCtx, window.mediaStreamSource)
+    : null;
+  phraseCapture = recording;
   const rawBuf = new Float32Array(rawAnalyser.fftSize);
   const formantBuf = new Float32Array(formantAnalyser.fftSize);
   const t0 = performance.now();
@@ -942,10 +955,13 @@ function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
     pacerCircle.textContent = "Hotovo";
     targetWord.className = "target-word";
 
-    scheduleDspTimeout(() => {
-      runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, maxDurationMs);
+    if (recording) statusAlert.textContent = "Overujem povedaný text…";
+    Promise.resolve(recording?.finish()).catch(() => "").then(transcript => {
+      if (generation !== dspStartGeneration) return;
+      phraseCapture = null;
+      runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, maxDurationMs, transcript);
       startBtn.disabled = false;
-    }, 200);
+    });
   };
 
   activeFinishEarlyCallback = finish;
@@ -1012,7 +1028,10 @@ function findInterpolatedCrossingTimeRms(frames, startIdx, endIdx, targetRms) {
   return frames[endIdx].t;
 }
 
-function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs) {
+function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs, transcript) {
+  const fixedText = !!meta.targetText && !meta.freeReply;
+  const verified = fixedText && window.GlidePhrase.matches(meta.targetText, transcript);
+  const phraseReason = transcript?.trim() ? "phrase_mismatch" : "phrase_unverified";
   smoothEnvelopes(frames);
 
   // Akustické prahy: chránené absolútnym prahom (-56 dBFS), aby jemné mľasknutie sánky pred rečou nespustilo meranie
@@ -1069,6 +1088,14 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   }
 
   if (!window.GlideTrainingCore.capture({firstSound, nucleus, peakDb:maxFDb, minimumDb:fullVoiceMin, voicedMs:periodicHoldMs, freeReply:meta.freeReply, clipped:isClipped}).accepted) {
+    if (verified) {
+      banner.className = "badge-banner success";
+      banner.textContent = "Celý text rozpoznaný.";
+      window.dispatchEvent(new CustomEvent("dsp-evaluation-complete", {
+        detail: { passed: true, isPerfect: false, vrt: 0, latency: 0, meta },
+      }));
+      return;
+    }
     banner.className = "badge-banner fail";
     banner.textContent = "Odpoveď sa nepodarilo zachytiť. Skús sa priblížiť k mikrofónu.";
     setRow(
@@ -1252,7 +1279,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
   drawEnvelopeGraph(frames, sThresh, t20, t80, totalDurationMs);
 
   const acousticWithinGuide = p1 && p2 && p3 && p4 && p5;
-  const passed = true; // A captured spoken attempt counts; acoustic ranges are descriptive.
+  const passed = !fixedText || verified;
   const isPerfect = false;
   if (passed) {
     banner.className = "badge-banner success";
@@ -1261,7 +1288,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
       : "✅ Reč zachytená (+30 XP za absolvovanie).";
   } else {
     banner.className = "badge-banner fail";
-    banner.textContent = "❌ Signál sa nepodarilo spoľahlivo vyhodnotiť.";
+    banner.textContent = phraseReason === "phrase_mismatch" ? "Celý text sa nepodarilo rozpoznať." : "Potvrď, že si povedal/a celý text.";
   }
   statusAlert.textContent = "Vyhodnotenie dokončené.";
 
@@ -1277,6 +1304,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
         isPerfect,
         vrt,
         latency,
+        reason: passed ? undefined : phraseReason,
         acousticWithinGuide,
         p1,
         p2,

@@ -65,7 +65,7 @@ test("natural consonant transitions pass all three phrase attempts; silence and 
       });
       let result;
       window.addEventListener('dsp-evaluation-complete', e => { result = e.detail; }, { once: true });
-      runPostHocEvaluation(frames, analyzePhonetics('Dve veľké kávy'), 1600, 5500);
+      runPostHocEvaluation(frames, analyzePhonetics('Dve veľké kávy'), 1600, 5500, 'dve veľké kávy');
       return { passed: result.passed, vrt: result.vrt, p5: result.p5 };
     });
     expect(result.passed).toBe(true);

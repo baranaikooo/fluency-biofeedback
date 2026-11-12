@@ -26,6 +26,7 @@ function loadEngine() {
     Object.assign(window, { supabase: await import("@supabase/supabase-js") });
     for (const file of [
       "training-core",
+      "phrase-check",
       "lesson-plan",
       "questions-and-voices",
       "dsp-core",

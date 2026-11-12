@@ -1758,6 +1758,16 @@ class DuoLessonController {
         if (subEl) subEl.textContent = "Skús prehovoriť do mikrofónu. Obsah odpovede je na tebe.";
       }
 
+      if (result.reason === "phrase_mismatch" || result.reason === "phrase_unverified") {
+        if (headEl) headEl.textContent = result.reason === "phrase_mismatch"
+          ? "Celý text sa nepodarilo rozpoznať"
+          : "Potvrď celý text";
+        if (subEl) subEl.textContent = result.reason === "phrase_mismatch"
+          ? "Zopakuj celý zadaný text vlastným tempom."
+          : "Ak si vyslovil/a všetky slová, môžeš to potvrdiť.";
+        if (continueBtn) continueBtn.textContent = "Skúsiť znova";
+      }
+
       // ROTÁCIA CHÝB (Duolingo Mistake Rotation)
       const failed = this.lessonQueue[0];
       failed.attempts = (failed.attempts || 0) + 1;
