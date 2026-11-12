@@ -212,6 +212,7 @@
   };
   const advance = model.handleDrawerContinue.bind(model);
   model.handleDrawerContinue = function () {
+    if (this.conversation?.waitingForChoice) return;
     if (!document.getElementById("feedbackDrawer")?.classList.contains("active")) return;
     const current = this.currentWordItem,
       next = this.lessonQueue[0];

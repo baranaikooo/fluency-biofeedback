@@ -1008,6 +1008,9 @@ class DuoLessonController {
       if (e.key === "Enter") {
         const drawer = document.getElementById("feedbackDrawer");
         if (drawer && drawer.classList.contains("active")) {
+          const button = e.target.closest?.("button");
+          if (button && drawer.contains(button) && button !== drawerBtn) return;
+          e.preventDefault();
           this.handleDrawerContinue();
         }
       } else if (e.key === "Escape") {
@@ -1510,6 +1513,8 @@ class DuoLessonController {
   }
 
   launchLesson() {
+    this.conversation = null;
+    window.GlideConversation?.reset();
     this.closePopover();
     if (!this.currentLevel) return;
 
@@ -1560,14 +1565,16 @@ class DuoLessonController {
     this.loadNextItem();
   }
 
-  launchSosDrill() {
+  launchSosDrill(conversation = null) {
+    this.conversation = conversation;
+    window.GlideConversation?.reset();
     this.pathSession = null;
     const wordInputEl = document.getElementById("wordInput");
     const chosenWord =
       wordInputEl && wordInputEl.value.trim() ? wordInputEl.value.trim() : "Peter Novák";
 
     // Voľba režimu zo sandboxu
-    const selectedMode =
+    const selectedMode = conversation ? "guillotine" :
       document.querySelector('input[name="sandboxMode"]:checked')?.value || "standard";
 
     this.isLessonActive = true;
@@ -1577,8 +1584,8 @@ class DuoLessonController {
       window.setDspMode(selectedMode);
     }
     this.currentLevel = {
-      id: "sos",
-      title: "Rýchly SOS Dril",
+      id: conversation ? "conversation" : "sos",
+      title: conversation?.title || "Rýchly SOS Dril",
       mode: selectedMode,
       words: [chosenWord, chosenWord, chosenWord], // 3 pokusy
       xp: 25,
@@ -1588,12 +1595,12 @@ class DuoLessonController {
     this.mistakesCount = 0;
     this.totalAttemptsCount = 0;
 
-    this.lessonQueue = [
+    this.lessonQueue = conversation?.tasks || [
       { word: chosenWord, attempts: 0 },
       { word: chosenWord, attempts: 0 },
       { word: chosenWord, attempts: 0 },
     ];
-    this.initialWordCount = 3;
+    this.initialWordCount = this.lessonQueue.length;
 
     // Prepnúť do Celoobrazovkového sústredenia (Stav 2)
     this.enterFocusMode();
@@ -1630,7 +1637,7 @@ class DuoLessonController {
 
     if (context && this.currentLevel) {
       const remaining = this.lessonQueue.length;
-      context.textContent = this.isSosDrill
+      context.textContent = this.conversation ? `${this.conversation.title} · ${Math.min(3, this.completedItemsCount + 1)} z 3` : this.isSosDrill
         ? `⚡ SOS Dril • Zostáva pokusov: ${remaining}`
         : `${this.currentLevel.title} • Zostáva: ${remaining}`;
     }
@@ -1644,6 +1651,8 @@ class DuoLessonController {
 
     this.currentWordItem = this.lessonQueue[0];
     const word = this.currentWordItem.word;
+    const goal = document.getElementById('lessonConversationGoal');
+    if (goal) { goal.hidden = !this.conversation; goal.textContent = this.conversation?.goal || ''; }
 
     const wordInputEl = document.getElementById("wordInput");
     const targetWordEl = document.getElementById("targetWord");
@@ -1659,7 +1668,7 @@ class DuoLessonController {
       wordInputEl.value = word;
       if (typeof refreshMeta === "function") refreshMeta();
     }
-    if (targetWordEl) targetWordEl.textContent = ["guillotine", "ambush"].includes(this.currentLevel?.mode) ? "ODPOVEDZ VLASTNÝMI SLOVAMI" : word.toUpperCase();
+    if (targetWordEl) targetWordEl.textContent = this.conversation ? word : ["guillotine", "ambush"].includes(this.currentLevel?.mode) ? "ODPOVEDZ VLASTNÝMI SLOVAMI" : word.toUpperCase();
 
     if (pacerEl) {
       pacerEl.style.transform = "scale(1)";
@@ -1763,7 +1772,7 @@ class DuoLessonController {
           ? "Celý text sa nepodarilo rozpoznať"
           : "Potvrď celý text";
         if (subEl) subEl.textContent = result.reason === "phrase_mismatch"
-          ? "Zopakuj celý zadaný text vlastným tempom."
+          ? (result.recognizedText ? `Zachytené: „${result.recognizedText}“. Zopakuj celý text.` : "Zopakuj celý zadaný text vlastným tempom.")
           : "Ak si vyslovil/a všetky slová, môžeš to potvrdiť.";
         if (continueBtn) continueBtn.textContent = "Skúsiť znova";
       }
@@ -1775,6 +1784,7 @@ class DuoLessonController {
       // No loss of lives for speech differences or capture errors.
     }
 
+    window.GlideConversation?.afterAttempt(this, result);
     this.updateLessonProgress();
   }
 
@@ -1786,6 +1796,7 @@ class DuoLessonController {
   }
 
   completeCurrentLesson() {
+    window.GlideConversation?.showRecap(this.conversation);
     if (!this.isSosDrill && this.pathSession) window.GlideLessons.clear(this);
     this.isLessonActive = false;
     window.dispatchEvent(new CustomEvent("glide-practice-complete"));
@@ -1822,7 +1833,7 @@ class DuoLessonController {
     const accRecap = document.getElementById("recapAccuracyVal");
     const streakRecap = document.getElementById("recapStreakVal");
 
-    if (title) title.textContent = this.isSosDrill ? "SOS Dril Dokončený!" : "Lekcia Dokončená!";
+    if (title) title.textContent = this.conversation ? "Rozhovor dokončený" : this.isSosDrill ? "SOS Dril Dokončený!" : "Lekcia Dokončená!";
     if (sub)
       sub.textContent = this.isSosDrill
         ? "Tréning je dokončený. Ako sa ti dnes hovorilo?"

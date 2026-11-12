@@ -190,7 +190,12 @@
     const tasks = [];
     const isScene = ["guillotine", "ambush"].includes(level.mode);
     const base = [...level.words];
-    const pool = [...new Set([...base, ...(extras[level.id] || [])])];
+    const vocabulary = root.GlideVocabulary?.forSeeds(base) || [];
+    const candidates = [...new Set([...vocabulary, ...(extras[level.id] || [])])]
+      .filter(word => !base.some(seed => seed.toLocaleLowerCase("sk") === word.toLocaleLowerCase("sk")));
+    const start = isScene || !candidates.length ? 0 : Math.floor(random() * candidates.length) % candidates.length;
+    const expanded = [...candidates.slice(start), ...candidates.slice(0, start)];
+    const pool = [...base, ...expanded];
     let scene = [];
     if (isScene) {
       const category = level.ambushCategory || "all";

@@ -382,5 +382,15 @@
     "file": "scenarios/pokladna_payment_jaro.mp3",
     "audioUrl": "/audio/scenarios/pokladna_payment_jaro.mp3",
     "status": "generated"
+  },
+  {
+    "id": "glide_cafe_opening",
+    "category": "conversation",
+    "caller": "Baristka",
+    "prompt": "Dobrý deň, vitajte v kaviarni. Čo vám môžem pripraviť?",
+    "voiceId": "GsFe19Xn8iGqNR2RxINi",
+    "file": "scenarios/glide-cafe-opening.mp3",
+    "audioUrl": "/audio/scenarios/glide-cafe-opening.mp3",
+    "status": "generated"
   }
 ]

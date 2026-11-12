@@ -732,7 +732,9 @@
 
           <!-- Vstup na vlastné slovo / meno -->
           <div class="sandbox-input-card">
-            <label class="sandbox-label" for="wordInput">Slovo alebo veta</label>
+            <div class="sandbox-input-heading">
+              <label class="sandbox-label" for="wordInput">Slovo alebo veta</label>
+            </div>
             <div class="sandbox-input-wrap">
               <input
                 type="text"
@@ -1355,6 +1357,7 @@
       <!-- Minimalistické tréningové javisko počas reči -->
       <div class="lesson-stage">
         <div class="lesson-eyebrow">VLASTNÝM TEMPOM</div>
+        <p id="lessonConversationGoal" class="lesson-conversation-goal" hidden></p>
         <!-- Interaktívna bublina otázky oponenta počas dialógu / hovoru -->
         <div class="lesson-dialogue-card" id="lessonDialogueCard" style="display: none">
           <div class="ld-speaker-badge">

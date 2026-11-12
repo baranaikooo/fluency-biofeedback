@@ -746,9 +746,10 @@ if (startBtn) {
     const meta = analyzePhonetics(w);
     meta.freeReply = !!lesson?.currentWordItem?.freeReply || currentMode === "guillotine" || currentMode === "ambush";
 
+    meta.conversation = lesson?.conversation && lesson.completedItemsCount < 2 ? lesson.conversation.sceneId : null;
+    if (meta.conversation || (meta.targetText && !meta.freeReply)) await window.GlidePhrase.prepare(audioCtx);
+    if (generation !== dspStartGeneration) return;
     if (currentMode === "standard") {
-      if (meta.targetText && !meta.freeReply) await window.GlidePhrase.prepare(audioCtx);
-      if (generation !== dspStartGeneration) return;
       runStandardPacer(meta);
     } else if (currentMode === "guillotine") {
       runGuillotineMode(meta);
@@ -792,7 +793,9 @@ function runStandardPacer(meta) {
 
 function lessonScenario() {
   const lesson = typeof duoLesson !== 'undefined' ? duoLesson : null;
-  if (!lesson?.isLessonActive || lesson.isSosDrill) return null;
+  if (!lesson?.isLessonActive) return null;
+  if (lesson.conversation) return lesson.currentWordItem?.question || null;
+  if (lesson.isSosDrill) return null;
   if (lesson.currentWordItem?.questionId) return window.fluencyVoice?.rotator.getById(lesson.currentWordItem.questionId);
   const ids = {'4.1':['pokladna_payment'],'4.2':['pokladna_2'],'4.3':['pokladna_3'],'4.4':['pokladna_4'],'4.5':['pokladna_payment','pokladna_2','pokladna_3','pokladna_goodbye'],'5.1':['kurier_intro'],'5.2':['lekar_appointment'],'5.3':['servis_intro'],'5.4':['kurier_confirm'],'5.5':['hovor_goodbye']}[lesson.currentLevel?.id];
   const index = Math.max(0, lesson.currentLevel?.words?.indexOf(lesson.currentWordItem?.word) || 0);
@@ -802,7 +805,7 @@ function lessonScenario() {
 function runGuillotineMode(meta) {
   if (startBtn) startBtn.disabled = true;
   if (targetWord) targetWord.classList.add("expose");
-  setPacerText("Pokladňa...");
+  setPacerText(duoLesson?.conversation ? "Počúvaj…" : "Pokladňa...");
   if (pacerCircle) pacerCircle.style.borderColor = "#ffc800";
 
   let cashierScenario;
@@ -908,7 +911,7 @@ function armAmbushCall(meta) {
 
 function getCaptureDurationMs(meta, mode = currentMode) {
   if (meta.freeReply) return 15000;
-  const minimum = mode === "ambush" ? 7000 : mode === "guillotine" || meta.wordCount > 1 ? 10000 : 2800;
+  const minimum = mode === "ambush" ? 7000 : mode === "guillotine" || meta.wordCount > 1 ? 10000 : 6000;
   return Math.min(30000, Math.max(minimum, 2000 + (meta.textLength || 0) * 180, (meta.wordCount || 1) * 1400));
 }
 
@@ -933,7 +936,7 @@ function triggerGoSignal(meta, maxLatencyAllowedMs) {
 function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
   const frames = [];
   const generation = dspStartGeneration;
-  const recording = meta.targetText && !meta.freeReply
+  const recording = meta.conversation || (meta.targetText && !meta.freeReply)
     ? window.GlidePhrase.capture(audioCtx, window.mediaStreamSource)
     : null;
   phraseCapture = recording;
@@ -1133,7 +1136,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
     banner.textContent = "✅ Odpoveď zaznamenaná. Obsah odpovede je na tebe.";
     if (statusAlert) statusAlert.textContent = "Odpoveď zaznamenaná.";
     drawEnvelopeGraph(frames, sThresh, null, null, totalDurationMs);
-    window.dispatchEvent(new CustomEvent("dsp-evaluation-complete", {detail: {passed:true, isPerfect:false, vrt:0, latency, freeReply:true, meta}}));
+    window.dispatchEvent(new CustomEvent("dsp-evaluation-complete", {detail: {passed:true, isPerfect:false, vrt:0, latency, freeReply:true, meta, conversationChoice: meta.conversation ? window.GlideConversation.interpret(meta.conversation, transcript) : undefined}}));
     return;
   }
 
@@ -1305,6 +1308,7 @@ function runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, totalDurationMs
         vrt,
         latency,
         reason: passed ? undefined : phraseReason,
+        recognizedText: !passed && transcript ? transcript.trim().slice(0, 140) : undefined,
         acousticWithinGuide,
         p1,
         p2,

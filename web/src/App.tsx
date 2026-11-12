@@ -27,6 +27,7 @@ function loadEngine() {
     for (const file of [
       "training-core",
       "phrase-check",
+      "word-bank",
       "lesson-plan",
       "questions-and-voices",
       "dsp-core",
@@ -38,6 +39,7 @@ function loadEngine() {
       "lifecycle",
       "updates",
       "practice",
+      "conversation",
       "selects",
     ]) {
       await new Promise<void>((resolve, reject) => {
