@@ -118,6 +118,31 @@ test('initial OAuth deep link keeps auth monitoring active afterwards', async ({
   await expect.poll(() => page.evaluate(() => window.fluencyAuth.getCurrentUser())).toBeNull();
 });
 
+test('Android browser offers to open Glide for a Google callback from an older APK', async ({ browser }) => {
+  const context = await browser.newContext({
+    baseURL: process.env.GLIDE_TEST_URL || 'http://localhost:3000',
+    userAgent: 'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Chrome/132.0 Mobile Safari/537.36',
+  });
+  try {
+    const page = await context.newPage();
+    await mockAuth(page, state());
+    const saved = session();
+    const fragment = new URLSearchParams({
+      access_token: saved.access_token,
+      refresh_token: saved.refresh_token,
+      token_type: 'bearer',
+      expires_in: '3600',
+      expires_at: String(saved.expires_at),
+    });
+    await page.goto(`/#${fragment}`);
+    await expect(page.getByRole('button', { name: 'Otvoriť Glide' })).toBeVisible();
+    await page.getByRole('button', { name: 'Pokračovať v prehliadači' }).click();
+    await expect.poll(() => page.evaluate(() => window.fluencyAuth?.getCurrentUser()?.id)).toBe(user.id);
+  } finally {
+    await context.close();
+  }
+});
+
 test('Android migrates a saved Google session and restores it after WebView storage is cleared', async ({ page }) => {
   const network = state();
   const native = new Map();
