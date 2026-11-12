@@ -40,7 +40,11 @@
       avatar: "📞",
       voiceGender: "female",
       goal: "Spýtaj sa na termín návštevy a dohodni čas, ktorý ti vyhovuje.",
-      opening: "Dobrý deň, ambulancia. S čím vám môžem pomôcť?",
+      opening: "Ambulancia, prosím.",
+      openingVoices: [
+        "/audio/scenarios/glide-ambulancia-leda.mp3",
+        "/audio/scenarios/glide-ambulancia-despina.mp3",
+      ],
       branches: [
         [
           "Dohodnúť termín",
@@ -126,8 +130,24 @@
     return found.length === 1 ? found[0] : null;
   }
 
+  let nextDoctorVoice = 0;
+  function takeDoctorVoice(voices) {
+    const key = "glide_doctor_opening_voice";
+    let index = nextDoctorVoice;
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored === "0" || stored === "1") index = Number(stored);
+      localStorage.setItem(key, String(1 - index));
+    } catch {
+      // Keep alternating in this session when browser storage is unavailable.
+    }
+    nextDoctorVoice = 1 - index;
+    return voices[index];
+  }
+
   function create(sceneId, goal) {
     const scene = scenes[sceneId];
+    const openingAudio = scene.openingVoices ? takeDoctorVoice(scene.openingVoices) : scene.audioUrl;
     const question = (promptText, audioUrl = null) => ({
       category: "conversation",
       caller: scene.caller,
@@ -142,7 +162,7 @@
       goal,
       waitingForChoice: false,
       tasks: [
-        { word: "Začni rozhovor", question: question(scene.opening, scene.audioUrl) },
+        { word: "Začni rozhovor", question: question(scene.opening, openingAudio) },
         { word: "Reaguj vlastnými slovami", question: question(scene.branches.at(-1)[2]) },
         { word: "Ukonči rozhovor", question: question(scene.closing) },
       ].map((task) => ({ ...task, freeReply: true, attempts: 0 })),

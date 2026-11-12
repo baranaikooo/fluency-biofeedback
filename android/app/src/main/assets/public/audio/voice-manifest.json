@@ -392,5 +392,25 @@
     "file": "scenarios/glide-cafe-opening.mp3",
     "audioUrl": "/audio/scenarios/glide-cafe-opening.mp3",
     "status": "generated"
+  },
+  {
+    "id": "glide_ambulancia_leda",
+    "category": "conversation",
+    "caller": "Recepcia ambulancie",
+    "prompt": "Ambulancia, prosím.",
+    "voiceId": "Leda",
+    "file": "scenarios/glide-ambulancia-leda.mp3",
+    "audioUrl": "/audio/scenarios/glide-ambulancia-leda.mp3",
+    "status": "generated"
+  },
+  {
+    "id": "glide_ambulancia_despina",
+    "category": "conversation",
+    "caller": "Recepcia ambulancie",
+    "prompt": "Ambulancia, prosím.",
+    "voiceId": "Despina",
+    "file": "scenarios/glide-ambulancia-despina.mp3",
+    "audioUrl": "/audio/scenarios/glide-ambulancia-despina.mp3",
+    "status": "generated"
   }
 ]

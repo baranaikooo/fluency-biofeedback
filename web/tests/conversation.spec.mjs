@@ -73,6 +73,19 @@ test("café rehearsal follows both responses and recommends a next scene from th
   expect(entries[0]).toMatchObject({ sceneId: "cafe", outcome: "yes", effort: 1 });
 });
 
+test("ambulance opening alternates both bundled voices across launches", async ({ page }) => {
+  for (const voice of ["leda", "despina", "leda"]) {
+    await open(page);
+    await page.locator("#conversationOpen").click();
+    await page.locator("#conversationSceneTrigger").click();
+    await page.getByRole("option", { name: "Telefonát do ambulancie", exact: true }).click();
+    await page.getByRole("button", { name: "Začať rozhovor", exact: true }).click();
+    const question = await page.evaluate(() => lessonScenario());
+    expect(question.promptText).toBe("Ambulancia, prosím.");
+    expect(question.audioUrl).toBe(`/audio/scenarios/glide-ambulancia-${voice}.mp3`);
+  }
+});
+
 test("a custom situation and a missing transcript preserve the user's choice of follow-up", async ({
   page,
 }) => {
