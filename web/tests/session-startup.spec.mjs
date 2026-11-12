@@ -118,6 +118,42 @@ test('initial OAuth deep link keeps auth monitoring active afterwards', async ({
   await expect.poll(() => page.evaluate(() => window.fluencyAuth.getCurrentUser())).toBeNull();
 });
 
+test('Android migrates a saved Google session and restores it after WebView storage is cleared', async ({ page }) => {
+  const network = state();
+  const native = new Map();
+  await mockAuth(page, network);
+  await prepare(page);
+  await page.exposeFunction('testNativeAuth', (operation, { key, value }) => {
+    if (operation === 'get') return { value: native.get(key) };
+    if (operation === 'set') native.set(key, value);
+    if (operation === 'remove') native.delete(key);
+  });
+  await page.addInitScript(({ storageKey, saved }) => {
+    if (!sessionStorage.getItem('seeded')) {
+      localStorage.setItem(storageKey, JSON.stringify(saved));
+      sessionStorage.setItem('seeded', '1');
+    }
+    window.Capacitor = {
+      getPlatform: () => 'android',
+      Plugins: { GlideAuthStorage: {
+        get: args => window.testNativeAuth('get', args),
+        set: args => window.testNativeAuth('set', args),
+        remove: args => window.testNativeAuth('remove', args),
+      } },
+    };
+  }, { storageKey, saved: session(true) });
+  await ready(page);
+  await expect.poll(() => page.evaluate(() => window.fluencyAuth.getCurrentUser()?.id)).toBe(user.id);
+  expect(network.grants).toEqual(['refresh_token']);
+  expect(JSON.parse(native.get(storageKey)).refresh_token).toBe('refresh-2');
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => window.fluencyAuth.getCurrentUser()?.id)).toBe(user.id);
+  expect(network.grants).toEqual(['refresh_token']);
+  await page.evaluate(() => window.fluencyAuth.signOut());
+  expect(native.has(storageKey)).toBe(false);
+});
+
 test('splash with the soundwave stays visible until the engine loads', async ({ page }) => {
   await prepare(page);
   await page.route('**/engine/questions-and-voices.js', async route => {

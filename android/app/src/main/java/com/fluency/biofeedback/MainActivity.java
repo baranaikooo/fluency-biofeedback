@@ -20,6 +20,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(GlideUpdatesPlugin.class);
         registerPlugin(GlideSpeechPlugin.class);
+        registerPlugin(GlideAuthStoragePlugin.class);
         super.onCreate(savedInstanceState);
 
         // 1. Vyžiadanie systémového oprávnenia pre mikrofón a kameru pri štarte aplikácie
@@ -61,6 +62,7 @@ public class MainActivity extends BridgeActivity {
         }
 
         final String uriStr = data.toString();
+        setIntent(new Intent(this, MainActivity.class).setAction(Intent.ACTION_MAIN));
         dispatchDeepLinkToWeb(uriStr, attempt);
     }
 

@@ -93,18 +93,51 @@
     };
   }
 
+  const AUTH_STORAGE_KEY = "sb-valdfrjvcvxosjtxhqqb-auth-token";
+  let authStorage;
+
+  function createAuthStorage() {
+    const legacy = window.localStorage;
+    const native = window.Capacitor?.getPlatform?.() === "android"
+      ? window.Capacitor.Plugins?.GlideAuthStorage
+      : null;
+    if (!native) return legacy;
+
+    return {
+      async getItem(key) {
+        const { value } = await native.get({ key });
+        if (typeof value === "string") return value;
+        const oldValue = legacy.getItem(key);
+        if (oldValue === null) return null;
+        await native.set({ key, value: oldValue });
+        legacy.removeItem(key);
+        return oldValue;
+      },
+      async setItem(key, value) {
+        await native.set({ key, value });
+        legacy.removeItem(key);
+      },
+      async removeItem(key) {
+        legacy.removeItem(key);
+        await native.remove({ key });
+      },
+    };
+  }
+
   function initSupabase() {
     if (typeof window.supabase === "undefined" || !window.supabase.createClient) {
       console.warn("[Supabase] Knihovna supabase-js zatiaľ nie je načítaná.");
       return false;
     }
     if (!client) {
+      authStorage = createAuthStorage();
       client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: true,
-          storage: window.localStorage,
+          storageKey: AUTH_STORAGE_KEY,
+          storage: authStorage,
         },
       });
       window.fluencySupabase = client;
@@ -997,12 +1030,8 @@
       const pending = window.__pendingDeepLink;
       window.__pendingDeepLink = null;
       await window.handleNativeDeepLink(pending);
-      return;
-    }
-
-    if (window.location.hash && window.location.hash.indexOf("access_token=") !== -1) {
+    } else if (window.location.hash && window.location.hash.indexOf("access_token=") !== -1) {
       await window.handleNativeDeepLink(window.location.href);
-      return;
     }
 
     // Browsing never depends on network authentication or questionnaire completion.
@@ -1013,7 +1042,7 @@
       if (!session?.user && !currentUser) {
         sessionStorage.setItem("fl_guest_mode", "1");
         // Úvodná obrazovka sa ukáže len pri úplne prvom spustení; dá sa zavrieť.
-        const hasStoredSession = !!localStorage.getItem("sb-valdfrjvcvxosjtxhqqb-auth-token");
+        const hasStoredSession = !!(await authStorage.getItem(AUTH_STORAGE_KEY));
         if (!hasStoredSession && !localStorage.getItem("fl_welcome_seen") && !isDiagnosticCompleted()) {
           localStorage.setItem("fl_welcome_seen", "1");
           showWelcomeOverlay();
