@@ -1,0 +1,52 @@
+@keyframes glide-content-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glide-card-enter {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes glide-question-enter {
+  from { opacity: .55; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tab-pane.active,
+  .world-section:not([hidden]) .world-header-banner {
+    animation: glide-content-enter 220ms ease-out both;
+  }
+
+  .question-item:not([hidden]) {
+    animation: glide-question-enter 180ms ease-out both;
+  }
+
+  .node-popover-backdrop.active .node-popover-card,
+  .celebration-overlay.active .celebration-card,
+  dialog.lesson-round-dialog[open],
+  .modal-backdrop-overlay .auth-modal-card {
+    animation: glide-card-enter 200ms cubic-bezier(.2, .75, .25, 1) both;
+  }
+
+  #bottomNav .nav-tab .nav-icon {
+    transition: scale 180ms ease;
+  }
+
+  #bottomNav .nav-tab.active .nav-icon {
+    scale: 1.08;
+  }
+
+  #bottomNav .nav-tab:active .nav-icon {
+    scale: .9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-pane.active,
+  .path-node-btn,
+  .pacer-circle {
+    animation: none !important;
+  }
+}

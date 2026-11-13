@@ -25,7 +25,7 @@ async function mockAuth(page, state) {
     if (url.pathname.includes('/rest/v1/profiles')) {
       state.profiles++;
       if (state.profileError) return reply({ message: 'temporarily unavailable' }, 503);
-      return reply(request.method() === 'GET' ? { id: user.id, xp: 0, progress: { unlockedLevels: ['1.1'] } } : [{ id: user.id }]);
+      return reply(request.method() === 'GET' ? { id: user.id, xp: 0, progress: { unlockedLevels: ['1.1'], diagnostic: state.diagnostic } } : [{ id: user.id }]);
     }
     return reply({});
   });
@@ -60,6 +60,23 @@ test('password login survives closing the browser session without entering crede
     await expect(reopened.locator('#welcomeAuthOverlay')).toBeHidden();
     expect(network.grants).toEqual(['password']);
   } finally { await newContext.close(); }
+});
+
+test('restoring a saved training profile does not play the completion fanfare', async ({ page }) => {
+  const network = { ...state(), diagnostic: {} };
+  await mockAuth(page, network);
+  await prepare(page, session());
+  await page.addInitScript(() => {
+    window.testAudioStarts = 0;
+    const createOscillator = AudioContext.prototype.createOscillator;
+    AudioContext.prototype.createOscillator = function () {
+      window.testAudioStarts++;
+      return createOscillator.call(this);
+    };
+  });
+  await ready(page);
+  await expect.poll(() => page.evaluate(() => window.fluencyAuth.getCurrentProfile()?.progress?.diagnostic?.recWorldId)).toBeTruthy();
+  expect(await page.evaluate(() => window.testAudioStarts)).toBe(0);
 });
 
 test('expired saved session refreshes automatically and token refresh does not reopen login', async ({ page }) => {

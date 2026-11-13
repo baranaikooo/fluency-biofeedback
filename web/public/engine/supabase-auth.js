@@ -688,9 +688,6 @@
     if (doSync && window.duoState) {
       syncCloudProgress(window.duoState.state);
     }
-    if (typeof duoSfx !== "undefined" && duoSfx.playFanfare) {
-      duoSfx.playFanfare();
-    }
   }
 
   // 7. Aktualizácia DOM prvkov podľa stavu prihlásenia
