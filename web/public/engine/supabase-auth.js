@@ -203,7 +203,7 @@
       );
       // V natívnej aplikácii posielame na Vercel relay, ktorý nás cez Deep Link okamžite prepne späť do APK
       const redirectUrl = isNative
-        ? "https://stutterbiofeedbackantigravity.vercel.app/?glide_android=1"
+        ? "https://glidesk.vercel.app/?glide_android=1"
         : window.location.origin + window.location.pathname;
 
       console.log(
