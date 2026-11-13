@@ -66,7 +66,8 @@
       avatar: "🛍️",
       voiceGender: "male",
       goal: "Vysvetli, s čím potrebuješ pomôcť pri nákupe alebo reklamácii.",
-      opening: "Dobrý deň, ako vám môžem pomôcť?",
+      opening: "Predajňa, prosím.",
+      audioUrl: "/audio/scenarios/glide-shop-opening.mp3",
       branches: [
         [
           "Reklamácia alebo výmena",
@@ -88,7 +89,8 @@
       avatar: "💬",
       voiceGender: "male",
       goal: "",
-      opening: "Dobrý deň, ako vám môžem pomôcť?",
+      opening: "Haló, prosím?",
+      audioUrl: "/audio/scenarios/glide-own-opening.mp3",
       branches: [
         [
           "Doplniť podrobnosti",

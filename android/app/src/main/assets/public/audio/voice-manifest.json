@@ -34,10 +34,10 @@
     "category": "pokladna",
     "caller": "Pokladníčka Alena",
     "prompt": "Budete si priať aj papierovú tašku na nákup?",
-    "voiceId": "azfErS4stIFaZiJsTHZo",
+    "voiceId": "Leda",
     "file": "scenarios/pokladna_4.mp3",
-    "audioUrl": null,
-    "status": "pending"
+    "audioUrl": "/audio/scenarios/pokladna_4.mp3",
+    "status": "generated"
   },
   {
     "id": "pokladna_5",
@@ -64,10 +64,10 @@
     "category": "kurier",
     "caller": "Kuriér Marek",
     "prompt": "Stojím dole pred bránou, viete zbehnúť na prízemie?",
-    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "voiceId": "Puck",
     "file": "scenarios/kurier_2.mp3",
-    "audioUrl": null,
-    "status": "pending"
+    "audioUrl": "/audio/scenarios/kurier_2.mp3",
+    "status": "generated"
   },
   {
     "id": "kurier_3",
@@ -124,10 +124,10 @@
     "category": "lekar",
     "caller": "Dr. Kováč (Lekár)",
     "prompt": "Kedy sa u vás tie príznaky objavili prvýkrát?",
-    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "voiceId": "Despina",
     "file": "scenarios/lekar_4.mp3",
-    "audioUrl": null,
-    "status": "pending"
+    "audioUrl": "/audio/scenarios/lekar_4.mp3",
+    "status": "generated"
   },
   {
     "id": "kaviaren_1",
@@ -214,10 +214,10 @@
     "category": "servis",
     "caller": "Miro (Automechanik)",
     "prompt": "Kedy by vám vyhovovalo pristaviť vozidlo na diagnostiku?",
-    "voiceId": "Gbg7vqyL0sYjsoEqVw0j",
+    "voiceId": "Charon",
     "file": "scenarios/servis_2.mp3",
-    "audioUrl": null,
-    "status": "pending"
+    "audioUrl": "/audio/scenarios/servis_2.mp3",
+    "status": "generated"
   },
   {
     "id": "servis_3",
@@ -411,6 +411,26 @@
     "voiceId": "Despina",
     "file": "scenarios/glide-ambulancia-despina.mp3",
     "audioUrl": "/audio/scenarios/glide-ambulancia-despina.mp3",
+    "status": "generated"
+  },
+  {
+    "id": "glide-shop-opening",
+    "category": "conversation",
+    "caller": "Partner v rozhovore",
+    "prompt": "Predajňa, prosím.",
+    "voiceId": "Enceladus",
+    "file": "scenarios/glide-shop-opening.mp3",
+    "audioUrl": "/audio/scenarios/glide-shop-opening.mp3",
+    "status": "generated"
+  },
+  {
+    "id": "glide-own-opening",
+    "category": "conversation",
+    "caller": "Partner v rozhovore",
+    "prompt": "Haló, prosím?",
+    "voiceId": "Aoede",
+    "file": "scenarios/glide-own-opening.mp3",
+    "audioUrl": "/audio/scenarios/glide-own-opening.mp3",
     "status": "generated"
   }
 ]

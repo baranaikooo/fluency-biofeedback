@@ -418,7 +418,7 @@
     "caller": "Pokladníčka Alena",
     "promptText": "Budete si priať aj papierovú tašku na nákup?",
     "voiceGender": "female",
-    "audioUrl": null
+    "audioUrl": "/audio/scenarios/pokladna_4.mp3"
   },
   {
     "id": "pokladna_5",
@@ -442,7 +442,7 @@
     "caller": "Kuriér Marek",
     "promptText": "Stojím dole pred bránou, viete zbehnúť na prízemie?",
     "voiceGender": "male",
-    "audioUrl": null
+    "audioUrl": "/audio/scenarios/kurier_2.mp3"
   },
   {
     "id": "kurier_3",
@@ -490,7 +490,7 @@
     "caller": "Dr. Kováč (Lekár)",
     "promptText": "Kedy sa u vás tie príznaky objavili prvýkrát?",
     "voiceGender": "male",
-    "audioUrl": null
+    "audioUrl": "/audio/scenarios/lekar_4.mp3"
   },
   {
     "id": "kaviaren_1",
@@ -562,7 +562,7 @@
     "caller": "Miro (Automechanik)",
     "promptText": "Kedy by vám vyhovovalo pristaviť vozidlo na diagnostiku?",
     "voiceGender": "male",
-    "audioUrl": null
+    "audioUrl": "/audio/scenarios/servis_2.mp3"
   },
   {
     "id": "servis_3",
