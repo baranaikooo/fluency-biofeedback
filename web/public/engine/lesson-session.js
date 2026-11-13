@@ -124,6 +124,34 @@
     root.abortActiveDspSession?.();
     c.exitFocusMode();
   }
+  const techniqueExamples = [
+    {
+      title: "Jemný začiatok hlasu",
+      steps: ["Uvoľni čeľusť", "Začni tichým „a“", "Plynulo dopovedz „áno“"],
+      hint: "Na začiatku môže hlas jemne zosilnieť. Skús to v pohodlnej hlasitosti.",
+    },
+    {
+      title: "Plynulé spojenie znelých hlások",
+      steps: ["Jemne začni „m“", "Prejdi do „á“", "Dopovedz „máme“"],
+      hint: "Vyskúšaj prechod z „m“ do samohlásky v jednom plynulom pohybe.",
+    },
+    {
+      title: "Ľahký kontakt pri spoluhláske",
+      steps: ["Pri „p“ ľahko spoj pery", "Povoľ pery", "Povedz „pero“"],
+      hint: "Pri „t“ skús rovnako ľahký dotyk jazykom za hornými zubami.",
+    },
+    {
+      title: "Pauza medzi významovými celkami",
+      steps: ["„Dve veľké kávy“", "Krátka pauza", "„So sebou, prosím“"],
+      hint: "Pauzu urob tam, kde sa končí časť myšlienky. Pri otázkach môžeš odpovedať vlastnými slovami.",
+    },
+    {
+      title: "Prenos techniky do rozhovoru",
+      steps: ["Vypočuj si otázku", "Daj si chvíľu", "Odpovedz vlastnými slovami"],
+      hint: "Pri telefonáte si môžeš vopred zvoliť jednoduchý cieľ, napríklad dohodnúť termín.",
+    },
+  ];
+
   function describe(level) {
     const count = document.getElementById("popoverWordCount");
     const start = document.getElementById("startLessonBtn");
@@ -135,6 +163,20 @@
     start.querySelector("span").textContent = checkpoint
       ? "POKRAČOVAŤ V LEKCII"
       : "SPUSTIŤ TRÉNING";
+    const technique = document.getElementById("lessonTechnique");
+    const example = techniqueExamples[Number(level.id.split(".")[0]) - 1];
+    technique.open = false;
+    technique.hidden = !example;
+    if (!example) return;
+    document.getElementById("lessonTechniqueTitle").textContent = example.title;
+    document.getElementById("lessonTechniqueHint").textContent = example.hint;
+    document.getElementById("lessonTechniqueSteps").replaceChildren(
+      ...example.steps.map((step) => {
+        const item = document.createElement("li");
+        item.textContent = step;
+        return item;
+      }),
+    );
   }
   const roundDialog = document.createElement("dialog");
   roundDialog.id = "lessonRoundDialog";

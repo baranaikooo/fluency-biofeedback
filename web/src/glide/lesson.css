@@ -96,3 +96,23 @@
 @media(max-height:680px) {.lesson-screen #lessonPause {margin-top:2px;padding:4px 8px;font-size:11px;}.lesson-round-dialog{padding:22px;}}
 .node-popover-card .popover-meta {display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
 .lesson-screen #scenarioReadyBtn {margin-top:12px;min-height:44px;font-size:12px;border-radius:12px;}
+.lesson-technique {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #e2dcf1;
+  border-radius: 14px;
+  background: #f8f5fe;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+}
+.lesson-technique summary { cursor: pointer; font-weight: 600; }
+.lesson-technique strong { display: block; margin-top: 8px; }
+.lesson-technique-steps { margin: 6px 0; padding-inline-start: 20px; list-style: decimal; }
+.lesson-technique p { color: var(--text-muted); }
+.lesson-technique a { display: inline-block; margin-top: 6px; color: var(--purple-hover); text-decoration: underline; }
+.node-popover-card:has(.lesson-technique[open]) {
+  max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);
+  overflow-y: auto;
+}

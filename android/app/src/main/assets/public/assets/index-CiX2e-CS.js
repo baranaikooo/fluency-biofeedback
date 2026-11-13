@@ -1336,6 +1336,14 @@ Error generating stack: `+e.message+`
           <span class="popover-count" id="popoverWordCount">4 cvičenia</span>\r
         </div>\r
 \r
+        <details class="lesson-technique" id="lessonTechnique">\r
+          <summary>Názorná ukážka</summary>\r
+          <strong id="lessonTechniqueTitle"></strong>\r
+          <ol class="lesson-technique-steps" id="lessonTechniqueSteps"></ol>\r
+          <p id="lessonTechniqueHint"></p>\r
+          <a href="https://www.asha.org/practice-portal/clinical-topics/fluency-disorders/#collapse_6" target="_blank" rel="noopener noreferrer">Odborný zdroj · ASHA</a>\r
+        </details>\r
+\r
         <button class="btn-3d green full" id="startLessonBtn">\r
           <span>SPUSTIŤ TRÉNING</span>\r
         </button>\r
