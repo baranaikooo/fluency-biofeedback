@@ -455,6 +455,7 @@
             );
             localStorage.setItem("fl_onboarding_completed", "1");
             applyDiagnosticPersonalization(currentProfile.progress.diagnostic, false);
+            window.duoPath?.render();
           }
         } else {
           // Čerstvý profil, synchronizujeme aktuálny lokálny stav

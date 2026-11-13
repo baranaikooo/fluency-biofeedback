@@ -584,8 +584,32 @@ class DuoStateManager {
     this.renderHud();
   }
 
+  recommendedWorldId() {
+    try {
+      const diagnostic = JSON.parse(localStorage.getItem("fl_diagnostic"));
+      const id = Number(diagnostic?.recWorldId);
+      return WORLDS_DATA.some((world) => world.id === id) ? id : null;
+    } catch {
+      return null;
+    }
+  }
+
+  orderedWorlds() {
+    const recommended = this.recommendedWorldId();
+    const index = WORLDS_DATA.findIndex((world) => world.id === recommended);
+    if (index <= 0) return WORLDS_DATA;
+    return [...WORLDS_DATA.slice(index), ...WORLDS_DATA.slice(0, index)];
+  }
+
   isUnlocked(levelId) {
-    return this.state.unlockedLevels.includes(levelId);
+    if (this.state.unlockedLevels.includes(levelId) || this.isCompleted(levelId)) return true;
+    const levels = this.orderedLevelIds();
+    const index = levels.indexOf(levelId);
+    return index === 0 || (index > 0 && this.isCompleted(levels[index - 1]));
+  }
+
+  orderedLevelIds() {
+    return this.orderedWorlds().flatMap((world) => world.levels.map((level) => level.id));
   }
 
   isCompleted(levelId) {
@@ -620,39 +644,25 @@ class DuoStateManager {
   }
 
   startAtRecommendedWorld(recWorldId) {
-    const wNum = parseInt(recWorldId, 10) || 1;
-    WORLDS_DATA.forEach((w) => {
-      if (w.id < wNum) {
-        w.levels.forEach((lvl) => {
-          if (!this.state.unlockedLevels.includes(lvl.id)) {
-            this.state.unlockedLevels.push(lvl.id);
-          }
-        });
-      } else if (w.id === wNum) {
-        const firstLevelId = `${wNum}.1`;
-        if (!this.state.unlockedLevels.includes(firstLevelId)) {
-          this.state.unlockedLevels.push(firstLevelId);
-        }
-      }
-    });
+    const world = WORLDS_DATA.find((entry) => entry.id === Number(recWorldId));
+    if (!world) return;
+    const firstLevelId = world.levels[0].id;
+    if (!this.state.unlockedLevels.includes(firstLevelId)) {
+      this.state.unlockedLevels.push(firstLevelId);
+    }
 
     this.save();
     this.renderHud();
     this.renderTelemetry();
 
     if (typeof duoPath !== "undefined") {
+      duoPath.selectedWorld = world.id;
       duoPath.render();
-      setTimeout(() => {
-        duoPath.scrollToWorld(wNum);
-      }, 350);
     }
   }
 
   findNextLevelId(currentId) {
-    let allLevels = [];
-    WORLDS_DATA.forEach((w) => {
-      w.levels.forEach((l) => allLevels.push(l.id));
-    });
+    const allLevels = this.orderedLevelIds();
     const idx = allLevels.indexOf(currentId);
     if (idx !== -1 && idx + 1 < allLevels.length) {
       return allLevels[idx + 1];
@@ -818,12 +828,15 @@ class DuoPathRenderer {
       this.container.before(navigation);
     }
     navigation.replaceChildren();
-    if (!this.selectedWorld) {
-      const next = WORLDS_DATA.find((world) => world.levels.some((level) => duoState.isUnlocked(level.id) && !duoState.isCompleted(level.id)));
+    const recommended = duoState.recommendedWorldId();
+    const worlds = duoState.orderedWorlds();
+    if (!this.selectedWorld || this.renderedRecommendation !== recommended) {
+      const next = worlds.find((world) => world.levels.some((level) => duoState.isUnlocked(level.id) && !duoState.isCompleted(level.id)));
       this.selectedWorld = next?.id || 1;
     }
+    this.renderedRecommendation = recommended;
 
-    WORLDS_DATA.forEach((world) => {
+    worlds.forEach((world) => {
       const chapter = document.createElement('button');
       chapter.type = 'button';
       chapter.dataset.world = world.id;

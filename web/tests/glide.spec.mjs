@@ -348,6 +348,15 @@ test("questionnaire consent, all sections and completion are reachable", async (
   expect(profile.note).toBe("Moja poznámka k tréningu.");
   expect(profile.state.unlockedLevels).toContain("4.1");
   expect(Object.keys(profile.state.completedLevels)).toHaveLength(0);
+  expect(await page.locator("#worldChaptersNav button").evaluateAll(
+    (buttons) => buttons.map((button) => button.dataset.world),
+  )).toEqual(["4", "5", "1", "2", "3"]);
+  await page.reload();
+  await expect(page.locator("#world-section-4")).toBeVisible();
+  await page.locator("#continuePathBtn").click();
+  expect(await page.evaluate(() => duoLesson.currentLevel.id)).toBe("4.1");
+  expect(await page.evaluate(() => duoState.findNextLevelId("5.5"))).toBe("1.1");
+  await page.locator("#popoverCloseBtn").click();
   await page.evaluate(() => window.openFigmaQuestionnaire(true));
   await expect(page.locator("#qNextBtn")).toBeDisabled();
   await expect(page.locator("#figmaQuestionnaireModal input:checked")).toHaveCount(0);
