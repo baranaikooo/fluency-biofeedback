@@ -1054,6 +1054,10 @@ class DuoLessonController {
     // Oslavný modal Späť
     const celebBtn = document.getElementById("celebrationBackBtn");
     if (celebBtn) celebBtn.addEventListener("click", () => this.finishCelebration());
+    document.getElementById("celebrationNextBtn")?.addEventListener("click", () => {
+      this.finishCelebration();
+      document.getElementById("continuePathBtn")?.click();
+    });
 
     // SOS Dril: Spustenie terénnej prípravy
     const launchSosBtn = document.getElementById("launchSosDrillBtn");
@@ -1856,6 +1860,9 @@ class DuoLessonController {
     if (accRecap) accRecap.textContent = "Hotovo";
     if (streakRecap) streakRecap.textContent = `🔥 ${duoState.state.streak} dní`;
 
+    const nextButton = document.getElementById("celebrationNextBtn");
+    const hasNextLesson = duoState.orderedWorlds().some((world) => world.levels.some((level) => duoState.isUnlocked(level.id) && !duoState.isCompleted(level.id)));
+    if (nextButton) nextButton.hidden = this.isSosDrill || !!this.conversation || !hasNextLesson;
     if (modal) modal.classList.add("active");
   }
 

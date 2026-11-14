@@ -77,8 +77,7 @@ test("ambulance opening alternates both bundled voices across launches", async (
   for (const voice of ["leda", "despina", "leda"]) {
     await open(page);
     await page.locator("#conversationOpen").click();
-    await page.locator("#conversationSceneTrigger").click();
-    await page.getByRole("option", { name: "Telefonát do ambulancie", exact: true }).click();
+    await page.getByRole("button", { name: "Telefonát do ambulancie", exact: true }).click();
     await page.getByRole("button", { name: "Začať rozhovor", exact: true }).click();
     const question = await page.evaluate(() => lessonScenario());
     expect(question.promptText).toBe("Ambulancia, prosím.");
@@ -118,8 +117,7 @@ test("a custom situation and a missing transcript preserve the user's choice of 
 }) => {
   await open(page);
   await page.locator("#conversationOpen").click();
-  await page.locator("#conversationSceneTrigger").click();
-  await page.getByRole("option", { name: "Vlastná situácia", exact: true }).click();
+    await page.getByRole("button", { name: "Vlastná situácia", exact: true }).click();
   await page.locator("#conversationGoal").fill("Spýtať sa na prestup na vlak");
   await page.getByRole("button", { name: "Začať rozhovor", exact: true }).click();
   await expect(page.locator("#lessonConversationGoal")).toHaveText("Spýtať sa na prestup na vlak");

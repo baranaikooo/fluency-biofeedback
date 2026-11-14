@@ -111,3 +111,6 @@
   .questionnaire-modal-card .question-text { font-size: 14px; margin-bottom: 8px; }
   .questionnaire-modal-card .answer-scale label { min-height: 44px; padding: 6px 10px; }
 }
+.questionnaire-modal-card .answer-scale label {border:1px solid transparent;border-radius:12px;transition:background-color .18s,border-color .18s;}
+.questionnaire-modal-card .answer-scale label:has(input:checked) {background:var(--lavender-soft);border-color:var(--purple);color:var(--purple-hover);}
+.questionnaire-modal-card .answer-scale label:focus-within {outline:2px solid var(--purple);outline-offset:2px;}

@@ -183,12 +183,14 @@
       <button type="button" id="conversationLifeMode" aria-pressed="false">V bežnom živote</button>
     </div>
     <form id="conversationForm">
-      <label for="conversationScene">Situácia</label>
-      <select id="conversationScene"></select>
+      <span class="conversation-scene-label" id="conversationSceneLabel">Vyber situáciu</span>
+      <div id="conversationSceneCards" class="conversation-scene-cards" role="group" aria-labelledby="conversationSceneLabel"></div>
+      <select id="conversationScene" data-glide-select="scene-cards" aria-label="Situácia" aria-hidden="true" tabindex="-1" class="conversation-scene-select"></select>
       <label for="conversationGoal">Čo chceš povedať alebo vybaviť?</label>
       <input id="conversationGoal" maxlength="140" required autocomplete="off">
       <button class="btn-3d green full" id="conversationStart">Začať rozhovor</button>
     </form>
+    <button type="button" id="conversationPending" class="conversation-pending" hidden><span>Rozpracovaný rozhovor</span><strong id="conversationPendingTitle"></strong><span>Vrátiť sa k rozhovoru →</span></button>
     <section id="conversationCheckin" hidden>
       <form id="conversationBeforeForm">
         <h3>Pred rozhovorom</h3>
@@ -256,7 +258,23 @@
   choiceBox.hidden = true;
   byId("drawerContinueBtn").before(choiceBox);
 
-  for (const [id, scene] of Object.entries(scenes)) sceneSelect.add(new Option(scene.title, id));
+  for (const [id, scene] of Object.entries(scenes)) {
+    sceneSelect.add(new Option(scene.title, id));
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "conversation-scene-card";
+    card.dataset.scene = id;
+    card.setAttribute("aria-pressed", "false");
+    const icon = document.createElement("span");
+    icon.className = "conversation-scene-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = scene.avatar;
+    const title = document.createElement("span");
+    title.textContent = scene.title;
+    card.append(icon, title);
+    card.addEventListener("click", () => select(id));
+    byId("conversationSceneCards").append(card);
+  }
   function records() {
     try {
       const stored = JSON.parse(localStorage.getItem(key()) || "[]");
@@ -275,6 +293,7 @@
   }
   function select(sceneId, goal) {
     sceneSelect.value = sceneId;
+    dialog.querySelectorAll(".conversation-scene-card").forEach((card) => card.setAttribute("aria-pressed", String(card.dataset.scene === sceneId)));
     goalInput.value = goal ?? scenes[sceneId].goal;
     goalInput.placeholder = "Napríklad dohodnúť si nový termín";
     window.GlideSelect?.refresh();
@@ -283,6 +302,7 @@
     practiceMode.setAttribute("aria-pressed", String(!life));
     lifeMode.setAttribute("aria-pressed", String(life));
     checkin.hidden = !life;
+    byId("conversationPending").hidden = !pending || life;
     byId("conversationStart").hidden = life;
     beforeForm.hidden = after;
     afterForm.hidden = !after;
@@ -316,6 +336,7 @@
     const last = entries.at(-1);
     const next = plan?.sceneId || (last ? recommend(last) : "cafe");
     select(next, plan?.goal ?? (last?.sceneId === next ? last.goal : undefined));
+    byId("conversationPendingTitle").textContent = pending ? scenes[pending.sceneId].title : "";
     showMode(!!plan, !!plan || !!pending);
     const successes = entries.filter((entry) => entry.outcome === "yes").length;
     status.textContent = last
@@ -323,6 +344,7 @@
       : "";
     dialog.showModal();
   }
+  byId("conversationPending").onclick = () => showMode(true, true);
   practiceMode.onclick = () => showMode(false);
   lifeMode.onclick = () => showMode(true, !!pending);
   byId("conversationAlreadyDone").onclick = () => {
