@@ -122,3 +122,72 @@
   }
 }
 
+
+@keyframes glide-expand-content {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  details > summary {
+    cursor: pointer;
+    transition: color 180ms ease, background-color 180ms ease;
+  }
+
+  details > summary:active {
+    opacity: .75;
+  }
+
+  details[open] > :not(summary) {
+    animation: glide-expand-content 260ms var(--motion-settle) backwards;
+  }
+
+  .glide-choice-dialog[open],
+  .conversation-dialog[open],
+  #practiceDialog[open] {
+    animation: glide-card-enter 290ms var(--motion-settle) backwards;
+  }
+
+  .glide-select-chevron {
+    transition: transform 240ms var(--motion-settle);
+  }
+
+  .glide-select-trigger[aria-expanded="true"] .glide-select-chevron {
+    transform: rotate(180deg);
+  }
+
+  .glide-choice-option,
+  .path-node-btn,
+  .nav-tab,
+  .sidebar-nav-item {
+    transition: transform 180ms var(--motion-settle), background-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .glide-choice-option:active,
+  .path-node-btn:active,
+  .nav-tab:active,
+  .sidebar-nav-item:active {
+    transform: scale(.97);
+  }
+}
+
+@supports (interpolate-size: allow-keywords) and selector(::details-content) {
+  @media (prefers-reduced-motion: no-preference) {
+    details {
+      interpolate-size: allow-keywords;
+    }
+
+    details::details-content {
+      height: 0;
+      overflow: clip;
+      opacity: 0;
+      transition: height 280ms var(--motion-settle), opacity 200ms ease, content-visibility 280ms allow-discrete;
+    }
+
+    details[open]::details-content {
+      height: auto;
+      opacity: 1;
+    }
+  }
+}
+
