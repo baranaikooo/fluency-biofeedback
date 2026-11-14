@@ -1409,6 +1409,8 @@ class DuoLessonController {
       wordInputEl.value = item.word;
     }
 
+    const wordDialog = document.getElementById("vocabularyDialog");
+    if (wordDialog?.open) wordDialog.close();
     duoSfx.playTone(550, "sine", 0.05, 0.08);
     this.launchSosDrill();
   }

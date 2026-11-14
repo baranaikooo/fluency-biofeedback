@@ -59,3 +59,13 @@
 .drill-mode-options {padding:0!important;overflow:visible;}
 .drill-mode-options > summary {min-height:48px;padding:14px 16px;cursor:pointer;color:var(--ink);font-size:13px;font-weight:600;}
 .drill-mode-options > .mode-select-grid {padding:0 16px 16px;}
+.vocabulary-tabs {display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:14px 0;padding:4px;border-radius:15px;background:var(--bg);}
+.vocabulary-tabs button {min-height:44px;border-radius:12px;color:var(--text-muted);font-weight:600;}
+.vocabulary-tabs button[aria-pressed="true"] {background:var(--lavender-soft);color:var(--purple-hover);}
+#vocabularyLibrary[hidden],#vocabularySaved[hidden] {display:none!important;}
+#vocabularySaved .feared-words-card {padding:0;border:0;box-shadow:none;background:transparent;}
+#vocabularySaved .vault-input-row {display:flex;flex-wrap:wrap;gap:8px;}
+#vocabularySaved .vault-input-row > * {min-width:0;}
+#vocabularySaved .vault-input {flex:1 1 100%;}
+#vocabularySaved .glide-select {flex:1 1 130px;}
+#vocabularySaved .vault-list {margin-top:12px;}

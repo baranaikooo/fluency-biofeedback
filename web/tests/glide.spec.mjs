@@ -216,7 +216,8 @@ test("all original worlds, navigation, vault and persistence work without iframe
   await page.locator("#sidebarTabDril").click();
   await expect(page.locator("#tabDril")).toHaveClass(/active/);
   const word = '<img src=x onerror="window.injected=true">Test';
-  await page.getByText('Tvoje uložené slová', { exact: true }).click();
+  await page.locator("#vocabularyOpen").click();
+  await page.locator("#vocabularySavedTab").click();
   await page.locator("#vaultWordInput").fill(word);
   await page.locator("#vaultAddBtn").click();
   await expect(page.locator(".vault-item-word").filter({ hasText: word })).toBeVisible();
@@ -224,7 +225,8 @@ test("all original worlds, navigation, vault and persistence work without iframe
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-engine", "ready");
   await page.locator("#sidebarTabDril").click();
-  await page.getByText('Tvoje uložené slová', { exact: true }).click();
+  await page.locator("#vocabularyOpen").click();
+  await page.locator("#vocabularySavedTab").click();
   await expect(page.locator(".vault-item-word").filter({ hasText: word })).toBeVisible();
   await page.locator("#sidebarTabTelemetria").click();
   await expect(page.locator("#tabTelemetria")).toHaveClass(/active/);
@@ -569,7 +571,8 @@ test("telemetry only includes requested training cards and drill controls stay o
   await expect(page.locator("#wordInput")).toHaveValue("");
   await page.locator('input[name="sandboxMode"][value="guillotine"]').check();
   await expect(page.locator('input[name="sandboxMode"][value="guillotine"]')).toBeChecked();
-  await page.getByText('Tvoje uložené slová', { exact: true }).click();
+  await page.locator("#vocabularyOpen").click();
+  await page.locator("#vocabularySavedTab").click();
   await page.locator("#vFilterTraining").click();
   await expect(page.locator("#vFilterTraining")).toHaveClass(/active/);
   expect(errors).toEqual([]);

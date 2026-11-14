@@ -79,7 +79,6 @@
   // Optional material stays one tap away, while the primary controls stay near the top.
   for (const [selector, title] of [
     ['.sandbox-input-card .preset-chips', 'Príklady slov a viet'],
-    ['#fearedWordsCard', 'Tvoje uložené slová'],
     ['.questionnaire-note', 'Doplniť poznámku (nepovinné)'],
     ['#scienceEntryCard', 'Ako funguje tréning'],
     ['#telemetryDiagnosticCard', 'Tréningový profil'],

@@ -11,7 +11,8 @@ async function open(page) {
 }
 test("category picker uses app dialog and supports keyboard selection", async ({ page }) => {
   await open(page);
-  await page.getByText("Tvoje uložené slová", { exact: true }).click();
+  await page.locator("#vocabularyOpen").click();
+  await page.locator("#vocabularySavedTab").click();
   await expect(page.locator("#vaultCategorySelect")).toBeHidden();
   await page.locator("#vaultCategorySelectTrigger").click();
   await expect(page.locator("#glideChoiceDialog")).toBeVisible();

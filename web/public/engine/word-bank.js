@@ -56,7 +56,7 @@
   trigger.id = "vocabularyOpen";
   trigger.type = "button";
   trigger.className = "practice-button";
-  trigger.textContent = "Slovník cvičení";
+  trigger.textContent = "Slová";
   document.querySelector(".sandbox-input-heading")?.append(trigger);
 
   const dialog = document.createElement("dialog");
@@ -65,14 +65,33 @@
   dialog.setAttribute("aria-labelledby", "vocabularyTitle");
   dialog.innerHTML = `
     <button type="button" class="conversation-close" aria-label="Zavrieť">✕</button>
-    <h2 id="vocabularyTitle">Slovník cvičení</h2>
+    <h2 id="vocabularyTitle">Slová na tréning</h2>
+    <div class="vocabulary-tabs" role="group" aria-label="Výber slov">
+      <button type="button" id="vocabularyLibraryTab" aria-pressed="true">Slovník</button>
+      <button type="button" id="vocabularySavedTab" aria-pressed="false">Moje slová</button>
+    </div>
+    <div id="vocabularyLibrary">
     <label for="vocabularySearch">Vyhľadať slovo</label>
     <input id="vocabularySearch" type="search" placeholder="Napríklad káva" autocomplete="off">
     <p id="vocabularyCount" role="status"></p>
     <div id="vocabularyWords" class="vocabulary-words"></div>
     <button id="vocabularyNext" type="button" class="lesson-quiet-action">Ďalšie slová</button>
+    </div>
+    <div id="vocabularySaved" hidden></div>
   `;
   document.body.append(dialog);
+  const savedPanel = dialog.querySelector("#vocabularySaved");
+  const libraryPanel = dialog.querySelector("#vocabularyLibrary");
+  const savedCard = document.getElementById("fearedWordsCard");
+  if (savedCard) savedPanel.append(savedCard);
+  function selectPanel(saved) {
+    savedPanel.hidden = !saved;
+    libraryPanel.hidden = saved;
+    dialog.querySelector("#vocabularySavedTab").setAttribute("aria-pressed", String(saved));
+    dialog.querySelector("#vocabularyLibraryTab").setAttribute("aria-pressed", String(!saved));
+  }
+  dialog.querySelector("#vocabularySavedTab").onclick = () => selectPanel(true);
+  dialog.querySelector("#vocabularyLibraryTab").onclick = () => selectPanel(false);
   const search = document.getElementById("vocabularySearch");
   const list = document.getElementById("vocabularyWords");
   const count = document.getElementById("vocabularyCount");
@@ -106,6 +125,7 @@
     };
   }
   trigger.onclick = () => {
+    selectPanel(false);
     search.value = "";
     offset = 0;
     render();
