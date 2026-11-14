@@ -178,16 +178,26 @@
   dialog.innerHTML = `
     <button type="button" class="conversation-close" aria-label="Zavrieť">✕</button>
     <h2 id="conversationTitle">Nácvik rozhovoru</h2>
+    <div class="conversation-mode" role="group" aria-label="Typ rozhovoru">
+      <button type="button" id="conversationPracticeMode" aria-pressed="true">Simulácia</button>
+      <button type="button" id="conversationLifeMode" aria-pressed="false">V bežnom živote</button>
+    </div>
     <form id="conversationForm">
       <label for="conversationScene">Situácia</label>
       <select id="conversationScene"></select>
       <label for="conversationGoal">Čo chceš povedať alebo vybaviť?</label>
       <input id="conversationGoal" maxlength="140" required autocomplete="off">
-      <button class="btn-3d green full">Začať rozhovor</button>
+      <button class="btn-3d green full" id="conversationStart">Začať rozhovor</button>
     </form>
-    <details id="conversationCheckin">
-      <summary>Záznam zo skutočného rozhovoru</summary>
+    <section id="conversationCheckin" hidden>
+      <form id="conversationBeforeForm">
+        <h3>Pred rozhovorom</h3>
+        <fieldset class="conversation-rating" id="conversationBeforeRating"></fieldset>
+        <button type="submit" class="btn-3d green full">Uložiť plán</button>
+        <button type="button" id="conversationAlreadyDone" class="lesson-quiet-action">Rozhovor už prebehol</button>
+      </form>
       <form id="conversationCheckinForm">
+        <h3>Po rozhovore</h3>
         <fieldset class="conversation-rating">
           <legend>Podarilo sa ti povedať, čo si chcel/a?</legend>
           <label><input type="radio" name="conversationOutcome" value="yes" required><span>Áno</span></label>
@@ -200,9 +210,17 @@
           <label><input type="radio" name="conversationEffort" value="2"><span>Stredný</span></label>
           <label><input type="radio" name="conversationEffort" value="3"><span>Náročný</span></label>
         </fieldset>
+        <fieldset class="conversation-rating" id="conversationAfterRating"></fieldset>
+        <fieldset class="conversation-rating">
+          <legend>Čo ti pomohlo? (voliteľné)</legend>
+          <label><input type="checkbox" name="conversationHelp" value="pause"><span>Krátka pauza</span></label>
+          <label><input type="checkbox" name="conversationHelp" value="onset"><span>Jemný začiatok</span></label>
+          <label><input type="checkbox" name="conversationHelp" value="practice"><span>Príprava vopred</span></label>
+          <label><input type="checkbox" name="conversationHelp" value="pace"><span>Vlastné tempo</span></label>
+        </fieldset>
         <button class="btn-3d green full">Uložiť záznam</button>
       </form>
-    </details>
+    </section>
     <p id="conversationRecommendation" role="status"></p>
   `;
   document.body.append(dialog);
@@ -212,9 +230,25 @@
   const goalInput = byId("conversationGoal");
   const status = byId("conversationRecommendation");
   const checkin = byId("conversationCheckin");
+  const beforeForm = byId("conversationBeforeForm");
+  const afterForm = byId("conversationCheckinForm");
+  const practiceMode = byId("conversationPracticeMode");
+  const lifeMode = byId("conversationLifeMode");
   let openedFor;
+  let pending;
   const key = () =>
     "glide_conversations_v1_" + (window.fluencyAuth?.getCurrentUser()?.id || "guest");
+  const draftKey = () => key() + ":plan";
+  for (const [id, label] of [
+    ["Before", "Ako sa cítiš pred rozhovorom?"],
+    ["After", "Ako sa cítiš po rozhovore?"],
+  ]) {
+    byId(`conversation${id}Rating`).innerHTML = `
+      <legend>${label} (voliteľné)</legend>
+      <label><input type="radio" name="feeling" value="calm"><span>Pokojne</span></label>
+      <label><input type="radio" name="feeling" value="neutral"><span>Neutrálne</span></label>
+      <label><input type="radio" name="feeling" value="tense"><span>Napäto</span></label>`;
+  }
   const choiceBox = document.createElement("div");
   choiceBox.id = "conversationChoices";
   choiceBox.tabIndex = -1;
@@ -245,52 +279,104 @@
     goalInput.placeholder = "Napríklad dohodnúť si nový termín";
     window.GlideSelect?.refresh();
   }
+  function showMode(life, after = false) {
+    practiceMode.setAttribute("aria-pressed", String(!life));
+    lifeMode.setAttribute("aria-pressed", String(life));
+    checkin.hidden = !life;
+    byId("conversationStart").hidden = life;
+    beforeForm.hidden = after;
+    afterForm.hidden = !after;
+    if (life && pending) select(pending.sceneId, pending.goal);
+  }
+
+  function selectedSituation() {
+    const sceneId = sceneSelect.value;
+    const goal = goalInput.value.trim();
+    if (openedFor !== key()) {
+      status.textContent = "Účet sa zmenil. Otvor rozhovor znova.";
+      return null;
+    }
+    if (!scenes[sceneId] || !goal) {
+      status.textContent = "Doplň, čo chceš povedať alebo vybaviť.";
+      goalInput.focus();
+      return null;
+    }
+    return { sceneId, goal };
+  }
+
   function open(plan) {
     openedFor = key();
-    byId("conversationCheckinForm").reset();
+    beforeForm.reset();
+    afterForm.reset();
+    try {
+      pending = JSON.parse(localStorage.getItem(draftKey()));
+      if (!scenes[pending?.sceneId] || !pending.goal) pending = null;
+    } catch { pending = null; }
     const entries = records();
     const last = entries.at(-1);
     const next = plan?.sceneId || (last ? recommend(last) : "cafe");
     select(next, plan?.goal ?? (last?.sceneId === next ? last.goal : undefined));
-    checkin.open = !!plan;
+    showMode(!!plan, !!plan || !!pending);
     const successes = entries.filter((entry) => entry.outcome === "yes").length;
     status.textContent = last
       ? `Zaznamenané rozhovory: ${entries.length}. Cieľ splnený: ${successes}. Návrh na nácvik: ${scenes[recommend(last)].title}.`
       : "";
     dialog.showModal();
   }
+  practiceMode.onclick = () => showMode(false);
+  lifeMode.onclick = () => showMode(true, !!pending);
+  byId("conversationAlreadyDone").onclick = () => {
+    showMode(true, true);
+    afterForm.querySelector("button").focus({ preventScroll: true });
+  };
+  beforeForm.onsubmit = (event) => {
+    event.preventDefault();
+    const situation = selectedSituation();
+    if (!situation) return;
+    const draft = { ...situation, beforeFeeling: new FormData(beforeForm).get("feeling") };
+    try {
+      localStorage.setItem(draftKey(), JSON.stringify(draft));
+      pending = draft;
+      dialog.close();
+    } catch {
+      status.textContent = "Plán sa nepodarilo uložiť na tomto zariadení.";
+    }
+  };
   sceneSelect.onchange = () => select(sceneSelect.value);
   dialog.querySelector(".conversation-close").onclick = () => dialog.close();
   byId("conversationForm").onsubmit = (event) => {
     event.preventDefault();
-    const goal = goalInput.value.trim();
-    if (!goal || !scenes[sceneSelect.value]) return;
+    const situation = selectedSituation();
+    if (!situation || !checkin.hidden) return;
     dialog.close();
-    duoLesson.launchSosDrill(create(sceneSelect.value, goal));
+    duoLesson.launchSosDrill(create(situation.sceneId, situation.goal));
     byId("startBtn").focus({preventScroll:true});
   };
   byId("conversationCheckinForm").onsubmit = (event) => {
     event.preventDefault();
-    if (openedFor !== key()) {
-      status.textContent = "Účet sa zmenil. Otvor záznam znova.";
-      return;
-    }
+    const situation = selectedSituation();
+    if (!situation) return;
     const form = new FormData(event.currentTarget);
     const entry = {
-      sceneId: sceneSelect.value,
-      goal: goalInput.value.trim(),
+      ...situation,
+      beforeFeeling: pending?.sceneId === situation.sceneId && pending.goal === situation.goal
+        ? pending.beforeFeeling : null,
+      afterFeeling: form.get("feeling"),
+      helpedBy: form.getAll("conversationHelp"),
       outcome: form.get("conversationOutcome"),
       effort: Number(form.get("conversationEffort")),
       date: Date.now(),
     };
-    if (!scenes[entry.sceneId] || !entry.goal) {
-      status.textContent = "Najprv doplň, čo si chcel/a vybaviť.";
-      return;
-    }
     try {
       const entries = [...records(), entry];
       localStorage.setItem(key(), JSON.stringify(entries));
-      checkin.open = false;
+      if (pending?.sceneId === entry.sceneId && pending.goal === entry.goal) {
+        localStorage.removeItem(draftKey());
+        pending = null;
+      }
+      beforeForm.reset();
+      afterForm.reset();
+      showMode(true, !!pending);
       const next = recommend(entry);
       select(next, next === entry.sceneId ? entry.goal : undefined);
       status.textContent = `Záznam uložený. Nabudúce skús: ${scenes[next].title}.`;

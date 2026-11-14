@@ -8,6 +8,12 @@
 .conversation-dialog h2 { margin-right: 34px; }
 .conversation-close { position: absolute; top: 12px; right: 16px; padding: 8px; color: var(--text-muted); }
 .conversation-dialog form { display: grid; gap: 9px; }
+.conversation-dialog form[hidden], .conversation-dialog button[hidden] { display: none; }
+.conversation-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 12px 0; padding: 4px; border-radius: 15px; background: var(--bg); }
+.conversation-mode button { min-height: 44px; border-radius: 12px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+.conversation-mode button[aria-pressed="true"] { background: var(--lavender-soft); color: var(--purple-hover); }
+#conversationCheckin { margin-top: 12px; }
+#conversationCheckin h3 { font-size: 15px; font-weight: 600; }
 .conversation-dialog label, .conversation-dialog summary { color: var(--ink); font-size: 13px; font-weight: 600; }
 .conversation-dialog input { min-width: 0; width: 100%; padding: 11px; border: 1px solid var(--surface-border); border-radius: 12px; background: var(--bg); }
 .conversation-dialog details { margin-top: 14px; border-top: 1px solid var(--surface-border); padding-top: 12px; }

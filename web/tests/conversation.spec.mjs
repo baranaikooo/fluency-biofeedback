@@ -86,6 +86,33 @@ test("ambulance opening alternates both bundled voices across launches", async (
   }
 });
 
+test("a real-life plan survives reload and adds optional reflection to the same entry", async ({ page }) => {
+  await open(page);
+  await page.locator("#conversationOpen").click();
+  await page.getByRole("button", { name: "V bežnom živote" }).click();
+  await page.locator("#conversationBeforeRating").getByText("Napäto", { exact: true }).click();
+  await page.getByRole("button", { name: "Uložiť plán" }).click();
+  await open(page);
+  await page.locator("#conversationOpen").click();
+  await page.getByRole("button", { name: "V bežnom živote" }).click();
+  await expect(page.getByRole("heading", { name: "Po rozhovore" })).toBeVisible();
+  const reflection = page.locator("#conversationCheckinForm");
+  await reflection.getByText("Áno", { exact: true }).click();
+  await reflection.getByText("Zvládnuteľný", { exact: true }).click();
+  await page.locator("#conversationAfterRating").getByText("Pokojne", { exact: true }).click();
+  await page.getByText("Krátka pauza", { exact: true }).click();
+  await page.getByRole("button", { name: "Uložiť záznam" }).click();
+  const saved = await page.evaluate(() => ({
+    plan: localStorage.getItem("glide_conversations_v1_guest:plan"),
+    entries: JSON.parse(localStorage.getItem("glide_conversations_v1_guest")),
+  }));
+  expect(saved.plan).toBeNull();
+  expect(saved.entries).toHaveLength(1);
+  expect(saved.entries[0]).toMatchObject({
+    sceneId: "cafe", beforeFeeling: "tense", afterFeeling: "calm", helpedBy: ["pause"],
+  });
+});
+
 test("a custom situation and a missing transcript preserve the user's choice of follow-up", async ({
   page,
 }) => {
