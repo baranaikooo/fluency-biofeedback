@@ -91,13 +91,13 @@ test("a real-life plan survives reload and adds optional reflection to the same 
   await open(page);
   await page.locator("#sidebarTabRozhovory").click();
 
-  await page.getByRole("button", { name: "V bežnom živote" }).click();
+  await page.getByRole("button", { name: "Môj skutočný rozhovor" }).click();
   await page.locator("#conversationBeforeRating").getByText("Napäto", { exact: true }).click();
   await page.getByRole("button", { name: "Uložiť plán" }).click();
   await open(page);
   await page.locator("#sidebarTabRozhovory").click();
 
-  await page.getByRole("button", { name: "V bežnom živote" }).click();
+  await page.getByRole("button", { name: "Môj skutočný rozhovor" }).click();
   await expect(page.getByRole("heading", { name: "Po rozhovore" })).toBeVisible();
   const reflection = page.locator("#conversationCheckinForm");
   await reflection.getByText("Áno", { exact: true }).click();

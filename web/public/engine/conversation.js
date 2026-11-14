@@ -180,9 +180,10 @@
     <h1 id="conversationTitle">Nácvik rozhovoru</h1>
     <p class="conversation-intro">Vyber si situáciu a trénuj vlastným tempom.</p>
     <div class="conversation-mode" role="group" aria-label="Typ rozhovoru">
-      <button type="button" id="conversationPracticeMode" aria-pressed="true">Simulácia</button>
-      <button type="button" id="conversationLifeMode" aria-pressed="false">V bežnom živote</button>
+      <button type="button" id="conversationPracticeMode" aria-pressed="true">Precvičiť v aplikácii</button>
+      <button type="button" id="conversationLifeMode" aria-pressed="false">Môj skutočný rozhovor</button>
     </div>
+    <p class="conversation-mode-help" id="conversationModeHelp">Aplikácia prehrá repliky a ty odpovedáš vlastnými slovami.</p>
     <form id="conversationForm">
       <span class="conversation-scene-label" id="conversationSceneLabel">Vyber situáciu</span>
       <div id="conversationSceneCards" class="conversation-scene-cards" role="group" aria-labelledby="conversationSceneLabel"></div>
@@ -300,6 +301,9 @@
     window.GlideSelect?.refresh();
   }
   function showMode(life, after = false) {
+    byId("conversationModeHelp").textContent = life
+      ? "Naplánuj si skutočný rozhovor a po ňom si zaznamenaj svoju skúsenosť."
+      : "Aplikácia prehrá repliky a ty odpovedáš vlastnými slovami.";
     practiceMode.setAttribute("aria-pressed", String(!life));
     lifeMode.setAttribute("aria-pressed", String(life));
     checkin.hidden = !life;
