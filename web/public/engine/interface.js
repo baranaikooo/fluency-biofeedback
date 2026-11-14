@@ -45,6 +45,7 @@
 (function initDesktopSidebarSync() {
   const sCesta = document.getElementById("sidebarTabCesta");
   const sDril = document.getElementById("sidebarTabDril");
+  const sRozhovory = document.getElementById("sidebarTabRozhovory");
   const sAsistent = document.getElementById("sidebarTabAsistent");
   const sTelemetria = document.getElementById("sidebarTabTelemetria");
   const sScience = document.getElementById("sidebarScienceBtn");
@@ -52,6 +53,7 @@
 
   const nCesta = document.getElementById("navTabCesta");
   const nDril = document.getElementById("navTabDril");
+  const nRozhovory = document.getElementById("navTabRozhovory");
   const nAsistent = document.getElementById("navTabAsistent");
   const nTelemetria = document.getElementById("navTabTelemetria");
   const openScienceBtn = document.getElementById("openScienceModalBtn");
@@ -59,6 +61,7 @@
 
   if (sCesta && nCesta) sCesta.addEventListener("click", () => nCesta.click());
   if (sDril && nDril) sDril.addEventListener("click", () => nDril.click());
+  if (sRozhovory && nRozhovory) sRozhovory.addEventListener("click", () => nRozhovory.click());
   if (sAsistent && nAsistent) sAsistent.addEventListener("click", () => nAsistent.click());
   if (sTelemetria && nTelemetria) sTelemetria.addEventListener("click", () => nTelemetria.click());
   if (sScience && openScienceBtn) sScience.addEventListener("click", () => openScienceBtn.click());
@@ -68,6 +71,7 @@
   const navItems = [
     { tab: "tabCesta", side: sCesta },
     { tab: "tabDril", side: sDril },
+    { tab: "tabRozhovory", side: sRozhovory },
     { tab: "tabAsistent", side: sAsistent },
     { tab: "tabTelemetria", side: sTelemetria },
   ];
