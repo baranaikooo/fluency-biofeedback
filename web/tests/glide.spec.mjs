@@ -569,12 +569,10 @@ test("telemetry only includes requested training cards and drill controls stay o
   await expect(page.locator("#wordInput")).toHaveValue("Kartou, prosím");
   await page.locator("#clearWordBtn").click();
   await expect(page.locator("#wordInput")).toHaveValue("");
-  await page.locator('input[name="sandboxMode"][value="guillotine"]').check();
-  await expect(page.locator('input[name="sandboxMode"][value="guillotine"]')).toBeChecked();
+  await expect(page.locator('input[name="sandboxMode"]')).toHaveCount(0);
   await page.locator("#vocabularyOpen").click();
   await page.getByText("Pridať vlastné slovo", { exact: true }).click();
-  await page.locator("#vFilterTraining").click();
-  await expect(page.locator("#vFilterTraining")).toHaveClass(/active/);
+  await expect(page.locator("#vaultWordInput")).toBeVisible();
   expect(errors).toEqual([]);
 });
 

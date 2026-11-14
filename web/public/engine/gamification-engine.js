@@ -1593,8 +1593,7 @@ class DuoLessonController {
       wordInputEl && wordInputEl.value.trim() ? wordInputEl.value.trim() : "Peter Novák";
 
     // Voľba režimu zo sandboxu
-    const selectedMode = conversation ? "guillotine" :
-      document.querySelector('input[name="sandboxMode"]:checked')?.value || "standard";
+    const selectedMode = conversation ? "guillotine" : "standard";
 
     this.isLessonActive = true;
     this.voiceIntroPlayed = false;
