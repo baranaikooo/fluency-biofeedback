@@ -710,7 +710,7 @@
         <div class="sandbox-container">
           <!-- Hero karta SOS Drilu -->
           <div class="sandbox-hero-card">
-            <div class="sandbox-badge">⚡ SOS SANDBOX</div>
+            <div class="sandbox-badge">RÝCHLY DRIL</div>
             <h2 class="sandbox-title">Čo chceš dnes povedať?</h2>
             <p class="sandbox-sub">Meno, telefonát či objednávka. Nacvič si to po svojom.</p>
           </div>
@@ -745,8 +745,8 @@
           </div>
 
           <!-- Voľba režimu drilu -->
-          <div class="sandbox-mode-card">
-            <div class="sandbox-label">Ako chceš cvičiť?</div>
+          <details class="sandbox-mode-card drill-mode-options">
+            <summary id="drillModeSummary">Režim: Vlastným tempom</summary>
             <div class="mode-select-grid">
               <label class="mode-card-radio">
                 <input type="radio" name="sandboxMode" value="standard" checked />
@@ -766,7 +766,7 @@
                 </div>
               </label>
             </div>
-          </div>
+          </details>
 
           <!-- Veľké tlačidlo na spustenie drilu -->
           <div class="sandbox-action-wrap">
@@ -774,6 +774,8 @@
               <span>Začať · 3 pokusy</span>
             </button>
           </div>
+
+          <div class="drill-more-actions" aria-label="Ďalšie možnosti tréningu"></div>
 
           <!-- ============================================================== -->
           <!-- TREZOR OBÁVANÝCH SLOV (FEARED WORDS VAULT)                     -->

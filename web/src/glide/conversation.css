@@ -44,3 +44,18 @@
 .conversation-pending strong {font-size:14px;}
 .conversation-scene-card:focus-visible,.conversation-pending:focus-visible {outline:3px solid #a69ae2;outline-offset:2px;}
 @media(max-width:360px){.conversation-scene-card{font-size:11px;padding:7px;gap:6px}}
+/* Keep card text visible and preserve its full height on narrow screens. */
+.conversation-scene-card {min-width:0;height:auto;white-space:normal;overflow:visible;line-height:1.35;}
+.conversation-scene-card > span:last-child {min-width:0;white-space:normal;overflow-wrap:anywhere;}
+.conversation-dialog input:not([type=radio]):not([type=checkbox]) {line-height:1.4;}
+.drill-more-actions {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.drill-more-actions button {min-width:0;min-height:48px;padding:9px 10px;border:1px solid var(--surface-border);border-radius:14px;font-size:12px;font-weight:600;white-space:normal;line-height:1.35;}
+@media(max-width:768px) {
+  .mode-card-inner {height:auto;min-height:96px;gap:5px;}
+  .mode-card-title,.mode-card-desc {display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.35;}
+  .mode-card-desc {font-size:11px;}
+}
+@media(max-width:360px) {.conversation-scene-cards {grid-template-columns:1fr;} .conversation-scene-card {min-height:48px;}}
+.drill-mode-options {padding:0!important;overflow:visible;}
+.drill-mode-options > summary {min-height:48px;padding:14px 16px;cursor:pointer;color:var(--ink);font-size:13px;font-weight:600;}
+.drill-mode-options > .mode-select-grid {padding:0 16px 16px;}

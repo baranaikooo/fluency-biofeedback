@@ -69,6 +69,13 @@
     researchPoints.before(details);
     details.append(summary, researchPoints);
   }
+  document.querySelectorAll('input[name="sandboxMode"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const summary = document.getElementById('drillModeSummary');
+      const title = input.closest('label')?.querySelector('.mode-card-title');
+      if (summary && input.checked && title) summary.textContent = 'Režim: ' + title.textContent.trim();
+    });
+  });
   // Optional material stays one tap away, while the primary controls stay near the top.
   for (const [selector, title] of [
     ['.sandbox-input-card .preset-chips', 'Príklady slov a viet'],

@@ -413,7 +413,7 @@
   button.className = "practice-button";
   button.textContent = "💬 Nácvik rozhovoru";
   button.onclick = () => open();
-  byId("launchSosDrillBtn").after(button);
+  document.querySelector(".drill-more-actions").append(button);
 
   const recap = document.createElement("button");
   recap.type = "button";
