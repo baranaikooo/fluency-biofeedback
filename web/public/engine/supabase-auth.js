@@ -837,16 +837,8 @@
     // Profil tlačidlo v hlavičke
     if (headerProfileBtn) {
       headerProfileBtn.addEventListener("click", () => {
-        if (!currentUser) {
-          showAuthScreen();
-        } else {
-          const navTabTelemetria = document.getElementById("navTabTelemetria");
-          if (navTabTelemetria) navTabTelemetria.click();
-          const profileCard = document.getElementById("telemetryProfileCard");
-          if (profileCard) {
-            profileCard.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }
+        document.getElementById("navTabTelemetria")?.click();
+        document.getElementById("tabTelemetria")?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
 
