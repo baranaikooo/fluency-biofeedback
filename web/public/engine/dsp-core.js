@@ -545,7 +545,17 @@ function playScenarioAudio(scenario, onDone) {
 // ============================================================================
 let dspStartGeneration = 0;
 let phraseCapture = null;
+function setLessonMicState(state) {
+  const indicator = document.getElementById("lessonMicStatus");
+  const label = document.getElementById("lessonMicStatusText");
+  if (!indicator || !label) return;
+  indicator.dataset.state = state;
+  label.textContent = { ready: "Pripravené", listening: "Počúvam", processing: "Spracúvam" }[state];
+  if (state !== "listening") indicator.style.removeProperty("--voice-level");
+}
+
 function abortActiveDspSession() {
+  setLessonMicState("ready");
   document.getElementById("scenarioReadyBtn")?.remove();
   dspStartGeneration++;
   phraseCapture?.cancel();
@@ -958,11 +968,13 @@ function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
     pacerCircle.textContent = "Hotovo";
     targetWord.className = "target-word";
 
+    setLessonMicState("processing");
     if (recording) statusAlert.textContent = "Overujem povedaný text…";
     Promise.resolve(recording?.finish()).catch(() => "").then(transcript => {
       if (generation !== dspStartGeneration) return;
       phraseCapture = null;
       runPostHocEvaluation(frames, meta, maxLatencyAllowedMs, maxDurationMs, transcript);
+      setLessonMicState("ready");
       startBtn.disabled = false;
     });
   };
@@ -975,6 +987,7 @@ function captureAndAudit(meta, maxLatencyAllowedMs, maxDurationMs) {
     formantAnalyser.getFloatTimeDomainData(formantBuf);
 
     const rStat = computeRms(rawBuf);
+    document.getElementById("lessonMicStatus")?.style.setProperty("--voice-level", String(Math.min(1, rStat.rms * 12)));
     const fStat = computeRms(formantBuf);
     const feat = computeSignalFeatures(rawBuf, audioCtx.sampleRate);
 

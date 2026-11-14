@@ -116,3 +116,14 @@
   max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);
   overflow-y: auto;
 }
+
+.lesson-mic-status {display:inline-flex;align-items:center;gap:8px;margin:2px auto 0;padding:6px 11px;border-radius:999px;background:#f1eef7;color:#554976;font-size:12px;font-weight:700;}
+.lesson-mic-dot {width:9px;height:9px;border-radius:50%;background:#8f84a7;transform:scale(calc(1 + var(--voice-level, 0) * .8));transition:transform 100ms ease,background-color 180ms ease;}
+.lesson-mic-status[data-state="listening"] {background:#e6f6ed;color:#246044;}
+.lesson-mic-status[data-state="listening"] .lesson-mic-dot {background:#30945f;}
+.lesson-mic-status[data-state="processing"] {background:#f6f0dc;color:#735e24;}
+.lesson-mic-status[data-state="processing"] .lesson-mic-dot {background:#bf9636;}
+.lesson-hint summary {display:inline-flex;align-items:center;min-height:40px;padding:7px 14px;border:1px solid #e2dcf1;border-radius:999px;background:#f8f5fe;color:var(--purple);font-size:12px;font-weight:600;}
+.lesson-hint summary::after {content:"⌄";margin-left:8px;font-size:16px;}
+.lesson-hint[open] summary::after {transform:rotate(180deg);}
+@media(max-height:680px){.lesson-mic-status{padding:4px 9px;font-size:11px}.lesson-hint summary{min-height:34px;padding:4px 12px}}

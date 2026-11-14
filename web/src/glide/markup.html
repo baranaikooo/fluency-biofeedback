@@ -686,10 +686,10 @@
         <div class="todays-focus-card">
           <div class="focus-card-left">
             <div class="focus-eyebrow">✦ DNEŠNÉ ZAMERANIE</div>
-            <h2 class="focus-title">Chvíľa pre tvoj hlas.</h2>
+            <h2 class="focus-title" id="nextLessonTitle">Pokračuj vo svojej Ceste.</h2>
             <p class="focus-description" id="dailyQuestText">Nadýchni sa. Začneme jedným slovom.</p>
             <button class="focus-cta-btn" id="continuePathBtn" type="button">
-              <span>Spustiť tréning</span>
+              <span>Pokračovať v Ceste</span>
               <span class="cta-arrow">→</span>
             </button>
           </div>
@@ -1404,7 +1404,8 @@
         </div>
 
         <!-- Stavové hlásenie pod kruhom -->
-        <div class="status-alert" id="statusAlert">
+        <div class="lesson-mic-status" id="lessonMicStatus" data-state="ready" role="status"><span class="lesson-mic-dot" aria-hidden="true"></span><span id="lessonMicStatusText">Pripravené</span></div>
+        <div class="status-alert" id="statusAlert" aria-live="polite">
           Stlač tlačidlo Štart pre začiatok dychového cyklu.
         </div>
 
