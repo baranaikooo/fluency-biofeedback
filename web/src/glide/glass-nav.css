@@ -60,3 +60,39 @@
 @media (prefers-reduced-motion: reduce) {
   #bottomNav .nav-tab { transition: none; }
 }
+@media (max-width: 768px) {
+  #bottomNav {
+    left: calc(14px + var(--safe-left));
+    right: calc(14px + var(--safe-right));
+    bottom: calc(14px + var(--safe-bottom));
+    padding: 4px;
+    border-color: #ffffff70;
+    background: #25202ee8;
+    box-shadow: 0 10px 30px #100a1b80, inset 0 1px 2px #ffffff80, inset 0 -1px 2px #ffffff24;
+  }
+
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    #bottomNav {
+      background: linear-gradient(180deg, #28232de8, #514957d9 52%, #6c6472dc);
+      -webkit-backdrop-filter: blur(22px) saturate(140%);
+      backdrop-filter: blur(22px) saturate(140%);
+    }
+  }
+
+  #bottomNav .nav-tab {
+    min-height: 62px;
+    gap: 4px;
+    color: #fff;
+    text-shadow: 0 1px 3px #000b;
+  }
+
+  #bottomNav .nav-label {
+    font-size: clamp(10px, 3vw, 12px);
+    font-weight: 650;
+  }
+
+  #bottomNav .nav-tab.active {
+    background: linear-gradient(160deg, #ffffff60, #ffffff20);
+    box-shadow: inset 0 1px 1px #ffffffa0, inset 0 0 0 1px #ffffff30;
+  }
+}
