@@ -29,6 +29,7 @@ test("nested form picker cancels safely, commits values and follows programmatic
   page,
 }) => {
   await open(page);
+  await page.locator("#sidebarProfileBtn").click();
   await page.locator("#practiceOpen").click();
   await page.locator("#practiceReview summary").click();
   await page.locator("#practiceSaidTrigger").click();
@@ -46,6 +47,7 @@ test("nested form picker cancels safely, commits values and follows programmatic
 test("mobile picker fits the viewport and option text stays text", async ({ page }) => {
   await open(page);
   await page.setViewportSize({ width: 320, height: 568 });
+  await page.locator("#headerProfileBtn").click();
   await page.locator("#practiceOpen").click();
   await page.locator("#practiceReview summary").click();
   await page.locator("#practiceFeedbackTrigger").click();

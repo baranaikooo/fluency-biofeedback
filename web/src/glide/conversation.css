@@ -80,3 +80,15 @@
 .vocabulary-words .vocabulary-word {min-width:0;overflow-wrap:anywhere;text-align:left;}
 .vocabulary-saved-status {font-size:10px;color:var(--purple-hover);white-space:nowrap;}
 .vocabulary-words .vocabulary-remove {min-width:38px;padding:6px;color:var(--purple-hover);}
+.sandbox-container {display:flex!important;flex-direction:column;}
+.drill-category {display:flex;flex-direction:column;gap:14px;padding:18px;border:1px solid var(--surface-border);border-radius:22px;background:var(--surface);box-shadow:0 8px 30px #3023410a;}
+.drill-category-heading {display:flex;align-items:center;gap:12px;min-width:0;}
+.drill-category-heading h3 {margin:0;color:var(--ink);font-size:18px;line-height:1.25;}
+.drill-category-heading p {margin:4px 0 0;color:var(--text-muted);font-size:12px;line-height:1.4;}
+.drill-category-icon {display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:14px;background:var(--lavender-soft);color:var(--purple-hover);font-weight:700;font-size:18px;}
+.drill-category .sandbox-input-card {padding:0;border:0;background:transparent;box-shadow:none;}
+.drill-category .sandbox-action-wrap {width:100%;}
+.drill-category .sandbox-mode-card {width:100%;}
+.drill-conversation-action button,.profile-challenges button {width:100%;min-height:48px;padding:12px 16px;border:1px solid var(--surface-border);border-radius:14px;background:var(--lavender-soft);color:var(--purple-hover);font-size:13px;font-weight:700;text-align:center;}
+.profile-challenges {grid-column:1 / -1;}
+@media(max-width:600px){.drill-category{padding:15px;gap:12px}.drill-category-heading h3{font-size:17px}}

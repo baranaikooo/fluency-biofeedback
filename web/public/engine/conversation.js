@@ -411,9 +411,9 @@
   button.id = "conversationOpen";
   button.type = "button";
   button.className = "practice-button";
-  button.textContent = "💬 Nácvik rozhovoru";
+  button.textContent = "Otvoriť rozhovory →";
   button.onclick = () => open();
-  document.querySelector(".drill-more-actions").append(button);
+  document.querySelector(".drill-conversation-action").append(button);
 
   const recap = document.createElement("button");
   recap.type = "button";
