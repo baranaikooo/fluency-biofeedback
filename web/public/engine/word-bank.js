@@ -66,32 +66,20 @@
   dialog.innerHTML = `
     <button type="button" class="conversation-close" aria-label="Zavrieť">✕</button>
     <h2 id="vocabularyTitle">Slová na tréning</h2>
-    <div class="vocabulary-tabs" role="group" aria-label="Výber slov">
-      <button type="button" id="vocabularyLibraryTab" aria-pressed="true">Slovník</button>
-      <button type="button" id="vocabularySavedTab" aria-pressed="false">Moje slová</button>
-    </div>
-    <div id="vocabularyLibrary">
     <label for="vocabularySearch">Vyhľadať slovo</label>
     <input id="vocabularySearch" type="search" placeholder="Napríklad káva" autocomplete="off">
+    <details class="vocabulary-add"><summary>Pridať vlastné slovo</summary><div id="vocabularyAddForm"></div></details>
     <p id="vocabularyCount" role="status"></p>
     <div id="vocabularyWords" class="vocabulary-words"></div>
     <button id="vocabularyNext" type="button" class="lesson-quiet-action">Ďalšie slová</button>
-    </div>
-    <div id="vocabularySaved" hidden></div>
   `;
   document.body.append(dialog);
-  const savedPanel = dialog.querySelector("#vocabularySaved");
-  const libraryPanel = dialog.querySelector("#vocabularyLibrary");
   const savedCard = document.getElementById("fearedWordsCard");
-  if (savedCard) savedPanel.append(savedCard);
-  function selectPanel(saved) {
-    savedPanel.hidden = !saved;
-    libraryPanel.hidden = saved;
-    dialog.querySelector("#vocabularySavedTab").setAttribute("aria-pressed", String(saved));
-    dialog.querySelector("#vocabularyLibraryTab").setAttribute("aria-pressed", String(!saved));
-  }
-  dialog.querySelector("#vocabularySavedTab").onclick = () => selectPanel(true);
-  dialog.querySelector("#vocabularyLibraryTab").onclick = () => selectPanel(false);
+  const addForm = savedCard?.querySelector(".vault-add-form");
+  if (addForm) dialog.querySelector("#vocabularyAddForm").append(addForm);
+  const randomButton = savedCard?.querySelector("#vaultRandomChallengeBtn");
+  if (randomButton) dialog.querySelector("#vocabularyAddForm").append(randomButton);
+  if (savedCard) savedCard.hidden = true;
   const search = document.getElementById("vocabularySearch");
   const list = document.getElementById("vocabularyWords");
   const count = document.getElementById("vocabularyCount");
@@ -99,24 +87,51 @@
   let offset = 0;
   const pageSize = 28;
   const fold = (text) => text.normalize("NFKD").replace(/\p{M}/gu, "").toLocaleLowerCase("sk");
+  const identity = (text) => text.trim().toLocaleLowerCase("sk");
   function render() {
     const query = fold(search.value.trim());
-    const matches = all.filter((word) => fold(word).includes(query));
+    const saved = window.duoState?.loadVaultWords() || [];
+    const savedNames = new Set(saved.map((item) => identity(item.word)));
+    const words = [
+      ...saved.map((item) => ({ word: item.word, saved: item })),
+      ...all.filter((word) => !savedNames.has(identity(word))).map((word) => ({ word })),
+    ];
+    const matches = words.filter((item) => fold(item.word).includes(query));
+    if (offset >= matches.length) offset = 0;
     list.replaceChildren();
-    for (const word of matches.slice(offset, offset + pageSize)) {
+    for (const item of matches.slice(offset, offset + pageSize)) {
+      const row = document.createElement("div");
+      row.className = "vocabulary-word-row";
       const button = document.createElement("button");
       button.type = "button";
-      button.textContent = word;
+      button.className = "vocabulary-word";
+      button.textContent = item.word;
       button.onclick = () => {
-        input.value = word;
+        input.value = item.word;
         input.dispatchEvent(new Event("input", { bubbles: true }));
         dialog.close();
         input.focus();
       };
-      list.append(button);
+      row.append(button);
+      if (item.saved) {
+        const status = document.createElement("span");
+        status.className = "vocabulary-saved-status";
+        status.textContent = item.saved.isMastered ? "Precvičené" : (item.saved.successes || 0) + "/3 pokusy";
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "vocabulary-remove";
+        remove.textContent = "✕";
+        remove.setAttribute("aria-label", "Odstrániť uložené slovo " + item.word);
+        remove.onclick = () => {
+          window.duoLesson?.deleteVaultWord(item.saved.id);
+          render();
+        };
+        row.append(status, remove);
+      }
+      list.append(row);
     }
     count.textContent = matches.length
-      ? `${offset + 1}–${Math.min(offset + pageSize, matches.length)} z ${matches.length} slov`
+      ? (offset + 1) + "–" + Math.min(offset + pageSize, matches.length) + " z " + matches.length + " slov"
       : "Žiadne slovo nezodpovedá vyhľadávaniu.";
     next.hidden = matches.length <= pageSize;
     next.onclick = () => {
@@ -125,7 +140,6 @@
     };
   }
   trigger.onclick = () => {
-    selectPanel(false);
     search.value = "";
     offset = 0;
     render();
@@ -136,5 +150,7 @@
     offset = 0;
     render();
   };
+  const vaultList = document.getElementById("vaultList");
+  if (vaultList) new MutationObserver(() => { if (dialog.open) render(); }).observe(vaultList, { childList: true });
   dialog.querySelector(".conversation-close").onclick = () => dialog.close();
 })(typeof window !== "undefined" ? window : globalThis);

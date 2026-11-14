@@ -69,3 +69,14 @@
 #vocabularySaved .vault-input {flex:1 1 100%;}
 #vocabularySaved .glide-select {flex:1 1 130px;}
 #vocabularySaved .vault-list {margin-top:12px;}
+#fearedWordsCard[hidden] {display:none!important;}
+.vocabulary-add {margin:12px 0;border:1px solid var(--surface-border);border-radius:14px;background:var(--bg);}
+.vocabulary-add summary {padding:12px;cursor:pointer;color:var(--purple-hover);font-weight:600;}
+#vocabularyAddForm {padding:0 12px 12px;}
+#vocabularyAddForm .vault-input-row {display:flex;flex-wrap:wrap;gap:8px;}
+#vocabularyAddForm .vault-input {flex:1 1 100%;min-width:0;}
+#vocabularyAddForm .glide-select {flex:1 1 130px;}
+.vocabulary-word-row {display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:3px;border-radius:12px;background:var(--lavender-soft);}
+.vocabulary-words .vocabulary-word {min-width:0;overflow-wrap:anywhere;text-align:left;}
+.vocabulary-saved-status {font-size:10px;color:var(--purple-hover);white-space:nowrap;}
+.vocabulary-words .vocabulary-remove {min-width:38px;padding:6px;color:var(--purple-hover);}
