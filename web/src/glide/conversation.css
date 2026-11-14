@@ -90,3 +90,20 @@
 @media(max-width:600px){.drill-category{padding:15px;gap:12px}.drill-category-heading h3{font-size:17px}}
 .conversation-page {width:100%;max-width:720px;margin:0 auto;}
 #tabRozhovory .drill-category {width:100%;}
+.conversation-page {width:100%;max-width:760px;margin:0 auto;}
+.conversation-surface {padding:4px 0 32px;text-align:left;}
+.conversation-eyebrow {margin:0 0 8px;color:var(--purple);font-size:10px;font-weight:700;letter-spacing:.12em;}
+.conversation-surface h1 {margin:0;color:var(--ink);font:500 clamp(30px,7vw,42px)/1.1 "Newsreader",serif;}
+.conversation-intro {margin:9px 0 20px;color:var(--text-muted);font-size:13px;line-height:1.5;}
+.conversation-surface .conversation-mode {margin:0 0 16px;padding:5px;border:1px solid var(--surface-border);background:var(--surface);}
+.conversation-surface #conversationForm,.conversation-surface #conversationCheckin {padding:18px;border:1px solid var(--surface-border);border-radius:22px;background:var(--surface);}
+.conversation-surface #conversationForm {gap:12px;}
+.conversation-surface .conversation-scene-cards {gap:9px;margin-bottom:4px;}
+.conversation-surface .conversation-scene-card {min-height:68px;padding:12px;font-size:13px;}
+.conversation-surface #conversationStart {margin-top:4px;}
+.conversation-surface #conversationRecommendation {margin:14px 2px;color:var(--text-muted);font-size:12px;line-height:1.5;}
+.conversation-surface #conversationRecommendation:empty {display:none;}
+.conversation-surface #conversationCheckin[hidden] {display:none!important;}
+@media(min-width:700px){.conversation-surface .conversation-scene-cards{grid-template-columns:repeat(4,minmax(0,1fr));}.conversation-surface .conversation-scene-card{flex-direction:column;align-items:flex-start;min-height:108px;}}
+@media(max-width:360px){.conversation-surface .conversation-scene-cards{grid-template-columns:repeat(2,minmax(0,1fr));}.conversation-surface .conversation-scene-card{min-height:68px;}}
+.conversation-surface textarea {width:100%;min-height:72px;padding:11px;border:1px solid var(--surface-border);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;line-height:1.45;resize:vertical;}

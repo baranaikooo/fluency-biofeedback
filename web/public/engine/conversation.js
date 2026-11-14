@@ -171,13 +171,14 @@
     };
   }
 
-  const dialog = document.createElement("dialog");
+  const dialog = document.createElement("div");
   dialog.id = "conversationDialog";
-  dialog.className = "lesson-round-dialog conversation-dialog";
+  dialog.className = "conversation-dialog conversation-surface";
   dialog.setAttribute("aria-labelledby", "conversationTitle");
   dialog.innerHTML = `
-    <button type="button" class="conversation-close" aria-label="Zavrieť">✕</button>
-    <h2 id="conversationTitle">Nácvik rozhovoru</h2>
+    <p class="conversation-eyebrow">TVOJ PRIESTOR NA ROZHOVOR</p>
+    <h1 id="conversationTitle">Nácvik rozhovoru</h1>
+    <p class="conversation-intro">Vyber si situáciu a trénuj vlastným tempom.</p>
     <div class="conversation-mode" role="group" aria-label="Typ rozhovoru">
       <button type="button" id="conversationPracticeMode" aria-pressed="true">Simulácia</button>
       <button type="button" id="conversationLifeMode" aria-pressed="false">V bežnom živote</button>
@@ -187,7 +188,7 @@
       <div id="conversationSceneCards" class="conversation-scene-cards" role="group" aria-labelledby="conversationSceneLabel"></div>
       <select id="conversationScene" data-glide-select="scene-cards" aria-label="Situácia" aria-hidden="true" tabindex="-1" class="conversation-scene-select"></select>
       <label for="conversationGoal">Čo chceš povedať alebo vybaviť?</label>
-      <input id="conversationGoal" maxlength="140" required autocomplete="off">
+      <textarea id="conversationGoal" maxlength="140" rows="2" required></textarea>
       <button class="btn-3d green full" id="conversationStart">Začať rozhovor</button>
     </form>
     <button type="button" id="conversationPending" class="conversation-pending" hidden><span>Rozpracovaný rozhovor</span><strong id="conversationPendingTitle"></strong><span>Vrátiť sa k rozhovoru →</span></button>
@@ -225,7 +226,7 @@
     </section>
     <p id="conversationRecommendation" role="status"></p>
   `;
-  document.body.append(dialog);
+  document.getElementById("conversationPage").append(dialog);
 
   const byId = (id) => document.getElementById(id);
   const sceneSelect = byId("conversationScene");
@@ -342,7 +343,7 @@
     status.textContent = last
       ? `Zaznamenané rozhovory: ${entries.length}. Cieľ splnený: ${successes}. Návrh na nácvik: ${scenes[recommend(last)].title}.`
       : "";
-    dialog.showModal();
+
   }
   byId("conversationPending").onclick = () => showMode(true, true);
   practiceMode.onclick = () => showMode(false);
@@ -359,18 +360,19 @@
     try {
       localStorage.setItem(draftKey(), JSON.stringify(draft));
       pending = draft;
-      dialog.close();
+      byId("conversationPendingTitle").textContent = scenes[draft.sceneId].title;
+      showMode(true, true);
+      status.textContent = "Plán je uložený. Po rozhovore sa môžeš vrátiť k záznamu.";
     } catch {
       status.textContent = "Plán sa nepodarilo uložiť na tomto zariadení.";
     }
   };
   sceneSelect.onchange = () => select(sceneSelect.value);
-  dialog.querySelector(".conversation-close").onclick = () => dialog.close();
+
   byId("conversationForm").onsubmit = (event) => {
     event.preventDefault();
     const situation = selectedSituation();
     if (!situation || !checkin.hidden) return;
-    dialog.close();
     duoLesson.launchSosDrill(create(situation.sceneId, situation.goal));
     byId("startBtn").focus({preventScroll:true});
   };
@@ -407,13 +409,7 @@
     }
   };
 
-  const button = document.createElement("button");
-  button.id = "conversationOpen";
-  button.type = "button";
-  button.className = "practice-button";
-  button.textContent = "Otvoriť rozhovory →";
-  button.onclick = () => open();
-  document.querySelector(".drill-conversation-action").append(button);
+  byId("navTabRozhovory").addEventListener("click", () => open());
 
   const recap = document.createElement("button");
   recap.type = "button";
@@ -421,7 +417,13 @@
   recap.className = "practice-button";
   recap.textContent = "Zaznamenať rozhovor v živote";
   recap.hidden = true;
-  recap.onclick = () => open(duoLesson.conversation);
+  recap.onclick = () => {
+    const plan = duoLesson.conversation;
+    duoLesson.finishCelebration();
+    byId("navTabRozhovory").click();
+    open(plan);
+    byId("conversationCheckin").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   byId("celebrationSub").after(recap);
 
   function reset() {

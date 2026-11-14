@@ -47,7 +47,7 @@ test("café rehearsal follows both responses and recommends a next scene from th
 }) => {
   await open(page);
   await page.locator("#sidebarTabRozhovory").click();
-  await page.locator("#conversationOpen").click();
+
   await page.getByRole("button", { name: "Začať rozhovor", exact: true }).click();
   await expect(page.locator("#lessonConversationGoal")).toContainText("dve kávy");
   expect(await page.evaluate(() => lessonScenario().audioUrl)).toContain("glide-cafe-opening");
@@ -78,7 +78,7 @@ test("ambulance opening alternates both bundled voices across launches", async (
   for (const voice of ["leda", "despina", "leda"]) {
     await open(page);
     await page.locator("#sidebarTabRozhovory").click();
-    await page.locator("#conversationOpen").click();
+
     await page.getByRole("button", { name: "Telefonát do ambulancie", exact: true }).click();
     await page.getByRole("button", { name: "Začať rozhovor", exact: true }).click();
     const question = await page.evaluate(() => lessonScenario());
@@ -90,13 +90,13 @@ test("ambulance opening alternates both bundled voices across launches", async (
 test("a real-life plan survives reload and adds optional reflection to the same entry", async ({ page }) => {
   await open(page);
   await page.locator("#sidebarTabRozhovory").click();
-  await page.locator("#conversationOpen").click();
+
   await page.getByRole("button", { name: "V bežnom živote" }).click();
   await page.locator("#conversationBeforeRating").getByText("Napäto", { exact: true }).click();
   await page.getByRole("button", { name: "Uložiť plán" }).click();
   await open(page);
   await page.locator("#sidebarTabRozhovory").click();
-  await page.locator("#conversationOpen").click();
+
   await page.getByRole("button", { name: "V bežnom živote" }).click();
   await expect(page.getByRole("heading", { name: "Po rozhovore" })).toBeVisible();
   const reflection = page.locator("#conversationCheckinForm");
@@ -121,7 +121,7 @@ test("a custom situation and a missing transcript preserve the user's choice of 
 }) => {
   await open(page);
   await page.locator("#sidebarTabRozhovory").click();
-  await page.locator("#conversationOpen").click();
+
     await page.getByRole("button", { name: "Vlastná situácia", exact: true }).click();
   await page.locator("#conversationGoal").fill("Spýtať sa na prestup na vlak");
   await page.getByRole("button", { name: "Začať rozhovor", exact: true }).click();
